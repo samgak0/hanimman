@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name="share")
-public class Share {
+@Table(name="together")
+public class Together {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,8 +27,8 @@ public class Share {
     private Timestamp createAt;
     private Timestamp modifiedAt;
     private Timestamp deletedAt;
-    private String location;
-    private Timestamp locationDate;
+    private String meetingLocation;
+    private Timestamp meetingAt;
     private String item;
     private int quantity;
     private boolean isEnd;
