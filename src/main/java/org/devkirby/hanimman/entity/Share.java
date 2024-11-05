@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @ToString
 @Builder
 @Table(name="share")
-public class share {
+public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -30,6 +30,7 @@ public class share {
     private int quantity;
     private boolean status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private int memberId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name= "id")
+//    private User user;
 }
