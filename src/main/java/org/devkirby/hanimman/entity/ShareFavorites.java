@@ -12,25 +12,18 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name="share")
-public class Share {
+@Table(name = "share_favorites")
+public class ShareFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    private String title;
-    private String content;
-    private int views;
     private Timestamp createAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
-    private String location;
-    private Timestamp locationDate;
-    private String item;
-    private int quantity;
-    private boolean isEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name="id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id")
+    private Share share;
 }
