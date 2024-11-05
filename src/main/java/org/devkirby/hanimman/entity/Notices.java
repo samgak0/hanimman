@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name="together")
-public class Together {
+@Table(name = "notices")
+public class Notices {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,13 +27,8 @@ public class Together {
     private Timestamp createAt;
     private Timestamp modifiedAt;
     private Timestamp deletedAt;
-    private String meetingLocation;
-    private Timestamp meetingAt;
-    private String item;
-    private int quantity;
-    private boolean isEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name="id")
     private User user;
 }

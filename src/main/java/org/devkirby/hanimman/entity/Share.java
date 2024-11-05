@@ -19,7 +19,10 @@ public class Share {
     private int id;
 
     private String title;
+
+    @Lob
     private String content;
+
     private int views;
     private Timestamp createAt;
     private Timestamp modifiedAt;
