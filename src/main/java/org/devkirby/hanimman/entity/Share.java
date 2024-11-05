@@ -30,7 +30,7 @@ public class Share {
     private int quantity;
     private boolean status;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name= "id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "id")
+    private User user;
 }
