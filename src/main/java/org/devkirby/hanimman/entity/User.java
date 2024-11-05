@@ -1,4 +1,4 @@
-package org.devkirby.hanimman.Entity;
+package org.devkirby.hanimman.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
