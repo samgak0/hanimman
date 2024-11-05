@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @ToString
 @Builder
 @Table(name = "share_favorites")
-public class ShareFavorites {
+public class TogetherFavorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -24,7 +24,7 @@ public class ShareFavorites {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id")
-    private Share share;
+    private Together together;
 
     private Timestamp createAt;
 }

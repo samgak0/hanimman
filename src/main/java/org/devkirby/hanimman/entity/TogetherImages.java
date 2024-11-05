@@ -8,23 +8,28 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table(name = "share_favorites")
-public class ShareFavorites {
+@Table(name = "together_images")
+public class TogetherImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String originalName;
+    private String serverName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
+    @JoinColumn(name= "id")
     private User user;
 
+    private int fileSize;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id")
-    private Share share;
+    private Together together;
 
     private Timestamp createAt;
+    private Timestamp deletedAt;
 }

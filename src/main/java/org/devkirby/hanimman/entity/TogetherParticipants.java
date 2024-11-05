@@ -8,15 +8,19 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table(name = "share_favorites")
-public class ShareFavorites {
+@Table(name = "Together_participants")
+public class TogetherParticipants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private Timestamp date;
+    private int quantity;
+    private boolean rejected;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id")
@@ -24,7 +28,5 @@ public class ShareFavorites {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id")
-    private Share share;
-
-    private Timestamp createAt;
+    private Together together;
 }
