@@ -3,12 +3,16 @@ package org.devkirby.hanimman.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
+@ToString
+@Table(name="user")
 public class User {
 
     @Id
@@ -44,14 +48,14 @@ public class User {
     private String neighborhood;
 
     @Column(length = 255)
-    private String device_unique_num;
+    private String deviceUniqueNum;
 
     @Column(nullable = true)
-    private Date modified_at;
+    private Timestamp modifiedAt;
 
     @Column
-    private Date created_at;
+    private Timestamp createdAt;
 
     @Column(nullable = true)
-    private Date deleted_at;
+    private Timestamp deletedAt;
 }

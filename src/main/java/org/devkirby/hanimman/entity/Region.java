@@ -9,8 +9,8 @@ import lombok.ToString;
 @Setter
 @Entity
 @ToString
-@Table(name="city")
-public class City {
+@Table(name="region")
+public class Region {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,5 +19,12 @@ public class City {
     @Column(length = 50)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "id")
+    private City cityId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "id")
+    private Country countryId;
 
 }
