@@ -21,6 +21,8 @@ public class NoticeFiles {
 
     private String originalName;
     private String serverName;
+
+    @Column(length = 20)
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)

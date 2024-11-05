@@ -3,30 +3,24 @@ package org.devkirby.hanimman.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @Entity
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
-@Table(name = "share_participants")
-public class ShareParticipants {
+@Table(name = "reports")
+public class reports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private Timestamp date;
-    private int quantity;
-    private boolean rejected;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reporter_id")
+    private User reporterId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private User userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent")
-    private Share parent;
+    @JoinColumn(name="reported_id")
+    private User reportedId;
 }

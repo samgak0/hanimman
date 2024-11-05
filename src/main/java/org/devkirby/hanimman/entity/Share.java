@@ -34,6 +34,6 @@ public class Share {
     private boolean isEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
-    private User user;
+    @JoinColumn(name= "user_id")
+    private User userId;
 }

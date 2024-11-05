@@ -23,10 +23,10 @@ public class TogetherParticipants {
     private boolean rejected;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private Together together;
+    @JoinColumn(name="parent")
+    private Together parent;
 }

@@ -19,12 +19,12 @@ public class ShareFavorites {
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private Share share;
+    @JoinColumn(name="parent")
+    private Share parent;
 
     private Timestamp createAt;
 }

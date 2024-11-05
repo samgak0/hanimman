@@ -1,5 +1,7 @@
 package org.devkirby.hanimman.entity;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,28 +10,32 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
-@Table(name = "share_images")
-public class ShareImages {
+@Table(name = "inquire_files")
+public class InquireFiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String originalName;
     private String serverName;
 
+    @Column(length = 20)
+    private String mineType;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "user_id")
-    private User userId;
+    @JoinColumn(name="id")
+    private User user;
 
     private int fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent")
-    private Share parent;
+    @JoinColumn(name="id")
+    private Inquiries inquiries;
 
-    private Timestamp deletedAt;
     private Timestamp createAt;
+    private Timestamp deletedAt;
 }
