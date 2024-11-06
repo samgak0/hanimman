@@ -27,7 +27,7 @@ public class ShareReview {
     private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User member;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Share parent;
