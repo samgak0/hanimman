@@ -69,7 +69,7 @@ CREATE TABLE profile (
     server_name VARCHAR(255) NOT NULL COMMENT '서버 사진 이름',
     mine_type VARCHAR(255) NOT NULL COMMENT '사진타입',
     file_size INT NOT NULL COMMENT '크기',
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
     parent INT NOT NULL COMMENT '소속 게시글',
     PRIMARY KEY (id),
     FOREIGN KEY (parent) REFERENCES user(id)
@@ -87,7 +87,7 @@ CREATE TABLE share (
     location_date TIMESTAMP NOT NULL COMMENT '모임일',
     item VARCHAR(255) NOT NULL COMMENT '품목',
     quantity INT NOT NULL COMMENT '수량',
-    status TINYINT NOT NULL DEFAULT 0 COMMENT '마감여부',
+    is_end TINYINT NOT NULL DEFAULT 0 COMMENT '마감여부',
     member_id INT NOT NULL COMMENT '회원 ID',
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES user(id)
@@ -102,7 +102,7 @@ CREATE TABLE share_images (
     file_size INT NOT NULL COMMENT '크기',
     parent INT NOT NULL COMMENT '소속 게시글',
     deleted_at TIMESTAMP NULL COMMENT '삭제일' COMMENT '탈퇴일',
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (parent) REFERENCES share(id)
@@ -156,7 +156,7 @@ CREATE TABLE together_images (
     user_id INT NOT NULL COMMENT '회원 ID',
     file_size INT NOT NULL COMMENT '크기',
     parent INT NOT NULL COMMENT '소속 게시글',
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
     deleted_at TIMESTAMP NULL COMMENT '삭제일' COMMENT '탈퇴일',
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user(id),
@@ -210,7 +210,7 @@ CREATE TABLE inquire_files (
     file_size INT NOT NULL COMMENT '크기',
     parent INT NOT NULL COMMENT '소속 게시글',
     deleted_at TIMESTAMP NULL COMMENT '삭제일',
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일',
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (parent) REFERENCES inquiries(id)

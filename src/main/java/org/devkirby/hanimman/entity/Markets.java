@@ -1,7 +1,20 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -10,11 +23,11 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "markets")
+@Table
 public class Markets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(length = 50, nullable = false)
     private String name;
@@ -26,15 +39,15 @@ public class Markets {
     private String longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="city_id")
+    @JoinColumn(name = "city_id")
     private City cityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="country_id")
+    @JoinColumn(name = "country_id")
     private Country countryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="region_id")
+    @JoinColumn(name = "region_id")
     private Region regionId;
 
     @Column(nullable = false)
