@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -27,7 +28,7 @@ public class Authentication {
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private Instant createAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
