@@ -29,11 +29,11 @@ public class ReviewsShare {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "member_id")
     private User memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "parent_id")
     private Share parentId;
 
 }

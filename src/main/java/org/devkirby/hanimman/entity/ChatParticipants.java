@@ -22,11 +22,11 @@ public class ChatParticipants {
     private Timestamp joinedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "room_id")
     private User roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "user_id")
     private User userId;
 
 
