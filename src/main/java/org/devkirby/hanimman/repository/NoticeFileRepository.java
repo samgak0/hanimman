@@ -1,14 +1,14 @@
 package org.devkirby.hanimman.repository;
 
-import org.devkirby.hanimman.entity.NoticeFiles;
-import org.devkirby.hanimman.entity.Notices;
+import org.devkirby.hanimman.entity.NoticeFile;
+import org.devkirby.hanimman.entity.Notice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface NoticeFilesRepository extends JpaRepository<NoticeFiles, Integer> {
+public interface NoticeFileRepository extends JpaRepository<NoticeFile, Integer> {
     // 공지사항에 대해 삭제되지 않은 파일만 가져오기
-    List<NoticeFiles> findByParentAndDeletedAtIsNull(Notices parent);
+    List<NoticeFile> findByParentAndDeletedAtIsNull(Notice parent);
 }

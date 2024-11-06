@@ -1,15 +1,14 @@
 package org.devkirby.hanimman.repository;
 
-import org.devkirby.hanimman.entity.ShareFavorites;
-import org.devkirby.hanimman.entity.TogetherFavorites;
+import org.devkirby.hanimman.entity.TogetherFavorite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface TogetherFavoritesRepository extends JpaRepository<TogetherFavorites, Integer> {
-    List<TogetherFavorites> findByUserId(Integer userId);
+public interface TogetherFavoritesRepository extends JpaRepository<TogetherFavorite, Integer> {
+    List<TogetherFavorite> findByUserId(Integer userId);
 
-    List<TogetherFavorites> findByParent(Integer parent);
+    List<TogetherFavorite> findByParent(Integer parent);
 }
