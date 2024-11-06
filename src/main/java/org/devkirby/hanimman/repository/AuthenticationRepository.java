@@ -12,5 +12,5 @@ import org.devkirby.hanimman.entity.User;
 @Repository
 public interface AuthenticationRepository extends JpaRepository<Authentication, Integer> {
 
-    List<Region> findByUser(User user);
+    List<Authentication> findByUser(User user);
 }
