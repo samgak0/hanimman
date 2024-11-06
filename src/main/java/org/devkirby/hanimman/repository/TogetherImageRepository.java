@@ -9,7 +9,7 @@ import java.util.List;
 import org.devkirby.hanimman.entity.TogetherImage;
 
 @Repository
-public interface TogetherImagesRepository extends JpaRepository<TogetherImage, Integer> {
+public interface TogetherImageRepository extends JpaRepository<TogetherImage, Integer> {
     List<TogetherImage> findByParentId(Integer parentId);
 
     // 삭제되지 않은 이미지 조회

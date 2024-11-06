@@ -3,7 +3,6 @@ package org.devkirby.hanimman.dto;
 import java.time.Instant;
 
 import lombok.*;
-import org.devkirby.hanimman.entity.Faq;
 
 @Data
 @AllArgsConstructor
