@@ -20,15 +20,15 @@ public class Reports {
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reporter_id")
+    @JoinColumn(name="reporter_id", nullable = false)
     private User reporterId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_id")
+    @JoinColumn(name="reported_id", nullable = false)
     private User reportedId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="category")
+    @JoinColumn(name="category", nullable = false)
     private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)

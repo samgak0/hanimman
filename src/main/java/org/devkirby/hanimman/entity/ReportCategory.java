@@ -18,12 +18,19 @@ public class ReportCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="manager")
+    @JoinColumn(name="manager", nullable = false)
     private User manager;
 
+    @Column(nullable = false)
     private Timestamp createAt;
     private Timestamp deletedAt;
+
+    @PrePersist
+    protected void onCreate(){
+        this.createAt = new Timestamp(System.currentTimeMillis());
+    }
 }
