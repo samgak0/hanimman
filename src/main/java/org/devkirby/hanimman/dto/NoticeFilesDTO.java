@@ -31,7 +31,7 @@ public class NoticeFilesDTO {
                 .mineType(entity.getMineType())
                 .userId(entity.getUserId().getId())  // User 엔티티의 ID를 추출
                 .fileSize(entity.getFileSize())
-                .parentId(entity.getParent().getId())  // Notices 엔티티의 ID를 추출
+                .parentId(entity.getParentId().getId())  // Notices 엔티티의 ID를 추출
                 .createdAt(entity.getCreatedAt())
                 .deletedAt(entity.getDeletedAt())
                 .build();

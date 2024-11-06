@@ -23,7 +23,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @Table
-public class Reports {
+public class TogetherReports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -41,10 +41,6 @@ public class Reports {
     private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_share_id", nullable = false)
-    private Share reportedShareId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_together_id", nullable = false)
-    private Share reportedTogetherId;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Share parentId;
 }
