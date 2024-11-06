@@ -29,6 +29,6 @@ public class Inquiries {
     private Timestamp deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 }

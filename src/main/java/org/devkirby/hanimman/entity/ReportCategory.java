@@ -3,6 +3,8 @@ package org.devkirby.hanimman.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Entity
 @Getter
 @Setter
@@ -10,17 +12,18 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "reports")
-public class reports {
+@Table(name = "report_category")
+public class ReportCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reporter_id")
-    private User reporterId;
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_id")
-    private User reportedId;
+    @JoinColumn(name="manager")
+    private User manager;
+
+    private Timestamp createAt;
+    private Timestamp deletedAt;
 }

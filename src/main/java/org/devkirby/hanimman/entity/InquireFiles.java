@@ -27,13 +27,13 @@ public class InquireFiles {
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 
     private int fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
+    @JoinColumn(name="parent")
     private Inquiries inquiries;
 
     private Timestamp createAt;
