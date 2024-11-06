@@ -32,6 +32,6 @@ public class Country {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cityId", nullable = false)
+    @JoinColumn(name = "city_id", nullable = false)
     private City cityId;
 }
