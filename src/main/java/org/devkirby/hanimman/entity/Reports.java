@@ -17,7 +17,7 @@ import java.util.List;
 public class Reports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reporter_id", nullable = false)

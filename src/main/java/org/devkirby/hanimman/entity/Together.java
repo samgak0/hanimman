@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class Together {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -25,8 +25,8 @@ public class Together {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int views;
+    @Column(nullable = false, columnDefinition = "Integer DEFAULT 0")
+    private Integer views;
 
     @Column(nullable = false)
     private Timestamp createAt;
@@ -45,7 +45,7 @@ public class Together {
     private String item;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
     private boolean isEnd;
@@ -53,4 +53,9 @@ public class Together {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id")
     private User userId;
+
+    @PrePersist
+    protected void onCreate(){
+        this.createAt = new Timestamp(System.currentTimeMillis());
+    }
 }

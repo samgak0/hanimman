@@ -16,13 +16,13 @@ import java.sql.Timestamp;
 public class TogetherParticipants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private Timestamp date;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
     private boolean rejected;

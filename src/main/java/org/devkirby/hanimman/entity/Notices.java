@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class Notices {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -26,7 +26,7 @@ public class Notices {
     private String content;
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int views;
+    private Integer views;
 
     @Column(nullable = false)
     private Timestamp createAt;

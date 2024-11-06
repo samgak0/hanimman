@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class ReportCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String name;

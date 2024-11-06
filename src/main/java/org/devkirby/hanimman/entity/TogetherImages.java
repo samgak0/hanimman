@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class TogetherImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String originalName;
@@ -29,7 +29,7 @@ public class TogetherImages {
     private User userId;
 
     @Column(nullable = false)
-    private int fileSize;
+    private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="parent", nullable = false)

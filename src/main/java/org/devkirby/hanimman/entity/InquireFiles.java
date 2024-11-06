@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 public class InquireFiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(length = 100, nullable = false)
     private String originalName;
@@ -33,7 +33,7 @@ public class InquireFiles {
     @JoinColumn(name="user_id", nullable = false)
     private User userId;
 
-    private int fileSize;
+    private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="parent", nullable = false)

@@ -14,11 +14,11 @@ import lombok.*;
 public class MarketCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, length = 50)
     private String name;
 
     @Column(nullable = false)
-    private int type;
+    private Integer type;
 }
