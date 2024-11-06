@@ -15,7 +15,7 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     // 제목에서 키워드 포함
     List<Together> findByTitleContaining(String keyword);
 
-    // 제목 및 내용에 키워드 포함
+    // 제목과 내용에 키워드 포함
     List<Together> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword);
 
     // 품목에 키워드 포함

@@ -34,14 +34,14 @@ public class Faq {
     private Integer views = 0;
 
     @Column
-    private Instant faqDeletedAt;
+    private Instant deletedAt;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant faqCreateDate = Instant.now();
+    private Instant createdAt = Instant.now();
 
     @Column
-    private Instant faqModification;
+    private Instant modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

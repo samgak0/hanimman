@@ -37,9 +37,8 @@ public class Notice {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Instant modifiedAt = Instant.now();
+    @Column
+    private Instant modifiedAt;
 
     @Column
     private Instant deletedAt;
