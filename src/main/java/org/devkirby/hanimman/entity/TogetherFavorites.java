@@ -26,7 +26,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @Table
-public class TogetherFavorite {
+public class TogetherFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
