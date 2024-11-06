@@ -44,7 +44,7 @@ public class Profile {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "parent")
     private User parent;
 
 }

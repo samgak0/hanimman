@@ -39,6 +39,6 @@ public class Authentication {
     private LocalDateTime createdAt;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "parent")
     private User parent;
 }
