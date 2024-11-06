@@ -1,17 +1,26 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @ToString
-@Table(name="chat_rooms")
+@Table
 public class ChatRooms {
 
     @Id
@@ -22,6 +31,6 @@ public class ChatRooms {
     private String name;
 
     @Column
-    private Timestamp createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
 }

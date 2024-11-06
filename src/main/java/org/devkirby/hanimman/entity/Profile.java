@@ -1,6 +1,16 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,7 +21,7 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 @ToString
-@Table(name="profile")
+@Table
 public class Profile {
 
     @Id
@@ -28,13 +38,13 @@ public class Profile {
     private String mineType;
 
     @Column
-    private int fileSize;
+    private Integer fileSize;
 
     @Column
-    private Timestamp createAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "parent")
+    @JoinColumn(name = "id")
     private User parent;
 
 }

@@ -1,61 +1,66 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.sql.Timestamp;
-import java.util.Date;
 
 @Getter
 @Setter
 @Entity
 @ToString
-@Table(name="user")
+@Table
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private Date birth;
 
     @Enumerated(EnumType.STRING)
     @Column
     private Gender gender;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String phonenum;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String nickname;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String codenum;
 
-    @Column
-    private boolean privilege;
+    @Column(nullable = false)
+    private boolean privilege = false;
 
-    @Column
-    private boolean blacklist;
+    @Column(nullable = false)
+    private boolean blacklist = false;
 
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String neighborhood;
 
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String deviceUniqueNum;
 
-    @Column(nullable = true)
-    private Timestamp modifiedAt;
+    @Column
+    private LocalDateTime modifiedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column
-    private Timestamp createdAt;
-
-    @Column(nullable = true)
-    private Timestamp deletedAt;
+    private LocalDateTime deletedAt;
 }

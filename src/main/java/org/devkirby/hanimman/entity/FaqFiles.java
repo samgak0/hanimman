@@ -1,9 +1,22 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
 
-import java.sql.Timestamp;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -12,11 +25,11 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "faq_files")
+@Table
 public class FaqFiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(length = 100, nullable = false)
     private String originalName;
@@ -28,21 +41,16 @@ public class FaqFiles {
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
     @Column(nullable = false)
-    private int fileSize;
+    private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent", nullable = false)
+    @JoinColumn(name = "parent", nullable = false)
     private Faq parent;
 
     @Column(nullable = false)
-    private Timestamp createAt;
-
-    @PrePersist
-    protected void onCreate(){
-        this.createAt = new Timestamp(System.currentTimeMillis());
-    }
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

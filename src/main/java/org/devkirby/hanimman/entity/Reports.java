@@ -1,10 +1,19 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -13,29 +22,29 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "reports")
+@Table
 public class Reports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reporter_id", nullable = false)
+    @JoinColumn(name = "reporter_id", nullable = false)
     private User reporterId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_id", nullable = false)
+    @JoinColumn(name = "reported_id", nullable = false)
     private User reportedId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="category", nullable = false)
+    @JoinColumn(name = "category", nullable = false)
     private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_share_id")
+    @JoinColumn(name = "reported_share_id")
     private Share reportedShareId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_together_id")
+    @JoinColumn(name = "reported_together_id")
     private Share reportedTogetherId;
 }

@@ -1,9 +1,22 @@
 package org.devkirby.hanimman.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
 
-import java.sql.Timestamp;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -12,31 +25,26 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "Together_participants")
+@Table
 public class TogetherParticipants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
-    private Timestamp date;
+    private LocalDateTime date = LocalDateTime.now();
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
-    @Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
-    private boolean rejected;
+    @Column(nullable = false)
+    private boolean rejected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent", nullable = false)
+    @JoinColumn(name = "parent", nullable = false)
     private Together parent;
-
-    @PrePersist
-    protected void onCreate(){
-        this.date = new Timestamp(System.currentTimeMillis());
-    }
 }
