@@ -13,14 +13,14 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
     List<Share> findByUserId(Integer userId);
 
     // 제목에서 키워드 포함
-    @Query("SELECT s FROM Share s WHERE s.title LIKE %:keyword%")
+    @Query("SELECT s FROM share s WHERE s.title LIKE %:keyword%")
     List<Share> findByTitleContaining(String keyword);
 
     // 제목 및 내용에 키워드 포함
-    @Query("SELECT s FROM Share s WHERE s.title LIKE %:keyword% OR s.content LIKE %:keyword%")
+    @Query("SELECT s FROM share s WHERE s.title LIKE %:keyword% OR s.content LIKE %:keyword%")
     List<Share> findByTitleOrContentContaining(String keyword);
 
     // 품목에 키워드 포함
-    @Query("SELECT s FROM Share s WHERE s.item LIKE %:keyword%")
+    @Query("SELECT s FROM share s WHERE s.item LIKE %:keyword%")
     List<Share> findByItemContaining(String keyword);
 }
