@@ -11,30 +11,25 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 @ToString
-@Table(name="profile")
-public class Profile {
+@Table(name="reviews_together")
+public class ReviewsTogether {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(length = 255)
-    private String realName;
-
-    @Column(length = 255)
-    private String serverName;
-
-    @Column(length = 255)
-    private String mineType;
-
-    @Column
-    private int fileSize;
+    private String content;
 
     @Column
     private Timestamp createAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "id")
-    private User parent;
+    private User memberId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "id")
+    private Share parentId;
 
 }
