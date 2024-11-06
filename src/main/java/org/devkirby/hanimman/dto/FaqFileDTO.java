@@ -6,13 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.devkirby.hanimman.entity.FaqFiles;
+import org.devkirby.hanimman.entity.FaqFile;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FaqFilesDTO {
+public class FaqFileDTO {
     private Integer id;
     private String originalName;
     private String serverName;
@@ -22,8 +22,8 @@ public class FaqFilesDTO {
     private Integer parentId;  // Faq 엔티티의 ID만 포함
     private Instant createdAt;
 
-    public static FaqFilesDTO fromEntity(FaqFiles entity) {
-        return FaqFilesDTO.builder()
+    public static FaqFileDTO fromEntity(FaqFile entity) {
+        return FaqFileDTO.builder()
                 .id(entity.getId())
                 .originalName(entity.getOriginalName())
                 .serverName(entity.getServerName())
