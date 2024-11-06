@@ -27,7 +27,7 @@ public class TogetherReview {
     private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User member;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Together parent;
