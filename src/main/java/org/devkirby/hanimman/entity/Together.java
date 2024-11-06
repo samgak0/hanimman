@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,19 +40,21 @@ public class Together {
     private String content;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer views = 0;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
+    private Instant modifiedAt;
+    private Instant deletedAt;
 
     @Column(nullable = false)
     private String meetingLocation;
 
     @Column(nullable = false)
-    private LocalDateTime meetingAt;
+    private Instant meetingAt;
 
     @Column(nullable = false)
     private String item;
