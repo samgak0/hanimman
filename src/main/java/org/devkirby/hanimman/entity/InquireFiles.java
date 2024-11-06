@@ -48,7 +48,7 @@ public class InquireFiles {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent", nullable = false)
-    private Inquiries inquiries;
+    private Inquiries parent;
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

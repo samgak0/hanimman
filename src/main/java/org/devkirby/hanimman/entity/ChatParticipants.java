@@ -34,13 +34,11 @@ public class ChatParticipants {
     private LocalDateTime joinedAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "roomId", nullable = false)
     private User roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", nullable = false)
     private User userId;
-
-
 
 }
