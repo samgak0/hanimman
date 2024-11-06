@@ -3,12 +3,7 @@ package org.devkirby.hanimman.entity;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,9 +25,9 @@ public class User {
     @Column(nullable = false)
     private Date birth;
 
-    // @Enumerated(EnumType.STRING)
-    // @Column
-    // private Gender gender;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Gender gender;
 
     @Column(length = 20, nullable = false)
     private String phonenum;
