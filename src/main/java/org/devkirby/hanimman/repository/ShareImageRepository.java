@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.repository;
 
+import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.entity.Together;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,5 @@ public interface ShareImageRepository extends JpaRepository<ShareImage, Integer>
     List<ShareImage> findByDeletedAtIsNull();
 
     // 특정 parent에 대해 deletedAt이 null인 이미지들만 조회
-    List<ShareImage> findByParentAndDeletedAtIsNull(Together parent);
+    List<ShareImage> findByParentAndDeletedAtIsNull(Share parent);
 }
