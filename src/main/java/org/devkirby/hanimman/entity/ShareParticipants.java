@@ -37,8 +37,8 @@ public class ShareParticipants {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
-    private boolean rejected;
+    @Column(nullable = false)
+    private boolean rejected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

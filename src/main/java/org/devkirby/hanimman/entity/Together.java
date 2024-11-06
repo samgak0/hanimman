@@ -30,7 +30,7 @@ import lombok.ToString;
 public class Together {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -39,8 +39,8 @@ public class Together {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int views;
+    @Column(nullable = false)
+    private Integer views = 0;
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
