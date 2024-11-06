@@ -36,7 +36,7 @@ public class TogetherFavorite {
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "parent", nullable = false)
     private Together parent;
 
     @Column(nullable = false)

@@ -42,11 +42,11 @@ public class ReviewsShare {
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "member_id", nullable = false)
     private User memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "parent_id", nullable = false)
     private Share parentId;
 
 }
