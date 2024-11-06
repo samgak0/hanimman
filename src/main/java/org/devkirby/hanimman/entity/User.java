@@ -25,9 +25,9 @@ public class User {
     @Column
     private Date birth;
 
-//    @Enumerated(EnumType.STRING)
-//   @Column
-//    private Gender gender;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Gender gender;
 
     @Column(length = 20)
     private String phonenum;
