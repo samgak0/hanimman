@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ public class TogetherParticipant {
     private Integer id;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private Instant date;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -39,5 +40,5 @@ public class TogetherParticipant {
     private Together parent;
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

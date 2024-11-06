@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -33,14 +34,14 @@ public class Faq {
     private Integer views = 0;
 
     @Column
-    private LocalDateTime faqDeletedAt;
+    private Instant faqDeletedAt;
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime faqCreateDate = LocalDateTime.now();
+    private Instant faqCreateDate = Instant.now();
 
     @Column
-    private LocalDateTime faqModification;
+    private Instant faqModification;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
