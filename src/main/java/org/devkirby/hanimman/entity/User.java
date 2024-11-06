@@ -1,7 +1,7 @@
 package org.devkirby.hanimman.entity;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table
+@Table(name = "users")
 public class User {
 
     @Id
@@ -29,10 +29,10 @@ public class User {
     private String name;
 
     @Column(nullable = false)
-    private Date birth;
+    private LocalDate birth;
 
     @Enumerated(EnumType.STRING)
-    @Column
+    @Column(nullable = false)
     private Gender gender;
 
     @Column(length = 20, nullable = false)
@@ -41,17 +41,23 @@ public class User {
     @Column(length = 20, nullable = false)
     private String nickname;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 6, nullable = false)
     private String codenum;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean privilege = false;
 
-    @Column(nullable = false)
-    private boolean blacklist = false;
+    @Column
+    private Instant blockedAt;
 
-    @Column(length = 255, nullable = false)
-    private String neighborhood;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "primary_region_id")
+    private Region primaryRegion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "secondly_region_id")
+    private Region secondlyRegion;
 
     @Column(length = 255, nullable = false)
     private String deviceUniqueNum;

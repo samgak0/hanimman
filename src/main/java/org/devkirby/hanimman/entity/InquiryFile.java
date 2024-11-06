@@ -17,28 +17,34 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "profiles")
-public class Profile {
+@Table(name = "inquiry_files")
+public class InquiryFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String realName;
+    @Column(length = 100, nullable = false)
+    private String originalName;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 100, nullable = false)
     private String serverName;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 20, nullable = false)
     private String mineType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @Column(nullable = false)
     private Integer fileSize;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Inquiry parent;
 
     @Column(nullable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User parent;
+    @Column
+    private Instant deletedAt;
 }

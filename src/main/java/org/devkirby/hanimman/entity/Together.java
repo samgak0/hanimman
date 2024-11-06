@@ -1,17 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,23 +8,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
+
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table
+@Table(name = "togethers")
 public class Together {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String title;
 
-    @Lob
     @Column(nullable = false)
     private String content;
 
@@ -47,25 +37,31 @@ public class Together {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
+    @Column
     private Instant modifiedAt;
+
+    @Column
     private Instant deletedAt;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Region region;
+
+    @Column(length = 255)
     private String meetingLocation;
 
-    @Column(nullable = false)
+    @Column
     private Instant meetingAt;
 
-    @Column(nullable = false)
+    @Column(length = 255)
     private String item;
 
-    @Column(nullable = false)
+    @Column
     private Integer quantity;
 
     @Column(nullable = false)
-    private boolean isEnd = false;
+    @Builder.Default
+    private Boolean isEnd = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 }

@@ -1,17 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,37 +8,41 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
+
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table
+@Table(name = "faqs")
 public class Faq {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String title;
 
-    @Lob
     @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
-    private int views = 0;
+    @Builder.Default
+    private Integer views = 0;
+
+    @Column
+    private Instant faqDeletedAt;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant createdAt = Instant.now();
+    private Instant faqCreateDate = Instant.now();
 
-    private Instant modifiedAt;
-    private Instant deletedAt;
+    @Column
+    private Instant faqModification;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 }

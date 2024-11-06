@@ -17,28 +17,22 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "profiles")
-public class Profile {
+@Table(name = "chat_messages")
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String realName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ChatRoom room;
 
     @Column(length = 255, nullable = false)
-    private String serverName;
-
-    @Column(length = 255, nullable = false)
-    private String mineType;
-
-    @Column(nullable = false)
-    private Integer fileSize;
+    private String content;
 
     @Column(nullable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User parent;
 }

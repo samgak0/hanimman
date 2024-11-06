@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.Instant;
-
 @Entity
 @Getter
 @Setter
@@ -17,19 +15,21 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "authentications")
-public class Authentication {
+@Table(name = "together_reports")
+public class TogetherReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String value;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Instant createAt = Instant.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User reporter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private User reported;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ReportCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Together parent;
 }

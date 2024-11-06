@@ -17,28 +17,28 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "profiles")
-public class Profile {
+@Table(name = "together_participants")
+public class TogetherParticipant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String realName;
-
-    @Column(length = 255, nullable = false)
-    private String serverName;
-
-    @Column(length = 255, nullable = false)
-    private String mineType;
+    @Column(nullable = false)
+    private Instant date;
 
     @Column(nullable = false)
-    private Integer fileSize;
+    private Integer quantity;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant createdAt = Instant.now();
+    private Boolean rejected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User parent;
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Together parent;
+
+    @Column
+    private Instant deletedAt;
 }
