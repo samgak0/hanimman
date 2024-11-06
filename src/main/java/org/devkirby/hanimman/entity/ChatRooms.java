@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,17 +9,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @ToString
+@Builder
 @Table
 public class ChatRooms {
 
@@ -30,7 +32,8 @@ public class ChatRooms {
     @Column(length = 255)
     private String name;
 
-    @Column
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
 }
