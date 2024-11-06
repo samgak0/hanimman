@@ -21,17 +21,19 @@ public class NoticeFiles {
 
     private String originalName;
     private String serverName;
+
+    @Column(length = 20)
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 
     private int fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private Notices notices;
+    @JoinColumn(name="parent")
+    private Notices parent;
 
     private Timestamp createAt;
     private Timestamp deletedAt;

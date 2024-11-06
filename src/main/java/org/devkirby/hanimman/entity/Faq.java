@@ -8,25 +8,27 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
-@Table(name = "share_participants")
-public class ShareParticipants {
+@Table(name = "faq")
+public class Faq {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private Timestamp date;
-    private int quantity;
-    private boolean rejected;
+    private String title;
+
+    @Lob
+    private String content;
+
+    private int views;
+    private Timestamp createAt;
+    private Timestamp modifiedAt;
+    private Timestamp deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent")
-    private Share parent;
 }

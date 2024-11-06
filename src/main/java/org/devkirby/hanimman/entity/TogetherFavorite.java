@@ -19,12 +19,12 @@ public class TogetherFavorite {
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
-    private User user;
+    @JoinColumn(name="user_id")
+    private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id")
-    private Together together;
+    private Together parent;
 
     private Timestamp createAt;
 }
