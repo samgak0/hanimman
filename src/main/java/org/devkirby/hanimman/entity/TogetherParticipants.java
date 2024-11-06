@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +32,7 @@ public class TogetherParticipants {
     private Integer id;
 
     @Column(nullable = false)
-    private LocalDateTime date = LocalDateTime.now();
+    private Instant date = Instant.now();
 
     @Column(nullable = false)
     private Integer quantity;

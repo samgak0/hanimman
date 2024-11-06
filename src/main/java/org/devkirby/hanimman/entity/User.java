@@ -1,17 +1,23 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Date;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
 @Getter
 @Setter
-@Entity
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table
 public class User {
 
@@ -51,11 +57,12 @@ public class User {
     private String deviceUniqueNum;
 
     @Column
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

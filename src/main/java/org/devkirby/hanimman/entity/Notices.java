@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,13 +40,15 @@ public class Notices {
     private String content;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer views = 0;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
+    private Instant modifiedAt;
+    private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

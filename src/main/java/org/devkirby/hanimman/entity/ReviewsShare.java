@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,11 +35,12 @@ public class ReviewsShare {
     @Column(length = 255)
     private String content;
 
-    @Column
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
