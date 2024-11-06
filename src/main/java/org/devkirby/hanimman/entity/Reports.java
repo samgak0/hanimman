@@ -32,6 +32,10 @@ public class Reports {
     private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reported_post_id")
-    private Share reportedPostId;
+    @JoinColumn(name="reported_share_id")
+    private Share reportedShareId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reported_together_id")
+    private Share reportedTogetherId;
 }
