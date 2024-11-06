@@ -20,11 +20,11 @@ public class Region {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "id", insertable=false, updatable=false)
     private City cityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "id", insertable=false, updatable=false)
     private Country countryId;
 
 }

@@ -25,6 +25,6 @@ public class Authentication {
     private Timestamp createAt;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "id", insertable=false, updatable=false )
     private User parent;
 }

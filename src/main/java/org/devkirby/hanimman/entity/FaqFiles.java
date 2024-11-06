@@ -25,13 +25,13 @@ public class FaqFiles {
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", insertable=false, updatable=false)
     private User userId;
 
     private int fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent")
+    @JoinColumn(name="parent", insertable=false, updatable=false)
     private Faq parent;
 
     private Timestamp createAt;

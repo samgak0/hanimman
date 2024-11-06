@@ -25,11 +25,11 @@ public class ReviewsTogether {
     private Timestamp createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "id", insertable = false, updatable = false)
     private User memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name= "id", insertable = false, updatable = false)
     private Share parentId;
 
 }

@@ -23,7 +23,7 @@ public class TogetherFavorite {
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id")
+    @JoinColumn(name="id", insertable=false, updatable=false)
     private Together parent;
 
     private Timestamp createAt;
