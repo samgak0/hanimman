@@ -8,13 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FaqFileDTO {
+public class ShareImageDTO {
     private Integer id;
     private String originalName;
     private String serverName;
     private String mineType;
-    private Integer userId;  // User ID만 전달
     private Integer fileSize;
-    private Integer parentId; // Faq ID만 전달
+    private Integer userId;  // User의 ID만 전달
+    private Integer shareId; // Share의 ID만 전달
+    private Instant deletedAt;
     private Instant createdAt;
 }

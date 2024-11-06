@@ -1,20 +1,21 @@
 package org.devkirby.hanimman.dto;
 
-import java.time.Instant;
-
 import lombok.*;
+
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FaqFileDTO {
+public class NoticeFileDTO {
     private Integer id;
     private String originalName;
     private String serverName;
     private String mineType;
-    private Integer userId;  // User ID만 전달
     private Integer fileSize;
-    private Integer parentId; // Faq ID만 전달
     private Instant createdAt;
+    private Instant deletedAt;
+    private Integer userId;  // 사용자 ID (User 엔티티의 ID)
+    private Integer noticeId;  // Notice 엔티티의 ID
 }
