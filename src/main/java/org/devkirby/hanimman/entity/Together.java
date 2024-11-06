@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -34,13 +35,13 @@ public class Together {
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
     @Column
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Region region;
@@ -49,7 +50,7 @@ public class Together {
     private String meetingLocation;
 
     @Column
-    private LocalDateTime meetingAt;
+    private Instant meetingAt;
 
     @Column(length = 255)
     private String item;

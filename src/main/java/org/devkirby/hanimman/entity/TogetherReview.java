@@ -1,5 +1,7 @@
 package org.devkirby.hanimman.entity;
 
+import java.time.Instant;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,10 +28,10 @@ public class TogetherReview {
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User member;

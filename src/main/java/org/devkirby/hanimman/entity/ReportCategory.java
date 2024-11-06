@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -30,8 +31,8 @@ public class ReportCategory {
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
+    private Instant createDate = Instant.now();
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

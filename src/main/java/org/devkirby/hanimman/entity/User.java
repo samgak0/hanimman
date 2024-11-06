@@ -1,7 +1,7 @@
 package org.devkirby.hanimman.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,7 +49,7 @@ public class User {
     private boolean privilege = false;
 
     @Column
-    private LocalDateTime blockedAt;
+    private Instant blockedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "primary_region_id")
@@ -63,12 +63,12 @@ public class User {
     private String deviceUniqueNum;
 
     @Column
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }
