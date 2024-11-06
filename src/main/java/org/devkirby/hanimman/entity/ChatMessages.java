@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -43,5 +45,6 @@ public class ChatMessages {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     private User roomId;
+
 
 }

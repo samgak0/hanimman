@@ -41,4 +41,6 @@ public class ChatParticipants {
     @JoinColumn(name = "id")
     private User userId;
 
+
+
 }
