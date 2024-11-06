@@ -14,7 +14,7 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
     List<Share> findByTitleContaining(String keyword);
 
     // 제목 및 내용에 키워드 포함
-    List<Share> findByTitleOrContentContaining(String keyword);
+    List<Share> findByTitleOrContentContaining(String keyword, String keyword2);
 
     // 품목에 키워드 포함
     List<Share> findByItemContaining(String keyword);
