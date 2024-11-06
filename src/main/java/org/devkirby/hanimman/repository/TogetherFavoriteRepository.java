@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TogetherFavoritesRepository extends JpaRepository<TogetherFavorite, Integer> {
+public interface TogetherFavoriteRepository extends JpaRepository<TogetherFavorite, Integer> {
     List<TogetherFavorite> findByUserId(Integer userId);
 
     List<TogetherFavorite> findByParent(Together parent);
