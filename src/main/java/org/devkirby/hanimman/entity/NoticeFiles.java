@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +52,7 @@ public class NoticeFiles {
     private Notices parent;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

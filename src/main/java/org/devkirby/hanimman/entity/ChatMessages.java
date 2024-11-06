@@ -1,6 +1,6 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,17 +12,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @ToString
+@Builder
 @Table
 public class ChatMessages {
 
@@ -33,8 +35,9 @@ public class ChatMessages {
     @Column(length = 255)
     private String content;
 
-    @Column
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
