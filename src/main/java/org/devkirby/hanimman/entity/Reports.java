@@ -41,10 +41,10 @@ public class Reports {
     private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_share_id")
+    @JoinColumn(name = "reported_share_id", nullable = false)
     private Share reportedShareId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_together_id")
+    @JoinColumn(name = "reported_together_id", nullable = false)
     private Share reportedTogetherId;
 }

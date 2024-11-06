@@ -17,8 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -39,6 +37,6 @@ public class Authentication {
     private LocalDateTime createdAt;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "id")
+    @JoinColumn(name = "parent", nullable = false)
     private User parent;
 }
