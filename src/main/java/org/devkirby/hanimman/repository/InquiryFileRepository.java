@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface InquiryFileRepository extends JpaRepository<Inquiry, Integer> {
+public interface InquiryFileRepository extends JpaRepository<InquiryFile, Integer> {
     // 문의에 대해 삭제되지 않은 파일만 가져오기
     List<InquiryFile> findByParentAndDeletedAtIsNull(Inquiry parent);
 }

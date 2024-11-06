@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface FaqFileRepository extends JpaRepository<FaqFile, Integer> {
-    // FAQ에 대해 삭제되지 않은 파일만 가져오기
-    List<FaqFile> findByParentAndDeletedAtIsNull(Faq parent);
+    List<FaqFile> findByParent(Faq parent);
 }

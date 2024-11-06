@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.devkirby.hanimman.entity.User;
+
 @Repository
 public interface AuthenticationRepository extends JpaRepository<Authentication, Integer> {
 
-    List<Region> findByCountryId(Integer countryId);
+    List<Region> findByUser(User user);
 }

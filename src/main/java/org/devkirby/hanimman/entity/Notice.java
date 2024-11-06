@@ -1,19 +1,12 @@
 package org.devkirby.hanimman.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -37,9 +30,8 @@ public class Notice {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Instant modifiedAt = Instant.now();
+    @Column
+    private Instant modifiedAt;
 
     @Column
     private Instant deletedAt;

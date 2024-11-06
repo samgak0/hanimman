@@ -1,19 +1,12 @@
 package org.devkirby.hanimman.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -34,14 +27,14 @@ public class Faq {
     private Integer views = 0;
 
     @Column
-    private Instant faqDeletedAt;
+    private Instant deletedAt;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant faqCreateDate = Instant.now();
+    private Instant createdAt = Instant.now();
 
     @Column
-    private Instant faqModification;
+    private Instant modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
