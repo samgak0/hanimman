@@ -1,8 +1,5 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,32 +23,24 @@ import lombok.ToString;
 @ToString
 @Builder
 @Table
-public class FaqFiles {
+public class ShareReports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100, nullable = false)
-    private String originalName;
-
-    @Column(nullable = false)
-    private String serverName;
-
-    @Column(length = 20)
-    private String mineType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private User reporterId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    @JoinColumn(name = "reported_id", nullable = false)
+    private User reportedId;
 
-    @Column(nullable = false)
-    private Integer fileSize;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category", nullable = false)
+    private ReportCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = false)
-    private Faq parentId;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Instant createdAt = Instant.now();
+    private Share parentId;
 }

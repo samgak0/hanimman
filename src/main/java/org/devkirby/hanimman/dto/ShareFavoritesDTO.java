@@ -22,7 +22,7 @@ public class ShareFavoritesDTO {
         return ShareFavoritesDTO.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId().getId())  // User 엔티티의 ID 추출
-                .parentId(entity.getParent().getId()) // Share 엔티티의 ID 추출
+                .parentId(entity.getParentId().getId()) // Share 엔티티의 ID 추출
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

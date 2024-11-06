@@ -45,8 +45,8 @@ public class ShareImages {
     private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Share parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Share parentId;
 
     private Instant deletedAt;
 

@@ -31,7 +31,7 @@ public class InquireFilesDTO {
                 .mineType(entity.getMineType())
                 .userId(entity.getUserId().getId())  // User 엔티티의 ID를 추출
                 .fileSize(entity.getFileSize())
-                .parentId(entity.getParent().getId())  // Inquiries 엔티티의 ID만 추출
+                .parentId(entity.getParentId().getId())  // Inquiries 엔티티의 ID만 추출
                 .createdAt(entity.getCreatedAt())
                 .deletedAt(entity.getDeletedAt())
                 .build();

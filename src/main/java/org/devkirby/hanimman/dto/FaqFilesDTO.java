@@ -30,7 +30,7 @@ public class FaqFilesDTO {
                 .mineType(entity.getMineType())
                 .userId(entity.getUserId().getId())  // User 엔티티의 ID를 추출
                 .fileSize(entity.getFileSize())
-                .parentId(entity.getParent().getId())  // Faq 엔티티의 ID를 추출
+                .parentId(entity.getParentId().getId())  // Faq 엔티티의 ID를 추출
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

@@ -36,8 +36,8 @@ public class TogetherFavorites {
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Together parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Together parentId;
 
     @Column(nullable = false)
     @Builder.Default

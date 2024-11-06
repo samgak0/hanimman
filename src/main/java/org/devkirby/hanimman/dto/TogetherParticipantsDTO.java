@@ -27,7 +27,7 @@ public class TogetherParticipantsDTO {
                 .quantity(entity.getQuantity())
                 .rejected(entity.isRejected())
                 .userId(entity.getUserId().getId())  // User 엔티티의 ID를 추출
-                .parentId(entity.getParent().getId())  // Together 엔티티의 ID를 추출
+                .parentId(entity.getParentId().getId())  // Together 엔티티의 ID를 추출
                 .build();
     }
 }

@@ -45,6 +45,6 @@ public class ShareParticipants {
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Share parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Share parentId;
 }

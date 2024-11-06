@@ -27,7 +27,7 @@ public class ShareParticipantsDTO {
                 .quantity(entity.getQuantity())
                 .rejected(entity.isRejected())
                 .userId(entity.getUserId().getId())
-                .parentId(entity.getParent().getId())
+                .parentId(entity.getParentId().getId())
                 .build();
     }
 }

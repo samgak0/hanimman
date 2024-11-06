@@ -47,8 +47,8 @@ public class InquireFiles {
     private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Inquiries parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Inquiries parentId;
 
     @Column(nullable = false)
     @Builder.Default

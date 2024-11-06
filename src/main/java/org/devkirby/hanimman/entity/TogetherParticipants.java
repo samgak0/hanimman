@@ -45,6 +45,6 @@ public class TogetherParticipants {
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Together parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Together parentId;
 }

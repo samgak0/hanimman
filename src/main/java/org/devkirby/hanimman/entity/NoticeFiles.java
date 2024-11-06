@@ -48,8 +48,8 @@ public class NoticeFiles {
     private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
-    private Notices parent;
+    @JoinColumn(name = "parent_id", nullable = false)
+    private Notices parentId;
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
