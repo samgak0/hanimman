@@ -16,32 +16,28 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "faqs")
-public class Faq {
+@Table(name = "together_participants")
+public class TogetherParticipant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String title;
+    @Column(nullable = false)
+    private LocalDateTime date;
 
     @Column(nullable = false)
-    private String content;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer views = 0;
-
-    @Column
-    private LocalDateTime faqDeletedAt;
+    private Integer quantity;
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime faqCreateDate = LocalDateTime.now();
-
-    @Column
-    private LocalDateTime faqModification;
+    private Boolean rejected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Together parent;
+
+    @Column
+    private LocalDateTime deletedAt;
 }

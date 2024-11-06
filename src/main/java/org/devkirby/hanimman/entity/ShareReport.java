@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,22 +15,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "report_categories")
-public class ReportCategory {
+@Table(name = "share_reports")
+public class ShareReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User reporter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User manager;
+    private User reported;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ReportCategory category;
 
-    @Column
-    private LocalDateTime deletedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Share parent;
 }

@@ -16,22 +16,34 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "report_categories")
-public class ReportCategory {
+@Table(name = "share_images")
+public class ShareImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(length = 255, nullable = false)
-    private String name;
+    private String originalName;
+
+    @Column(length = 255, nullable = false)
+    private String serverName;
+
+    @Column(length = 255, nullable = false)
+    private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User manager;
+    private User user;
 
     @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
+    private Integer fileSize;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Share parent;
 
     @Column
     private LocalDateTime deletedAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

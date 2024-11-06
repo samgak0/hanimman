@@ -16,22 +16,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "report_categories")
-public class ReportCategory {
+@Table(name = "chat_messages")
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User manager;
+    private ChatRoom room;
+
+    @Column(length = 255, nullable = false)
+    private String content;
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
-
-    @Column
-    private LocalDateTime deletedAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

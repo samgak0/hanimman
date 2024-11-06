@@ -1,32 +1,23 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table
-public class FaqFiles {
+@Table(name = "faq_files")
+public class FaqFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,24 +25,22 @@ public class FaqFiles {
     @Column(length = 100, nullable = false)
     private String originalName;
 
-    @Column(nullable = false)
+    @Column(length = 100, nullable = false)
     private String serverName;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @Column(nullable = false)
     private Integer fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = false)
     private Faq parent;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant createdAt = Instant.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

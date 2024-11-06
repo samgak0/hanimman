@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "faqs")
-public class Faq {
+@Table(name = "notices")
+public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,15 +32,16 @@ public class Faq {
     @Builder.Default
     private Integer views = 0;
 
-    @Column
-    private LocalDateTime faqDeletedAt;
+    @Column(nullable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime faqCreateDate = LocalDateTime.now();
+    private LocalDateTime modifiedAt = LocalDateTime.now();
 
     @Column
-    private LocalDateTime faqModification;
+    private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

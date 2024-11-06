@@ -1,70 +1,66 @@
 package org.devkirby.hanimman.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@Table
+@Table(name = "shares")
 public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String title;
 
-    @Lob
     @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer views = 0;
 
     @Column(nullable = false)
     @Builder.Default
-    private Instant createdAt = Instant.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private Instant modifiedAt;
-    private Instant deletedAt;
+    @Column
+    private LocalDateTime modifiedAt;
 
-    @Column(nullable = false)
+    @Column
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Region region;
+
+    @Column(length = 255)
     private String location;
 
-    @Column(nullable = false)
-    private Instant locationDate;
+    @Column
+    private LocalDateTime locationDate;
 
-    @Column(nullable = false)
+    @Column(length = 255)
     private String item;
 
-    @Column(nullable = false)
+    @Column
     private Integer quantity;
 
     @Column(nullable = false)
-    private boolean isEnd = false;
+    @Builder.Default
+    private Boolean isEnd = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 }

@@ -16,32 +16,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "faqs")
-public class Faq {
+@Table(name = "share_reviews")
+public class ShareReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(length = 255, nullable = false)
-    private String title;
-
-    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
     @Builder.Default
-    private Integer views = 0;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column
-    private LocalDateTime faqDeletedAt;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime faqCreateDate = LocalDateTime.now();
-
-    @Column
-    private LocalDateTime faqModification;
+    private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private User member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Share parent;
 }

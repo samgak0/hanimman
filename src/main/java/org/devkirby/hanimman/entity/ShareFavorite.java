@@ -16,22 +16,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "report_categories")
-public class ReportCategory {
+@Table(name = "share_favorites")
+public class ShareFavorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User manager;
+    private Share parent;
 
     @Column(nullable = false)
     @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
-
-    @Column
-    private LocalDateTime deletedAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
