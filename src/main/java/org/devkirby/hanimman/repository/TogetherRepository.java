@@ -2,6 +2,7 @@ package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Together;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,10 +16,10 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     // 제목에서 키워드 포함
     List<Together> findByTitleContainingAndDeletedAtIsNull(String keyword);
 
-    // 제목과 내용에 키워드 포함
-    List<Together> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword);
+    // 제목과 내용에 하나의 키워드를 포함하여 검색
+    @Query("SELECT t FROM Together t WHERE (t.title LIKE '%:keyword%' OR t.content LIKE '%:keyword%') AND t.deletedAt IS NULL")
+    List<Together> findByTitleOrContentContainingAndDeletedAtIsNull(String keyword);
 
     // 품목에 키워드 포함
     List<Together> findByItemContainingAndDeletedAtIsNull(String keyword);
-
 }

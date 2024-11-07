@@ -26,35 +26,35 @@ public class Together {
     @Builder.Default
     private Integer views = 0;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant modifiedAt;
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant deletedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Region region;
 
     @Column(length = 255)
     private String meetingLocation;
 
-    @Column
+    @Column(nullable = false, columnDefinition = "TIMESTAMP(6)")
     private Instant meetingAt;
 
     @Column(length = 255)
     private String item;
 
-    @Column
+    @Column(nullable = false)
     private Integer quantity;
 
     @Column(nullable = false)
     @Builder.Default
     private Boolean isEnd = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 }

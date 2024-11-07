@@ -2,6 +2,7 @@ package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Inquiry;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
 public interface InquiryRepository extends JpaRepository<Inquiry, Integer> {
     List<Inquiry> findByTitleContaining(String keyword);
 
-    List<Inquiry> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword);
+    @Query("SELECT i FROM Inquiry i WHERE i.title LIKE %:keyword% OR i.content LIKE %:keyword%")
+    List<Inquiry> findByTitleOrContentContaining(String keyword);
 
     List<Inquiry> findByOrderByCreatedAtAsc();
 

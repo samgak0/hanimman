@@ -25,19 +25,19 @@ public class ShareImage {
     @Column(nullable = false)
     private String mineType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     @Column(nullable = false)
     private Integer fileSize;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFUALT NULL")
     private Instant deletedAt;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
     @Builder.Default
     private Instant createdAt = Instant.now();
 }

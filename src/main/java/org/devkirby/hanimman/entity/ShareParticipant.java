@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -17,7 +18,7 @@ public class ShareParticipant {
     private Integer id;
 
     @Column(nullable = false)
-    private Instant date;
+    private LocalDate date;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -26,12 +27,12 @@ public class ShareParticipant {
     @Builder.Default
     private Boolean rejected = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant deletedAt;
 }

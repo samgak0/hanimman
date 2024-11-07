@@ -16,27 +16,26 @@ public class TogetherServiceImpl implements TogetherService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Integer register(TogetherDTO togetherDTO) {
+    public void create(TogetherDTO togetherDTO) {
         Together together = modelMapper.map(togetherDTO, Together.class);
         Together result = togetherRepository.save(together);
-        return result.getId();
     }
 
     @Override
-    public TogetherDTO get(Integer id) {
+    public TogetherDTO read(Integer id) {
         Together result = togetherRepository.findById(id).orElseThrow();
         return modelMapper.map(result, TogetherDTO.class);
     }
 
     @Override
-    public void modify(TogetherDTO togetherDTO) {
+    public void update(TogetherDTO togetherDTO) {
         togetherDTO.setModifiedAt(Instant.now());
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherRepository.save(together);
     }
 
     @Override
-    public void remove(Integer id) {
+    public void delete(Integer id) {
         Together together = togetherRepository.findById(id).orElseThrow();
         together.setDeletedAt(Instant.now());
         togetherRepository.save(together);
