@@ -2,6 +2,7 @@ package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Faq;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +14,8 @@ public interface FaqRepository extends JpaRepository<Faq, Integer> {
     List<Faq> findByTitleContaining(String keyword);
 
     // 제목과 내용에 키워드 포함
-    List<Faq> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword);
+    @Query("SELECT f FROM Faq f WHERE f.title LIKE %:keyword% OR f.content LIKE %:keyword%")
+    List<Faq> findByTitleOrContentContaining(String keyword);
 
     // 작성일 기준으로 오름차순 정렬
     List<Faq> findByOrderByCreatedAtAsc();
