@@ -34,7 +34,7 @@ public class FaqFile {
     @ManyToOne(fetch = FetchType.LAZY)
     private Faq parent;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 }

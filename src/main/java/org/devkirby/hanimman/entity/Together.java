@@ -26,7 +26,7 @@ public class Together {
     @Builder.Default
     private Integer views = 0;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 

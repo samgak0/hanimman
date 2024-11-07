@@ -19,7 +19,7 @@ public class ChatRoom {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 }

@@ -34,7 +34,7 @@ public class InquiryFile {
     @ManyToOne(fetch = FetchType.LAZY)
     private Inquiry parent;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 

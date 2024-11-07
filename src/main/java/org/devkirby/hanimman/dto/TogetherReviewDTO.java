@@ -14,7 +14,7 @@ import java.time.Instant;
 public class TogetherReviewDTO {
     private Integer id;
     private String content;
-    private Instant createAt;
+    private Instant createdAt;
     private Instant deletedAt;
     private Integer userId;
     private Integer parentId;

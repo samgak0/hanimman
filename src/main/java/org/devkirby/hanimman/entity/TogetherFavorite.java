@@ -22,7 +22,7 @@ public class TogetherFavorite {
     @ManyToOne(fetch = FetchType.LAZY)
     private Together parent;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 }

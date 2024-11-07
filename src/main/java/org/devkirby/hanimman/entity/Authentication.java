@@ -19,9 +19,9 @@ public class Authentication {
     @Column(nullable = false)
     private String value;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
-    private Instant createAt = Instant.now();
+    private Instant createdAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

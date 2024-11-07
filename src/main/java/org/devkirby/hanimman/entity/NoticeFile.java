@@ -34,7 +34,7 @@ public class NoticeFile {
     @ManyToOne(fetch = FetchType.LAZY)
     private Notice parent;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 

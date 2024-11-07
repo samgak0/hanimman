@@ -58,7 +58,7 @@ public class User {
     @Column
     private Instant modifiedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 

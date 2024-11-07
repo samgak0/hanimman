@@ -14,6 +14,6 @@ import java.time.Instant;
 public class AuthenticationDTO {
     private Integer id;
     private String value;
-    private Instant createAt;
+    private Instant createdAt;
     private Integer userId;
 }

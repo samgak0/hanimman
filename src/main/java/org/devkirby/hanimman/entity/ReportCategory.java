@@ -22,7 +22,7 @@ public class ReportCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     private User manager;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createDate = Instant.now();
 

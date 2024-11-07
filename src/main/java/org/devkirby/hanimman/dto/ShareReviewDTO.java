@@ -14,7 +14,7 @@ import java.time.Instant;
 public class ShareReviewDTO {
     private Integer id;
     private String content;
-    private Instant createAt;
+    private Instant createdAt;
     private Instant deletedAt;
     private Integer userId;
     private Integer parentId;

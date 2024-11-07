@@ -28,7 +28,7 @@ public class Profile {
     @Column(nullable = false)
     private Integer fileSize;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
 
