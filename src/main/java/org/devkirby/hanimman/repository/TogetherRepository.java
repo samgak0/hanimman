@@ -13,11 +13,11 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     List<Together> findByUserIdAndDeletedAtIsNull(Integer userId);
 
     // 제목에서 키워드 포함
-    List<Together> findByTitleContainingDeletedAtIsNull(String keyword);
+    List<Together> findByTitleContainingAndDeletedAtIsNull(String keyword);
 
     // 제목과 내용에 키워드 포함
-    List<Together> findByTitleContainingOrContentContainingDeletedAtIsNull(String titleKeyword, String contentKeyword);
+    List<Together> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword);
 
     // 품목에 키워드 포함
-    List<Together> findByItemContainingDeletedAtIsNull(String keyword);
+    List<Together> findByItemContainingAndDeletedAtIsNull(String keyword);
 }
