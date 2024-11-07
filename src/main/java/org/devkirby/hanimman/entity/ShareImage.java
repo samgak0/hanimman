@@ -34,7 +34,7 @@ public class ShareImage {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 
     @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")

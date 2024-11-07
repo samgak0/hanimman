@@ -30,10 +30,10 @@ public class Together {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant modifiedAt;
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
