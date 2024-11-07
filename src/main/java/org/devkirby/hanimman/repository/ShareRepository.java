@@ -8,14 +8,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShareRepository extends JpaRepository<Share, Integer> {
-    List<Share> findByUserId(Integer userId);
+    // 작성자 ID로 검색
+    List<Share> findByUserIdAndDeletedAtIsNull(Integer userId);
 
     // 제목에서 키워드 포함
-    List<Share> findByTitleContaining(String keyword);
+    List<Share> findByTitleContainingAndDeletedAtIsNull(String keyword);
 
     // 제목 및 내용에 키워드 포함
-    List<Share> findByTitleOrContentContaining(String titleKeyword, String contentKeyword);
+    List<Share> findByTitleOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword);
 
     // 품목에 키워드 포함
-    List<Share> findByItemContaining(String keyword);
+    List<Share> findByItemContainingAndDeletedAtIsNull(String keyword);
 }
