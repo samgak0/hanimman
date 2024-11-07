@@ -16,27 +16,26 @@ public class ShareServiceImpl implements ShareService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Integer register(ShareDTO shareDTO) {
+    public void create(ShareDTO shareDTO) {
         Share share = modelMapper.map(shareDTO, Share.class);
         Share result = shareRepository.save(share);
-        return result.getId();
     }
 
     @Override
-    public ShareDTO get(Integer id) {
+    public ShareDTO read(Integer id) {
         Share result = shareRepository.findById(id).orElseThrow();
         return modelMapper.map(result, ShareDTO.class);
     }
 
     @Override
-    public void modify(ShareDTO shareDTO) {
+    public void update(ShareDTO shareDTO) {
         shareDTO.setModifiedAt(Instant.now());
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
     }
 
     @Override
-    public void remove(Integer id) {
+    public void delete(Integer id) {
         Share share = shareRepository.findById(id).orElseThrow();
         share.setDeletedAt(Instant.now());
         shareRepository.save(share);
