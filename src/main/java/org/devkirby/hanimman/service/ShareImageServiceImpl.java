@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
@@ -13,22 +14,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class ShareImageServiceImpl implements ShareImageService{
-    @Autowired
+    @Value("${com.devkirby.hanimman.upload}")
+    String uploadDir;
+
     private final ShareImageRepository shareImageRepository;
-
-    @Autowired
-    private ShareRepository shareRepository;
-
+    private final ShareRepository shareRepository;
     private final ModelMapper modelMapper;
+
+    public ShareImageServiceImpl(ShareImageRepository shareImageRepository, ShareRepository shareRepository, ModelMapper modelMapper) {
+        this.shareImageRepository = shareImageRepository;
+        this.shareRepository = shareRepository;
+        this.modelMapper = modelMapper;
+    }
+
 
     @Override
     public void create(ShareImageDTO shareImageDTO) {
@@ -56,23 +64,31 @@ public class ShareImageServiceImpl implements ShareImageService{
         shareImageRepository.save(shareImage);
     }
 
+
     @Override
     public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
-        String uploadDir = "shareImages/";
+        // Ensure the upload directory exists
         File uploadFile = new File(uploadDir);
-        if(!uploadFile.exists()) {
+        if (!uploadFile.exists()) {
             uploadFile.mkdirs();
         }
 
+        // Generate a unique file name
         String originalName = file.getOriginalFilename();
         String serverName = UUID.randomUUID().toString() + "_" + originalName;
+        Path targetPath = Paths.get(uploadDir).resolve(serverName);
 
-        Path targetPath = new File(uploadDir + serverName).toPath();
+        // Save the file to the target path
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IOException("Failed to save file", e);
+        }
 
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        // Retrieve the share entity
+        Share share = shareRepository.findById(shareId).orElseThrow(() -> new IllegalArgumentException("Invalid share ID"));
 
-        Share share = shareRepository.findById(shareId).orElseThrow();
-
+        // Create and save the ShareImage entity
         ShareImage shareImage = ShareImage.builder()
                 .originalName(originalName)
                 .serverName(serverName)
@@ -84,6 +100,6 @@ public class ShareImageServiceImpl implements ShareImageService{
 
         shareImageRepository.save(shareImage);
 
-        return "File uploaded successfully" + serverName;
+        return "File uploaded successfully " + serverName;
     }
 }
