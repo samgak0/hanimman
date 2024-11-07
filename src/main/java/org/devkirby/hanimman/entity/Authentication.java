@@ -19,10 +19,10 @@ public class Authentication {
     @Column(nullable = false)
     private String value;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 }

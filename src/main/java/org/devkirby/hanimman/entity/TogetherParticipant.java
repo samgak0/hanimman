@@ -19,19 +19,19 @@ public class TogetherParticipant {
     @Column(nullable = false)
     private Instant date;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP(6)")
     private Integer quantity;
 
     @Column(nullable = false)
     @Builder.Default
     private Boolean rejected = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Together parent;
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant deletedAt;
 }

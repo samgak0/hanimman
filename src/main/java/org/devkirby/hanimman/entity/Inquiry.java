@@ -26,16 +26,16 @@ public class Inquiry {
     @Builder.Default
     private Integer views = 0;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant modifiedAt;
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
     private Instant deletedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 }

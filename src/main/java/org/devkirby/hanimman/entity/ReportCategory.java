@@ -19,13 +19,13 @@ public class ReportCategory {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User manager;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
     @Builder.Default
     private Instant createDate = Instant.now();
 
-    @Column
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 }
