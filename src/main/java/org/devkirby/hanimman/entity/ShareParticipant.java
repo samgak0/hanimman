@@ -31,4 +31,7 @@ public class ShareParticipant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Share parent;
+
+    @Column
+    private Instant deletedAt;
 }
