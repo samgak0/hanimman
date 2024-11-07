@@ -10,14 +10,14 @@ import java.util.List;
 public interface TogetherRepository extends JpaRepository<Together, Integer> {
 
     // 특정 사용자 ID에 해당하는 Together 리스트 조회
-    List<Together> findByUserId(Integer userId);
+    List<Together> findByUserIdAndDeletedAtIsNull(Integer userId);
 
     // 제목에서 키워드 포함
-    List<Together> findByTitleContaining(String keyword);
+    List<Together> findByTitleContainingDeletedAtIsNull(String keyword);
 
     // 제목과 내용에 키워드 포함
-    List<Together> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword);
+    List<Together> findByTitleContainingOrContentContainingDeletedAtIsNull(String titleKeyword, String contentKeyword);
 
     // 품목에 키워드 포함
-    List<Together> findByItemContaining(String keyword);
+    List<Together> findByItemContainingDeletedAtIsNull(String keyword);
 }
