@@ -16,13 +16,13 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String realName;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String serverName;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String mineType;
 
     @Column(nullable = false)

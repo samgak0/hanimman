@@ -16,13 +16,13 @@ public class ShareImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String originalName;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String serverName;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String mineType;
 
     @ManyToOne(fetch = FetchType.LAZY)

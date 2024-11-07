@@ -16,7 +16,7 @@ public class Authentication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String value;
 
     @Column(nullable = false)

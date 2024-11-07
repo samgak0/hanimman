@@ -22,7 +22,7 @@ public class ChatMessage {
     @ManyToOne(fetch = FetchType.LAZY)
     private ChatRoom room;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)

@@ -52,7 +52,7 @@ public class User {
     @JoinColumn(name = "secondly_region_id")
     private Region secondlyRegion;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String deviceUniqueNum;
 
     @Column

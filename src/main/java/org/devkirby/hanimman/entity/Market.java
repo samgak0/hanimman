@@ -35,6 +35,6 @@ public class Market {
     @ManyToOne(fetch = FetchType.LAZY)
     private Region region;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String address;
 }
