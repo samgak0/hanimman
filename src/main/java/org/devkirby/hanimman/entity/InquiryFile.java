@@ -10,7 +10,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "inquiry_files")
+@Table(name = "inquire_files")
 public class InquiryFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
