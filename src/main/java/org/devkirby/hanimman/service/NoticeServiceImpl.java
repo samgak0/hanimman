@@ -8,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +41,12 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findById(id).orElseThrow();
         notice.setDeletedAt(Instant.now());
         noticeRepository.save(notice);
+    }
+
+    @Override
+    public List<NoticeDTO> listAll() {
+        return noticeRepository.findAll().stream()
+                .map(notice -> modelMapper.map(notice, NoticeDTO.class))
+                .collect(Collectors.toList());
     }
 }
