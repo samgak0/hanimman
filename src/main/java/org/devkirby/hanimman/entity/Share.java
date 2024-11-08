@@ -56,5 +56,6 @@ public class Share {
     private Boolean isEnd = false;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
