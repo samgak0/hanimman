@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 
 
@@ -71,17 +72,28 @@ public class UserService {
     @Transactional
     public void deleteUser(UserDTO userDTO) {
         if (userDTO == null || userDTO.getId() == null) {
-            throw new IllegalArgumentException("userDTO 또는 사용자 ID는 null일 수 없습니다.");
+            throw new IllegalArgumentException("userDTO가 없거나 ID가 없을 경우");
         }
 
+        // 사용자 ID로 조회
         Optional<User> opt = userRepository.findById(userDTO.getId());
 
         if (opt.isPresent()) {
-            userRepository.delete(opt.get());
-            System.out.println("회원을 성공적으로 삭제되었습니다: " + userDTO.getId());
+            User user = opt.get();
+
+            // 탈퇴일 확인
+            if (user.getDeletedAt() != null) {
+                // 이미 탈퇴한 사용자 처리
+                System.out.println("이 사용자는 이미 탈퇴한 상태입니다: " + userDTO.getId());
+            } else {
+
+                user.setDeletedAt(Instant.now());
+                userRepository.save(user); // 변경된 사용자 정보를 저장
+                System.out.println("회원을 성공적으로 탈퇴하였습니다: " + userDTO.getId());
+            }
         } else {
+            // 사용자를 찾지 못한 경우
             System.out.println("회원을 찾을 수 없습니다: " + userDTO.getId());
-//            throw new UserNotFoundException("회원을 찾을 수 없습니다: " + userDTO.getId());
         }
     }
 }
