@@ -79,7 +79,6 @@ public class NoticeFileServiceImpl implements NoticeFileService {
         NoticeFile noticeFile = NoticeFile.builder()
                 .originalName(originalName)
                 .serverName(serverName)
-                .serverName(serverName)
                 .mineType(file.getContentType())
                 .fileSize((int)file.getSize())
                 .parent(notice)
