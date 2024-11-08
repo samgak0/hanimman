@@ -32,6 +32,6 @@ public class TogetherParticipant {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Together parent;
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 }
