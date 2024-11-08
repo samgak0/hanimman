@@ -30,19 +30,19 @@ public class Share {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant modifiedAt;
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Region region;
+    private Address address;
 
     @Column(length = 255)
     private String location;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP(6) DEFAULT")
+    @Column(nullable = false, columnDefinition = "TIMESTAMP(6)")
     private Instant locationDate;
 
     @Column(length = 255)

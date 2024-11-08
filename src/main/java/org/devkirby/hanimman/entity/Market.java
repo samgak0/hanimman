@@ -27,14 +27,8 @@ public class Market {
     private String longitude;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private City city;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Country country;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Region region;
+    private Address address;
 
     @Column(nullable = false)
-    private String address;
+    private String addressDetail;
 }

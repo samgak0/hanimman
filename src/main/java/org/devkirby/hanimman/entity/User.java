@@ -45,15 +45,13 @@ public class User {
     private Instant blockedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primary_region_id")
-    private Region primaryRegion;
+    private Address primaryAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "secondly_region_id")
-    private Region secondlyRegion;
+    private Address secondlyAddress;
 
     @Column(nullable = false)
-    private String deviceUniqueNum;
+    private String deviceUnique;
 
     @Column
     private Instant modifiedAt;

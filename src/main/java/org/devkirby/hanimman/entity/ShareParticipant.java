@@ -33,6 +33,6 @@ public class ShareParticipant {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
 
-    @Column(columnDefinition = "TIMESTAMP(6) DEFAULT NULL")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private Instant deletedAt;
 }
