@@ -12,4 +12,7 @@ import java.util.List;
 public interface ShareFavoriteRepository extends JpaRepository<ShareFavorite, Integer> {
     List<ShareFavorite> findByUserId(User user);
     List<ShareFavorite> findByParent(Share parent);
+    int countByParent(Share parent);
+
+    boolean existsByUserAndParent(User user, Share parent);
 }
