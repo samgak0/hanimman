@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 
-
 @Service
 public class UserService {
 
@@ -19,30 +18,30 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, ModelMapper modelMapper){
+    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
-    //회원 생성
-    public UserDTO createUser(UserDTO userDTO){
+    // 회원 생성
+    public UserDTO createUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
-    //회원조회
-    public UserDTO selectUser(UserDTO userDTO){
+    // 회원조회
+    public UserDTO selectUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         Optional<User> opt = userRepository.findById(user.getId());
         User savedUser = new User();
-        if(opt.isPresent()) {
+        if (opt.isPresent()) {
             savedUser = opt.get();
         }
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
-    //회원수정
+    // 회원수정
     @Transactional
     public UserDTO updateUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
@@ -54,9 +53,9 @@ public class UserService {
             // 기존 사용자 정보 업데이트
             existingUser.setName(user.getName());
             existingUser.setNickname(user.getNickname());
-            existingUser.setPrimaryRegion(user.getPrimaryRegion());
-            existingUser.setSecondlyRegion(user.getSecondlyRegion());
-            existingUser.setDeviceUniqueNum(user.getDeviceUniqueNum());
+            existingUser.setPrimaryAddress(user.getPrimaryAddress());
+            existingUser.setSecondlyAddress(user.getSecondlyAddress());
+            existingUser.setDeviceUnique(user.getDeviceUnique());
 
             // 업데이트된 사용자 저장
             User updatedUser = userRepository.save(existingUser);
@@ -64,7 +63,7 @@ public class UserService {
         } else {
             System.out.println("회원를 찾을수 없습니다" + userDTO.getId());
             return null;
-//          throw new UserNotFoundException("회원을 찾을 수 없습니다: " + userDTO.getId());
+            // throw new UserNotFoundException("회원을 찾을 수 없습니다: " + userDTO.getId());
         }
     }
 

@@ -13,9 +13,9 @@ public class FaqDTO {
     private String title;
     private String content;
     private Integer views;
-    private Instant faqDeletedAt;
-    private Instant faqCreateDate;
-    private Instant faqModification;
+    private Instant deletedAt;
+    private Instant createAt;
+    private Instant modifiedAt;
     private Integer userId;
 
 }

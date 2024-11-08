@@ -37,7 +37,7 @@ public class Together {
     private Instant deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Region region;
+    private Address address;
 
     @Column(length = 255)
     private String meetingLocation;

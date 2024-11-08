@@ -8,8 +8,8 @@ CREATE TABLE user (
     codenum VARCHAR(6) NOT NULL COMMENT '고유코드번호 (6글자 영문자)',
     privilege BIT NOT NULL COMMENT '권한(관리자 권한)',
     blocked_at DATETIME(6) COMMENT '차단일 (NULL 이 아니면 차단)',
-    primary_region_id INT COMMENT '기본 동 ID',
-    secondly_region_id INT COMMENT '선택적 동 ID',
+    primary_address_id INT COMMENT '기본 동 ID',
+    secondly_address_id INT COMMENT '선택적 동 ID',
     device_unique_num VARCHAR(255) NOT NULL COMMENT '기기고유값',
     modified_at DATETIME(6) COMMENT '수정일',
     created_at DATETIME(6) DEFAULT NOW(6) COMMENT '가입일',
@@ -18,24 +18,22 @@ CREATE TABLE user (
     FOREIGN KEY (secondly_region_id) REFERENCES region(id)
 ) COMMENT = '회원';
 
-CREATE TABLE city (
-    id INT PRIMARY KEY COMMENT '시/도 ID',
-    name VARCHAR(50) NOT NULL COMMENT '시/도 명'
-) COMMENT = '시/광역시/특별시/도';
-
-CREATE TABLE country (
-    id INT PRIMARY KEY COMMENT '구/군 ID',
-    parent_id INT COMMENT '시/도 ID',
-    name VARCHAR(50) NOT NULL COMMENT '구/군 명',
-    FOREIGN KEY (parent_id) REFERENCES city(id)
-) COMMENT = '구/군';
-
-CREATE TABLE region (
-    id INT PRIMARY KEY COMMENT '동 ID',
-    parent_id INT COMMENT '구/군 ID',
-    name VARCHAR(50) NOT NULL COMMENT '동 명',
-    FOREIGN KEY (parent_id) REFERENCES country(id)
-) COMMENT = '동';
+CREATE TABLE IF NOT EXISTS `addresses` (
+  `id` varchar(20) NOT NULL,
+  `part1_name` varchar(50) DEFAULT NULL COMMENT '시 이름',
+  `part2_name` varchar(50) DEFAULT NULL COMMENT '구 이름',
+  `part3_name` varchar(50) DEFAULT NULL COMMENT '동 이름',
+  `part4_name` varchar(50) DEFAULT NULL COMMENT '리 이름',
+  `part1_code` varchar(10) DEFAULT NULL COMMENT '시 코드',
+  `part2_code` varchar(10) DEFAULT NULL COMMENT '구 코드',
+  `part3_code` varchar(10) DEFAULT NULL COMMENT '동 코드',
+  `part4_code` varchar(10) DEFAULT NULL COMMENT '리 코드',
+  PRIMARY KEY (`id`),
+  KEY `part1_code` (`part1_code`),
+  KEY `part2_code` (`part2_code`),
+  KEY `part3_code` (`part3_code`),
+  KEY `part4_code` (`part4_code`)
+);
 
 CREATE TABLE authentication (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '사용자본인인증로그 ID',
