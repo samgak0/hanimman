@@ -33,15 +33,15 @@ public class Address {
     @Column(length = 50)
     private String villageName;
 
-    @Column(nullable = false)
-    private Integer cityCode;
+    @Column(length = 50, nullable = false)
+    private String cityCode;
 
-    @Column
-    private Integer districtCode;
+    @Column(length = 50)
+    private String districtCode;
 
-    @Column
-    private Integer neighborhoodCode;
+    @Column(length = 50)
+    private String neighborhoodCode;
 
-    @Column
-    private Integer villageCode;
+    @Column(length = 50)
+    private String villageCode;
 }
