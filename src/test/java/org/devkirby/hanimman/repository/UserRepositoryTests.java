@@ -30,9 +30,9 @@ class UserRepositoryTests {
                 .nickname("Dragon01")
                 .codenum("dieRlq")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device02")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device02")
                 .build();
         userRepository.save(user);
     }
@@ -47,9 +47,9 @@ class UserRepositoryTests {
                 .nickname("철수")
                 .codenum("aBcD12")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device01")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device01")
                 .build();
 
         User user2 = User.builder()
@@ -60,9 +60,9 @@ class UserRepositoryTests {
                 .nickname("영희")
                 .codenum("XyZpQw")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device02")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device02")
                 .build();
 
         User user3 = User.builder()
@@ -73,9 +73,9 @@ class UserRepositoryTests {
                 .nickname("준호")
                 .codenum("FgHiJk")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device03")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device03")
                 .build();
 
         User user4 = User.builder()
@@ -86,9 +86,9 @@ class UserRepositoryTests {
                 .nickname("민지")
                 .codenum("LmNoPq")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device04")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device04")
                 .build();
 
         User user5 = User.builder()
@@ -99,9 +99,9 @@ class UserRepositoryTests {
                 .nickname("다솜")
                 .codenum("ZyXwVu")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device05")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device05")
                 .build();
 
         User user6 = User.builder()
@@ -112,9 +112,9 @@ class UserRepositoryTests {
                 .nickname("호석")
                 .codenum("RstUvW")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device06")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device06")
                 .build();
 
         User user7 = User.builder()
@@ -125,9 +125,9 @@ class UserRepositoryTests {
                 .nickname("지혜")
                 .codenum("MnoPQr")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device07")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device07")
                 .build();
 
         User user8 = User.builder()
@@ -138,9 +138,9 @@ class UserRepositoryTests {
                 .nickname("민준")
                 .codenum("GhIjKl")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device08")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device08")
                 .build();
 
         User user9 = User.builder()
@@ -151,9 +151,9 @@ class UserRepositoryTests {
                 .nickname("보라")
                 .codenum("WxYzAb")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device09")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device09")
                 .build();
 
         User user10 = User.builder()
@@ -164,9 +164,9 @@ class UserRepositoryTests {
                 .nickname("도현")
                 .codenum("CdEfGh")
                 .privilege(false)
-                .primaryRegion(null)
-                .secondlyRegion(null)
-                .deviceUniqueNum("device10")
+                .primaryAddress(null)
+                .secondlyAddress(null)
+                .deviceUnique("device10")
                 .build();
 
         userRepository.save(user1);
