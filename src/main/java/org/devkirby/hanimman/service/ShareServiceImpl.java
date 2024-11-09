@@ -5,6 +5,8 @@ import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.repository.ShareRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -39,5 +41,11 @@ public class ShareServiceImpl implements ShareService {
         Share share = shareRepository.findById(id).orElseThrow();
         share.setDeletedAt(Instant.now());
         shareRepository.save(share);
+    }
+
+    @Override
+    public Page<ShareDTO> listAll(Pageable pageable) {
+        return shareRepository.findAll(pageable)
+                .map(share -> modelMapper.map(share, ShareDTO.class));
     }
 }
