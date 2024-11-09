@@ -1,10 +1,13 @@
 package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -41,4 +44,9 @@ public class TogetherServiceImpl implements TogetherService {
         togetherRepository.save(together);
     }
 
+    @Override
+    public Page<TogetherDTO> listAll(Pageable pageable) {
+        return togetherRepository.findAll(pageable)
+                .map(share -> modelMapper.map(share, TogetherDTO.class));
+    }
 }

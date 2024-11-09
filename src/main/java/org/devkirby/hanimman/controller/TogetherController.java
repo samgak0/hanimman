@@ -3,6 +3,9 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.service.TogetherService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,5 +33,10 @@ public class TogetherController {
     @DeleteMapping("/{id}")
     public void deleteTogether(@PathVariable Integer id) {
         togetherService.delete(id);
+    }
+
+    @GetMapping
+    public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable) {
+        return togetherService.listAll(pageable);
     }
 }
