@@ -3,6 +3,9 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.service.ShareService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,5 +33,10 @@ public class ShareController {
     @DeleteMapping("/{id}")
     public void deleteShare(@PathVariable Integer id) {
         shareService.delete(id);
+    }
+
+    @GetMapping
+    public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable) {
+        return shareService.listAll(pageable);
     }
 }
