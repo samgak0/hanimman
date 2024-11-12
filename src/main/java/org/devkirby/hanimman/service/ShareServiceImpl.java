@@ -6,9 +6,12 @@ import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
+import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.repository.ShareFavoriteRepository;
 import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,11 @@ import java.util.stream.Collectors;
 public class ShareServiceImpl implements ShareService {
     private final ShareRepository shareRepository;
     private final ShareImageRepository shareImageRepository;
+    private final ShareFavoriteRepository shareFavoriteRepository;
     private final ModelMapper modelMapper;
+
+    @Value("${com.devkirby.hanimman.upload.default_image.png}")
+    private String defaultImageUrl;
 
     @Override
     @Transactional
@@ -35,14 +42,15 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
-    public ShareDTO read(Integer id) {
-        Share share = shareRepository.findById(id).orElseThrow();
+    public ShareDTO read(Integer id, User loginUser) {
+        Share share = shareRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Share not found with id: " + id));
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-        List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
-        List<String> imageUrls = shareImages.stream()
-                .map(ShareImage::getServerName)
-                .collect(Collectors.toList());
-        shareDTO.setImageUrls(imageUrls);
+        shareDTO.setImageUrls(getImageUrls(share));
+
+        boolean isFavorite = shareFavoriteRepository.existsByUserAndParent(loginUser, share);
+        shareDTO.setFavorite(isFavorite);
+
         return shareDTO;
     }
 
@@ -57,7 +65,8 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional
     public void delete(Integer id) {
-        Share share = shareRepository.findById(id).orElseThrow();
+        Share share = shareRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Share not found with id: " + id));
         share.setDeletedAt(Instant.now());
         shareRepository.save(share);
     }
@@ -67,11 +76,7 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findAll(pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
-                    List<String> imageUrls = shareImages.stream()
-                            .map(ShareImage::getServerName)
-                            .collect(Collectors.toList());
-                    shareDTO.setImageUrls(imageUrls);
+                    shareDTO.setImageUrls(getImageUrls(share));
                     return shareDTO;
                 });
     }
@@ -81,12 +86,19 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
-                    List<String> imageUrls = shareImages.stream()
-                            .map(ShareImage::getServerName)
-                            .collect(Collectors.toList());
-                    shareDTO.setImageUrls(imageUrls);
+                    shareDTO.setImageUrls(getImageUrls(share));
                     return shareDTO;
                 });
+    }
+
+    private List<String> getImageUrls(Share share) {
+        List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+                .stream()
+                .map(ShareImage::getServerName)
+                .collect(Collectors.toList());
+        if (imageUrls.isEmpty()) {
+            imageUrls.add(defaultImageUrl);
+        }
+        return imageUrls;
     }
 }

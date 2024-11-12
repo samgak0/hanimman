@@ -2,14 +2,16 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherImage;
+import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.repository.TogetherFavoriteRepository;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,11 @@ import java.util.stream.Collectors;
 public class TogetherServiceImpl implements TogetherService {
     private final TogetherRepository togetherRepository;
     private final TogetherImageRepository togetherImageRepository;
+    private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final ModelMapper modelMapper;
+
+    @Value("${com.devkirby.hanimman.upload.default_image.png}")
+    private String defaultImageUrl;
 
     @Override
     @Transactional
@@ -33,14 +39,15 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public TogetherDTO read(Integer id) {
-        Together result = togetherRepository.findById(id).orElseThrow();
-        TogetherDTO togetherDTO = modelMapper.map(result, TogetherDTO.class);
-        List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(result);
-        List<String> imageUrls = togetherImages.stream()
-                .map(TogetherImage::getServerName)
-                .collect(Collectors.toList());
-        togetherDTO.setImageUrls(imageUrls);
+    public TogetherDTO read(Integer id, User loginUser) {
+        Together together = togetherRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Together not found with id: " + id));
+        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+        togetherDTO.setImageUrls(getImageUrls(together));
+
+        boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(loginUser, together);
+        togetherDTO.setFavorite(isFavorite);
+
         return togetherDTO;
     }
 
@@ -55,7 +62,8 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     @Transactional
     public void delete(Integer id) {
-        Together together = togetherRepository.findById(id).orElseThrow();
+        Together together = togetherRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Together not found with id: " + id));
         together.setDeletedAt(Instant.now());
         togetherRepository.save(together);
     }
@@ -65,11 +73,7 @@ public class TogetherServiceImpl implements TogetherService {
         return togetherRepository.findAll(pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(together);
-                    List<String> imageUrls = togetherImages.stream()
-                            .map(TogetherImage::getServerName)
-                            .collect(Collectors.toList());
-                    togetherDTO.setImageUrls(imageUrls);
+                    togetherDTO.setImageUrls(getImageUrls(together));
                     return togetherDTO;
                 });
     }
@@ -79,12 +83,19 @@ public class TogetherServiceImpl implements TogetherService {
         return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(together);
-                    List<String> imageUrls = togetherImages.stream()
-                            .map(TogetherImage::getServerName)
-                            .collect(Collectors.toList());
-                    togetherDTO.setImageUrls(imageUrls);
+                    togetherDTO.setImageUrls(getImageUrls(together));
                     return togetherDTO;
                 });
+    }
+
+    private List<String> getImageUrls(Together together) {
+        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+                .stream()
+                .map(TogetherImage::getServerName)
+                .collect(Collectors.toList());
+        if (imageUrls.isEmpty()) {
+            imageUrls.add(defaultImageUrl);
+        }
+        return imageUrls;
     }
 }

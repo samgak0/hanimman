@@ -27,4 +27,8 @@ public class TogetherDTO {
 
     // 이미지 리스트 추가
     private List<String> imageUrls;
+
+    // 찜 여부
+    @Builder.Default
+    private boolean favorite = false;
 }

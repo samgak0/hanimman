@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.devkirby.hanimman.dto.TogetherRequest;
+import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.TogetherService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +24,8 @@ public class TogetherController {
     }
 
     @GetMapping("/{id}")
-    public TogetherDTO readTogether(@PathVariable Integer id) {
-        return togetherService.read(id);
+    public TogetherDTO readTogether(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+        return togetherService.read(id, loginUser);
     }
 
     @PutMapping("/{id}")

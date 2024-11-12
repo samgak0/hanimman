@@ -36,7 +36,8 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public NoticeDTO read(Integer id) {
-        Notice notice = noticeRepository.findById(id).orElseThrow();
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notice not found with id: " + id));
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
         List<NoticeFile> noticeFiles = noticeFileRepository.findByParentAndDeletedAtIsNull(notice);
         List<String> fileUrls = noticeFiles.stream()
@@ -57,7 +58,8 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public void delete(Integer id) {
-        Notice notice = noticeRepository.findById(id).orElseThrow();
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notice not found with id: " + id));
         notice.setDeletedAt(Instant.now());
         noticeRepository.save(notice);
     }

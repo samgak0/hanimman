@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.dto.ShareRequest;
+import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.ShareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +24,8 @@ public class ShareController {
     }
 
     @GetMapping("/{id}")
-    public ShareDTO readShare(@PathVariable Integer id) {
-        return shareService.read(id);
+    public ShareDTO readShare(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+        return shareService.read(id, loginUser);
     }
 
     @PutMapping("/{id}")
