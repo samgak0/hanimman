@@ -11,4 +11,6 @@ public interface ShareService {
     void delete(Integer id);
 
     Page<ShareDTO> listAll(Pageable pageable);
+
+    Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable);
 }

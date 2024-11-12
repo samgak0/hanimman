@@ -1,6 +1,8 @@
 package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Together;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,4 +24,6 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
 
     // 품목에 키워드 포함
     List<Together> findByItemContainingAndDeletedAtIsNull(String keyword);
+
+    Page<Together> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword, Pageable pageable);
 }

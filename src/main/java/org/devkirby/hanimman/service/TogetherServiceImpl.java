@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.entity.Together;
+import org.devkirby.hanimman.entity.TogetherImage;
+import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class TogetherServiceImpl implements TogetherService {
     private final TogetherRepository togetherRepository;
+    private final TogetherImageRepository togetherImageRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -47,6 +50,26 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     public Page<TogetherDTO> listAll(Pageable pageable) {
         return togetherRepository.findAll(pageable)
-                .map(share -> modelMapper.map(share, TogetherDTO.class));
+                .map(together -> {
+                    TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                    TogetherImage togetherImage = togetherImageRepository.findByParentAndDeletedAtIsNull(together).stream().findFirst().orElse(null);
+                    if(togetherImage != null){
+                        togetherDTO.setImageUrl(togetherImage.getServerName());
+                    }
+                    return togetherDTO;
+                });
+    }
+
+    @Override
+    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable) {
+        return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+                .map(together -> {
+                    TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                    TogetherImage togetherImage = togetherImageRepository.findByParentAndDeletedAtIsNull(together).stream().findFirst().orElse(null);
+                    if(togetherImage != null){
+                        togetherDTO.setImageUrl(togetherImage.getServerName());
+                    }
+                    return togetherDTO;
+                });
     }
 }

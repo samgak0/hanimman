@@ -3,6 +3,8 @@ package org.devkirby.hanimman.service;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.Share;
+import org.devkirby.hanimman.entity.ShareImage;
+import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class ShareServiceImpl implements ShareService {
     private final ShareRepository shareRepository;
+    private final ShareImageRepository shareImageRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -46,6 +49,26 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public Page<ShareDTO> listAll(Pageable pageable) {
         return shareRepository.findAll(pageable)
-                .map(share -> modelMapper.map(share, ShareDTO.class));
+                .map(share -> {
+                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                    ShareImage shareImage = shareImageRepository.findByParentAndDeletedAtIsNull(share).stream().findFirst().orElse(null);
+                    if (shareImage != null) {
+                        shareDTO.setImageUrl(shareImage.getServerName());
+                    }
+                    return shareDTO;
+                });
+    }
+
+    @Override
+    public Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable) {
+        return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+                .map(share -> {
+                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                    ShareImage shareImage = shareImageRepository.findByParentAndDeletedAtIsNull(share).stream().findFirst().orElse(null);
+                    if (shareImage != null) {
+                        shareDTO.setImageUrl(shareImage.getServerName());
+                    }
+                    return shareDTO;
+                });
     }
 }

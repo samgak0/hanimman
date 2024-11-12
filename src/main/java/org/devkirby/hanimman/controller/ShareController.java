@@ -39,4 +39,9 @@ public class ShareController {
     public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable) {
         return shareService.listAll(pageable);
     }
+
+    @GetMapping("/search")
+    public Page<ShareDTO> searchShares(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
+        return shareService.searchByKeywords(keyword, pageable);
+    }
 }

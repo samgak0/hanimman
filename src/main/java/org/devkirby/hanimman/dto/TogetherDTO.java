@@ -23,4 +23,7 @@ public class TogetherDTO {
     private Integer quantity;
     private Boolean isEnd;
     private Integer userId;    // User의 ID
+
+    // 이미지 하나를 출력하기 위해 추가
+    private String imageUrl;
 }

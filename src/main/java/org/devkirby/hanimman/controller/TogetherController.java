@@ -39,4 +39,9 @@ public class TogetherController {
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable) {
         return togetherService.listAll(pageable);
     }
+
+    @GetMapping("/search")
+    public Page<TogetherDTO> searchTogethers(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
+        return togetherService.searchByKeywords(keyword, pageable);
+    }
 }

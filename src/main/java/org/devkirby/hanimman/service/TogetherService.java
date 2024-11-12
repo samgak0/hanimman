@@ -12,4 +12,6 @@ public interface TogetherService {
     void delete(Integer id);
 
     Page<TogetherDTO> listAll(Pageable pageable);;
+
+    Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable);
 }
