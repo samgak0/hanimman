@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.repository.ShareImageRepository;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,15 +24,24 @@ public class ShareServiceImpl implements ShareService {
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(ShareDTO shareDTO) {
+    public void create(ShareDTO shareDTO, ShareImageDTO shareImageDTO) {
         Share share = modelMapper.map(shareDTO, Share.class);
-        Share result = shareRepository.save(share);
+        ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
+        shareRepository.save(share);
+        shareImage.setParent(share);
+        shareImageRepository.save(shareImage);
     }
 
     @Override
     public ShareDTO read(Integer id) {
-        Share result = shareRepository.findById(id).orElseThrow();
-        return modelMapper.map(result, ShareDTO.class);
+        Share share = shareRepository.findById(id).orElseThrow();
+        ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+        List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
+        List<String> imageUrls = shareImages.stream()
+                .map(ShareImage::getServerName)
+                .collect(Collectors.toList());
+        shareDTO.setImageUrls(imageUrls);
+        return shareDTO;
     }
 
     @Override
@@ -51,10 +63,11 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findAll(pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    ShareImage shareImage = shareImageRepository.findByParentAndDeletedAtIsNull(share).stream().findFirst().orElse(null);
-                    if (shareImage != null) {
-                        shareDTO.setImageUrl(shareImage.getServerName());
-                    }
+                    List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
+                    List<String> imageUrls = shareImages.stream()
+                            .map(ShareImage::getServerName)
+                            .collect(Collectors.toList());
+                    shareDTO.setImageUrls(imageUrls);
                     return shareDTO;
                 });
     }
@@ -64,10 +77,11 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    ShareImage shareImage = shareImageRepository.findByParentAndDeletedAtIsNull(share).stream().findFirst().orElse(null);
-                    if (shareImage != null) {
-                        shareDTO.setImageUrl(shareImage.getServerName());
-                    }
+                    List<ShareImage> shareImages = shareImageRepository.findByParentAndDeletedAtIsNull(share);
+                    List<String> imageUrls = shareImages.stream()
+                            .map(ShareImage::getServerName)
+                            .collect(Collectors.toList());
+                    shareDTO.setImageUrls(imageUrls);
                     return shareDTO;
                 });
     }

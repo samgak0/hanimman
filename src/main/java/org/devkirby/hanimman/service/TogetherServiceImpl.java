@@ -3,6 +3,7 @@ package org.devkirby.hanimman.service;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
+import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +25,21 @@ public class TogetherServiceImpl implements TogetherService {
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(TogetherDTO togetherDTO) {
+    public void create(TogetherDTO togetherDTO, TogetherImageDTO togetherImageDTO) {
         Together together = modelMapper.map(togetherDTO, Together.class);
-        Together result = togetherRepository.save(together);
+        togetherRepository.save(together);
     }
 
     @Override
     public TogetherDTO read(Integer id) {
         Together result = togetherRepository.findById(id).orElseThrow();
-        return modelMapper.map(result, TogetherDTO.class);
+        TogetherDTO togetherDTO = modelMapper.map(result, TogetherDTO.class);
+        List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(result);
+        List<String> imageUrls = togetherImages.stream()
+                .map(TogetherImage::getServerName)
+                .collect(Collectors.toList());
+        togetherDTO.setImageUrls(imageUrls);
+        return togetherDTO;
     }
 
     @Override
@@ -52,10 +61,11 @@ public class TogetherServiceImpl implements TogetherService {
         return togetherRepository.findAll(pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    TogetherImage togetherImage = togetherImageRepository.findByParentAndDeletedAtIsNull(together).stream().findFirst().orElse(null);
-                    if(togetherImage != null){
-                        togetherDTO.setImageUrl(togetherImage.getServerName());
-                    }
+                    List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(together);
+                    List<String> imageUrls = togetherImages.stream()
+                            .map(TogetherImage::getServerName)
+                            .collect(Collectors.toList());
+                    togetherDTO.setImageUrls(imageUrls);
                     return togetherDTO;
                 });
     }
@@ -65,10 +75,11 @@ public class TogetherServiceImpl implements TogetherService {
         return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    TogetherImage togetherImage = togetherImageRepository.findByParentAndDeletedAtIsNull(together).stream().findFirst().orElse(null);
-                    if(togetherImage != null){
-                        togetherDTO.setImageUrl(togetherImage.getServerName());
-                    }
+                    List<TogetherImage> togetherImages = togetherImageRepository.findByParentAndDeletedAtIsNull(together);
+                    List<String> imageUrls = togetherImages.stream()
+                            .map(TogetherImage::getServerName)
+                            .collect(Collectors.toList());
+                    togetherDTO.setImageUrls(imageUrls);
                     return togetherDTO;
                 });
     }

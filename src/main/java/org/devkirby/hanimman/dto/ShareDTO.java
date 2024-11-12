@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.dto;
 
 import java.time.Instant;
+import java.util.List;
 
 import lombok.*;
 
@@ -24,6 +25,6 @@ public class ShareDTO {
     private Boolean isEnd;
     private Integer userId; // User의 ID만 전달
 
-    // 이미지 하나를 출력하기 위해 추가
-    private String imageUrl;
+    // 이미지 리스트 추가
+    private List<String> imageUrls;
 }
