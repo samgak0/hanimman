@@ -2,9 +2,14 @@ package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.InquiryDTO;
+import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.devkirby.hanimman.entity.Inquiry;
+import org.devkirby.hanimman.entity.InquiryFile;
+import org.devkirby.hanimman.repository.InquiryFileRepository;
 import org.devkirby.hanimman.repository.InquiryRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,12 +18,16 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class InquiryServiceImpl implements InquiryService {
     private final InquiryRepository inquiryRepository;
+    private final InquiryFileRepository inquiryFileRepository;
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(InquiryDTO inquiryDTO) {
+    public void create(InquiryDTO inquiryDTO, InquiryFileDTO inquiryFileDTO) {
         Inquiry inquiry = modelMapper.map(inquiryDTO, Inquiry.class);
+        InquiryFile inquiryFile = modelMapper.map(inquiryFileDTO, InquiryFile.class);
         inquiryRepository.save(inquiry);
+        inquiryFile.setParent(inquiry);
+        inquiryFileRepository.save(inquiryFile);
     }
 
     @Override
@@ -39,5 +48,17 @@ public class InquiryServiceImpl implements InquiryService {
         Inquiry inquiry = inquiryRepository.findById(id).orElseThrow();
         inquiry.setDeletedAt(Instant.now());
         inquiryRepository.save(inquiry);
+    }
+
+    @Override
+    public Page<InquiryDTO> listAll(Pageable pageable) {
+        return inquiryRepository.findAll(pageable)
+                .map(inquiry -> modelMapper.map(inquiry, InquiryDTO.class));
+    }
+
+    @Override
+    public Page<InquiryDTO> searchById(Integer id, Pageable pageable) {
+        return inquiryRepository.findByIdAndDeletedAtIsNull(id, pageable)
+                .map(inquiry -> modelMapper.map(inquiry, InquiryDTO.class));
     }
 }

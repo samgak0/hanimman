@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.dto;
 
 import java.time.Instant;
+import java.util.List;
 
 import lombok.*;
 
@@ -18,4 +19,6 @@ public class FaqDTO {
     private Instant modifiedAt;
     private Integer userId;
 
+    // 파일 리스트 추가
+    private List<String> fileUrls;
 }

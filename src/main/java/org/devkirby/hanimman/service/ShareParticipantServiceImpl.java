@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareParticipantDTO;
 import org.devkirby.hanimman.entity.ShareParticipant;
@@ -16,6 +17,7 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(ShareParticipantDTO shareParticipantDTO) {
         ShareParticipant shareParticipant = modelMapper.map(shareParticipantDTO, ShareParticipant.class);
         ShareParticipant result = shareParticipantRepository.save(shareParticipant);
@@ -28,12 +30,14 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
     }
 
     @Override
+    @Transactional
     public void update(ShareParticipantDTO shareParticipantDTO) {
         ShareParticipant shareParticipant = modelMapper.map(shareParticipantDTO, ShareParticipant.class);
         ShareParticipant result = shareParticipantRepository.save(shareParticipant);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         ShareParticipant shareParticipant = shareParticipantRepository.findById(id).orElseThrow();
         shareParticipant.setDeletedAt(Instant.now());
@@ -41,6 +45,7 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
     }
 
     @Override
+    @Transactional
     public void rejected(Integer id) {
         ShareParticipant shareParticipant = shareParticipantRepository.findById(id).orElseThrow();
         shareParticipant.setRejected(true);

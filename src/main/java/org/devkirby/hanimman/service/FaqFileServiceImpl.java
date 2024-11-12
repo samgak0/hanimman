@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.FaqFileDTO;
 import org.devkirby.hanimman.entity.Faq;
@@ -31,6 +32,7 @@ public class FaqFileServiceImpl implements FaqFileService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(FaqFileDTO faqFileDTO) {
         FaqFile faqFile = modelMapper.map(faqFileDTO, FaqFile.class);
         faqFileRepository.save(faqFile);
@@ -43,18 +45,21 @@ public class FaqFileServiceImpl implements FaqFileService {
     }
 
     @Override
+    @Transactional
     public void update(FaqFileDTO faqFileDTO) {
         FaqFile faqFile = modelMapper.map(faqFileDTO, FaqFile.class);
         faqFileRepository.save(faqFile);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         FaqFile faqFile = faqFileRepository.findById(id).orElseThrow();
         faqFileRepository.delete(faqFile);
     }
 
     @Override
+    @Transactional
     public String uploadFile(MultipartFile file, Integer faqId) throws IOException{
         File uploadFile = new File(uploadDir);
         if (!uploadFile.exists()) {

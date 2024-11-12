@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareFavorite;
@@ -20,6 +21,7 @@ public class ShareFavoriteServiceImpl implements ShareFavoriteService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public void create(Integer userId, Integer parentId) {
         Share share = shareRepository.findById(parentId).orElseThrow();
         User user = userRepository.findById(userId).orElseThrow();
@@ -34,6 +36,7 @@ public class ShareFavoriteServiceImpl implements ShareFavoriteService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         shareFavoriteRepository.deleteById(id);
     }

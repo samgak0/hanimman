@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherParticipantDTO;
 import org.devkirby.hanimman.entity.TogetherParticipant;
@@ -16,6 +17,7 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(TogetherParticipantDTO togetherParticipantDTO) {
         TogetherParticipant togetherParticipant = modelMapper.map(togetherParticipantDTO, TogetherParticipant.class);
         TogetherParticipant result = togetherParticipantRepository.save(togetherParticipant);
@@ -28,12 +30,14 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     }
 
     @Override
+    @Transactional
     public void update(TogetherParticipantDTO togetherParticipantDTO) {
         TogetherParticipant togetherParticipant = modelMapper.map(togetherParticipantDTO, TogetherParticipant.class);
         TogetherParticipant result = togetherParticipantRepository.save(togetherParticipant);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id).orElseThrow();
         togetherParticipant.setDeletedAt(Instant.now());
@@ -41,6 +45,7 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     }
 
     @Override
+    @Transactional
     public void rejected(Integer id) {
         TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id).orElseThrow();
         togetherParticipant.setRejected(true);

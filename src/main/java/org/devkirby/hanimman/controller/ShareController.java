@@ -3,6 +3,7 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareImageDTO;
+import org.devkirby.hanimman.dto.ShareRequest;
 import org.devkirby.hanimman.service.ShareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ public class ShareController {
     private final ShareService shareService;
 
     @PostMapping
-    public void createShare(@RequestBody ShareDTO shareDTO, @RequestBody ShareImageDTO shareImageDTO) {
-        shareService.create(shareDTO, shareImageDTO);
+    public void createShare(@RequestBody ShareRequest shareRequest) {
+        shareService.create(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
     }
 
     @GetMapping("/{id}")

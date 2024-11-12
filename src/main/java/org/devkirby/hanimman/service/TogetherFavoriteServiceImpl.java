@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherFavorite;
@@ -20,6 +21,7 @@ public class TogetherFavoriteServiceImpl implements TogetherFavoriteService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public void create(Integer userId, Integer parentId) {
         Together together = togetherRepository.findById(parentId).orElseThrow();
         User user = userRepository.findById(userId).orElseThrow();
@@ -34,6 +36,7 @@ public class TogetherFavoriteServiceImpl implements TogetherFavoriteService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         togetherFavoriteRepository.deleteById(id);
     }

@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.NoticeFileDTO;
 import org.devkirby.hanimman.entity.Notice;
@@ -32,6 +33,7 @@ public class NoticeFileServiceImpl implements NoticeFileService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(NoticeFileDTO noticeFileDTO) {
         NoticeFile noticeFile = modelMapper.map(noticeFileDTO, NoticeFile.class);
         NoticeFile result = noticeFileRepository.save(noticeFile);
@@ -45,12 +47,14 @@ public class NoticeFileServiceImpl implements NoticeFileService {
     }
 
     @Override
+    @Transactional
     public void update(NoticeFileDTO noticeFileDTO) {
         NoticeFile noticeFile = modelMapper.map(noticeFileDTO, NoticeFile.class);
         noticeFileRepository.save(noticeFile);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         NoticeFile noticeFile = noticeFileRepository.findById(id).orElseThrow();
         noticeFile.setDeletedAt(Instant.now());
@@ -58,6 +62,7 @@ public class NoticeFileServiceImpl implements NoticeFileService {
     }
 
     @Override
+    @Transactional
     public String uploadFile(MultipartFile file, Integer noticeId) throws IOException {
         File uploadFile = new File(uploadDir);
         if(!uploadFile.exists()) {

@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.devkirby.hanimman.entity.Inquiry;
@@ -32,6 +33,7 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(InquiryFileDTO inquiryFileDTO) {
         InquiryFile inquiryFile = modelMapper.map(inquiryFileDTO, InquiryFile.class);
         InquiryFile result = inquiryFileRepository.save(inquiryFile);
@@ -45,12 +47,14 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     }
 
     @Override
+    @Transactional
     public void update(InquiryFileDTO inquiryFileDTO) {
         InquiryFile inquiryFile = modelMapper.map(inquiryFileDTO, InquiryFile.class);
         inquiryFileRepository.save(inquiryFile);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         InquiryFile inquiryFile = inquiryFileRepository.findById(id).orElseThrow();
         inquiryFile.setDeletedAt(Instant.now());
@@ -58,6 +62,7 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     }
 
     @Override
+    @Transactional
     public String uploadFile(MultipartFile file, Integer inquiryId) throws IOException {
         File uploadFile= new File(uploadDir);
         if(!uploadFile.exists()) {

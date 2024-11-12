@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.devkirby.hanimman.entity.Share;
@@ -39,6 +40,7 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     }
 
     @Override
+    @Transactional
     public void create(TogetherImageDTO togetherImageDTO) {
         TogetherImage togetherImage = modelMapper.map(togetherImageDTO, TogetherImage.class);
         TogetherImage result = togetherImageRepository.save(togetherImage);
@@ -52,12 +54,14 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     }
 
     @Override
+    @Transactional
     public void update(TogetherImageDTO togetherImageDTO) {
         TogetherImage togetherImage = modelMapper.map(togetherImageDTO, TogetherImage.class);
         togetherImageRepository.save(togetherImage);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         TogetherImage togetherImage = togetherImageRepository.findById(id).orElseThrow();
         togetherImage.setDeletedAt(Instant.now());
@@ -65,6 +69,7 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     }
 
     @Override
+    @Transactional
     public String uploadImage(MultipartFile file, Integer togetherId) throws IOException {
         // Ensure the upload directory exists
         File uploadFile = new File(uploadDir);

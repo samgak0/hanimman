@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
@@ -25,6 +26,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(TogetherDTO togetherDTO, TogetherImageDTO togetherImageDTO) {
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherRepository.save(together);
@@ -43,6 +45,7 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
+    @Transactional
     public void update(TogetherDTO togetherDTO) {
         togetherDTO.setModifiedAt(Instant.now());
         Together together = modelMapper.map(togetherDTO, Together.class);
@@ -50,6 +53,7 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         Together together = togetherRepository.findById(id).orElseThrow();
         together.setDeletedAt(Instant.now());

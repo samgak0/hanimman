@@ -2,9 +2,14 @@ package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.FaqDTO;
+import org.devkirby.hanimman.dto.FaqFileDTO;
 import org.devkirby.hanimman.entity.Faq;
+import org.devkirby.hanimman.entity.FaqFile;
+import org.devkirby.hanimman.repository.FaqFileRepository;
 import org.devkirby.hanimman.repository.FaqRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,18 +20,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FaqServiceImpl implements FaqService {
     private final FaqRepository faqRepository;
+    private final FaqFileRepository faqFileRepository;
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(FaqDTO faqDTO) {
+    public void create(FaqDTO faqDTO, FaqFileDTO faqFileDTO) {
         Faq faq = modelMapper.map(faqDTO, Faq.class);
+        FaqFile faqFile = modelMapper.map(faqFileDTO, FaqFile.class);
         faqRepository.save(faq);
+        faqFile.setParent(faq);
+        faqFileRepository.save(faqFile);
     }
 
     @Override
     public FaqDTO read(Integer id) {
         Faq faq = faqRepository.findById(id).orElseThrow();
-        return modelMapper.map(faq, FaqDTO.class);
+        FaqDTO faqDTO = modelMapper.map(faq, FaqDTO.class);
+        List<FaqFile> faqFiles = faqFileRepository.findByParent(faq);
+        List<String> fileUrls = faqFiles.stream()
+                .map(FaqFile::getServerName)
+                .collect(Collectors.toList());
+        faqDTO.setFileUrls(fileUrls);
+        return faqDTO;
     }
 
     @Override
@@ -44,10 +59,14 @@ public class FaqServiceImpl implements FaqService {
     }
 
     @Override
-    public List<FaqDTO> listAll() {
-        return faqRepository.findAll().stream()
-                .map(faq -> modelMapper.map(faq, FaqDTO.class))
-                .collect(Collectors.toList());
+    public Page<FaqDTO> listAll(Pageable pageable) {
+        return faqRepository.findAll(pageable)
+                .map(faq -> modelMapper.map(faq, FaqDTO.class));
     }
 
+    @Override
+    public Page<FaqDTO> searchByKeywords(String keyword, Pageable pageable) {
+        return faqRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+                .map(faq -> modelMapper.map(faq, FaqDTO.class));
+    }
 }

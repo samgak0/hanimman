@@ -3,6 +3,7 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherImageDTO;
+import org.devkirby.hanimman.dto.TogetherRequest;
 import org.devkirby.hanimman.service.TogetherService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ public class TogetherController {
     private final TogetherService togetherService;
 
     @PostMapping
-    public void createTogether(@RequestBody TogetherDTO togetherDTO, @RequestBody TogetherImageDTO togetherImageDTO) {
-        togetherService.create(togetherDTO, togetherImageDTO);
+    public void createTogether(@RequestBody TogetherRequest togetherRequest) {
+        togetherService.create(togetherRequest.getTogetherDTO(), togetherRequest.getTogetherImageDTO());
     }
 
     @GetMapping("/{id}")

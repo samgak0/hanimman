@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.NoticeDTO;
 import org.devkirby.hanimman.dto.NoticeFileDTO;
@@ -24,6 +25,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(NoticeDTO noticeDTO, NoticeFileDTO noticeFileDTO) {
         Notice notice = modelMapper.map(noticeDTO, Notice.class);
         NoticeFile noticeFile = modelMapper.map(noticeFileDTO, NoticeFile.class);
@@ -45,6 +47,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional
     public void update(NoticeDTO noticeDTO) {
         noticeDTO.setModifiedAt(Instant.now());
         Notice notice = modelMapper.map(noticeDTO, Notice.class);
@@ -52,6 +55,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         Notice notice = noticeRepository.findById(id).orElseThrow();
         notice.setDeletedAt(Instant.now());

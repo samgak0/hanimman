@@ -3,6 +3,7 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.NoticeDTO;
 import org.devkirby.hanimman.dto.NoticeFileDTO;
+import org.devkirby.hanimman.dto.NoticeRequest;
 import org.devkirby.hanimman.service.NoticeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @PostMapping
-    public void createNotice(@RequestBody NoticeDTO noticeDTO, @RequestBody NoticeFileDTO noticeFileDTO) {
-        noticeService.create(noticeDTO, noticeFileDTO);
+    public void createNotice(@RequestBody NoticeRequest noticeRequest) {
+        noticeService.create(noticeRequest.getNoticeDTO(), noticeRequest.getNoticeFileDTO());
     }
 
     @GetMapping("/{id}")

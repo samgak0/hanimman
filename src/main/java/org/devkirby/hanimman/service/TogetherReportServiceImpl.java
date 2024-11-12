@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Together;
@@ -22,6 +23,7 @@ public class TogetherReportServiceImpl implements TogetherReportService {
     private final ReportCategoryRepository reportCategoryRepository;
 
     @Override
+    @Transactional
     public void create(Integer reporterId, Integer categoryId, Integer parentId) {
         Together together = togetherRepository.findById(parentId).orElseThrow();
         User reportedUser = together.getUser();
@@ -36,6 +38,7 @@ public class TogetherReportServiceImpl implements TogetherReportService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         togetherReportRepository.deleteById(id);
     }

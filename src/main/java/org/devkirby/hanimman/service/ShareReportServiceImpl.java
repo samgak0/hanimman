@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Share;
@@ -22,6 +23,7 @@ public class ShareReportServiceImpl implements ShareReportService {
     private final ReportCategoryRepository reportCategoryRepository;
 
     @Override
+    @Transactional
     public void create(Integer reporterId, Integer categoryId, Integer parentId) {
         Share share = shareRepository.findById(parentId).orElseThrow();
         User reportedUser = share.getUser();
@@ -36,6 +38,7 @@ public class ShareReportServiceImpl implements ShareReportService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         shareReportRepository.deleteById(id);
     }

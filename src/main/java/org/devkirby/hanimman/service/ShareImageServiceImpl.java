@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.devkirby.hanimman.dto.ShareImageDTO;
@@ -39,6 +40,7 @@ public class ShareImageServiceImpl implements ShareImageService{
 
 
     @Override
+    @Transactional
     public void create(ShareImageDTO shareImageDTO) {
         ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
         ShareImage result = shareImageRepository.save(shareImage);
@@ -52,12 +54,14 @@ public class ShareImageServiceImpl implements ShareImageService{
     }
 
     @Override
+    @Transactional
     public void update(ShareImageDTO shareImageDTO) {
         ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
         shareImageRepository.save(shareImage);
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         ShareImage shareImage = shareImageRepository.findById(id).orElseThrow();
         shareImage.setDeletedAt(Instant.now());
@@ -66,6 +70,7 @@ public class ShareImageServiceImpl implements ShareImageService{
 
 
     @Override
+    @Transactional
     public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
         // Ensure the upload directory exists
         File uploadFile = new File(uploadDir);

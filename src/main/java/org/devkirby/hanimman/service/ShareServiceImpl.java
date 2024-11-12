@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareImageDTO;
@@ -24,6 +25,7 @@ public class ShareServiceImpl implements ShareService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public void create(ShareDTO shareDTO, ShareImageDTO shareImageDTO) {
         Share share = modelMapper.map(shareDTO, Share.class);
         ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
@@ -45,6 +47,7 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
+    @Transactional
     public void update(ShareDTO shareDTO) {
         shareDTO.setModifiedAt(Instant.now());
         Share share = modelMapper.map(shareDTO, Share.class);
@@ -52,6 +55,7 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         Share share = shareRepository.findById(id).orElseThrow();
         share.setDeletedAt(Instant.now());

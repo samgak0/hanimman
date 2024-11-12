@@ -1,6 +1,8 @@
 package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Faq;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,4 +25,5 @@ public interface FaqRepository extends JpaRepository<Faq, Integer> {
     // 작성일 기준으로 내림차순 정렬
     List<Faq> findByOrderByCreatedAtDesc();
 
+    Page<Faq> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword, Pageable pageable);
 }
