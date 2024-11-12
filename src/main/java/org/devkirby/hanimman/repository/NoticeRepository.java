@@ -1,6 +1,8 @@
 package org.devkirby.hanimman.repository;
 
 import org.devkirby.hanimman.entity.Notice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,4 +24,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 
     // 작성일 기준으로 내림차순 정렬
     List<Notice> findByOrderByCreatedAtDesc();
+
+    Page<Notice> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword, Pageable pageable);
 }
