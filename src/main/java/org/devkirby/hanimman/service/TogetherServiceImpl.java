@@ -48,6 +48,10 @@ public class TogetherServiceImpl implements TogetherService {
         boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(loginUser, together);
         togetherDTO.setFavorite(isFavorite);
 
+
+        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+        togetherDTO.setFavoriteCount(favoriteCount);
+
         return togetherDTO;
     }
 
@@ -74,6 +78,9 @@ public class TogetherServiceImpl implements TogetherService {
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                     togetherDTO.setImageUrls(getImageUrls(together));
+
+                    Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                    togetherDTO.setFavoriteCount(favoriteCount);
                     return togetherDTO;
                 });
     }
@@ -84,6 +91,9 @@ public class TogetherServiceImpl implements TogetherService {
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                     togetherDTO.setImageUrls(getImageUrls(together));
+
+                    Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                    togetherDTO.setFavoriteCount(favoriteCount);
                     return togetherDTO;
                 });
     }

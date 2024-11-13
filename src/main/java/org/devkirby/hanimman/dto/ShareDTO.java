@@ -31,4 +31,8 @@ public class ShareDTO {
     // 찜 여부
     @Builder.Default
     private boolean favorite = false;;
+
+    // 찜 수
+    @Builder.Default
+    private Integer favoriteCount=0;
 }

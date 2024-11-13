@@ -50,6 +50,8 @@ public class ShareServiceImpl implements ShareService {
 
         boolean isFavorite = shareFavoriteRepository.existsByUserAndParent(loginUser, share);
         shareDTO.setFavorite(isFavorite);
+        Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+        shareDTO.setFavoriteCount(favoriteCount);
 
         return shareDTO;
     }
@@ -77,6 +79,9 @@ public class ShareServiceImpl implements ShareService {
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                     shareDTO.setImageUrls(getImageUrls(share));
+
+                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                    shareDTO.setFavoriteCount(favoriteCount);
                     return shareDTO;
                 });
     }
@@ -87,6 +92,9 @@ public class ShareServiceImpl implements ShareService {
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                     shareDTO.setImageUrls(getImageUrls(share));
+
+                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                    shareDTO.setFavoriteCount(favoriteCount);
                     return shareDTO;
                 });
     }
