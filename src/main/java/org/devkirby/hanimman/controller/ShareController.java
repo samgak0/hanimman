@@ -48,4 +48,9 @@ public class ShareController {
     public Page<ShareDTO> searchShares(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
         return shareService.searchByKeywords(keyword, pageable);
     }
+
+    @GetMapping("/not-end")
+    public Page<ShareDTO> listNotEndShares(@PageableDefault(size = 10) Pageable pageable) {
+        return shareService.listNotEnd(pageable);
+    }
 }

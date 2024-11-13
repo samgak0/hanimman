@@ -99,6 +99,20 @@ public class ShareServiceImpl implements ShareService {
                 });
     }
 
+    // 끝나지 않은 게시글 조회
+    @Override
+    public Page<ShareDTO> listNotEnd(Pageable pageable) {
+        return shareRepository.findByIsEndIsFalse(pageable)
+                .map(share -> {
+                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                    shareDTO.setImageUrls(getImageUrls(share));
+
+                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                    shareDTO.setFavoriteCount(favoriteCount);
+                    return shareDTO;
+                });
+    }
+
     private List<String> getImageUrls(Share share) {
         List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
                 .stream()

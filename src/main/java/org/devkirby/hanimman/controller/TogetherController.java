@@ -48,4 +48,9 @@ public class TogetherController {
     public Page<TogetherDTO> searchTogethers(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
         return togetherService.searchByKeywords(keyword, pageable);
     }
+
+    @GetMapping("/not-end")
+    public Page<TogetherDTO> listNotEndTogethers(@PageableDefault(size = 10) Pageable pageable) {
+        return togetherService.listNotEnd(pageable);
+    }
 }

@@ -15,4 +15,6 @@ public interface ShareService {
     Page<ShareDTO> listAll(Pageable pageable);
 
     Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable);
+
+    Page<ShareDTO> listNotEnd(Pageable pageable);
 }

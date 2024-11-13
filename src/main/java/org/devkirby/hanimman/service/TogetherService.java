@@ -16,4 +16,6 @@ public interface TogetherService {
     Page<TogetherDTO> listAll(Pageable pageable);;
 
     Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable);
+
+    Page<TogetherDTO> listNotEnd(Pageable pageable);
 }
