@@ -9,48 +9,32 @@ import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import util.ImageUploadUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
-public class ShareImageServiceImpl implements ShareImageService{
-    @Value("${com.devkirby.hanimman.upload}")
-    String uploadDir;
-
+@RequiredArgsConstructor
+public class ShareImageServiceImpl implements ShareImageService {
     private final ShareImageRepository shareImageRepository;
     private final ShareRepository shareRepository;
     private final ModelMapper modelMapper;
-
-    public ShareImageServiceImpl(ShareImageRepository shareImageRepository, ShareRepository shareRepository, ModelMapper modelMapper) {
-        this.shareImageRepository = shareImageRepository;
-        this.shareRepository = shareRepository;
-        this.modelMapper = modelMapper;
-    }
-
+    private final ImageUploadUtil imageUploadUtil;
 
     @Override
     @Transactional
     public void create(ShareImageDTO shareImageDTO) {
         ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
-        ShareImage result = shareImageRepository.save(shareImage);
+        shareImageRepository.save(shareImage);
     }
 
     @Override
     public ShareImageDTO read(Integer id) {
-        ShareImage result = shareImageRepository.findById(id).orElseThrow();
-        ShareImageDTO shareImageDTO = modelMapper.map(result, ShareImageDTO.class);
-        return shareImageDTO;
+        ShareImage shareImage = shareImageRepository.findById(id).orElseThrow();
+        return modelMapper.map(shareImage, ShareImageDTO.class);
     }
 
     @Override
@@ -68,34 +52,19 @@ public class ShareImageServiceImpl implements ShareImageService{
         shareImageRepository.save(shareImage);
     }
 
-
     @Override
     @Transactional
     public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
-        // Ensure the upload directory exists
-        File uploadFile = new File(uploadDir);
-        if (!uploadFile.exists()) {
-            uploadFile.mkdirs();
-        }
+        // 이미지 업로드
+        String serverName = imageUploadUtil.uploadImage(file);
 
-        // Generate a unique file name
-        String originalName = file.getOriginalFilename();
-        String serverName = UUID.randomUUID().toString() + "_" + originalName;
-        Path targetPath = Paths.get(uploadDir).resolve(serverName);
+        // Share 엔티티 조회
+        Share share = shareRepository.findById(shareId)
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 나눠요 게시글 ID 입니다."));
 
-        // Save the file to the target path
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("Failed to save file", e);
-        }
-
-        // Retrieve the share entity
-        Share share = shareRepository.findById(shareId).orElseThrow(() -> new IllegalArgumentException("Invalid share ID"));
-
-        // Create and save the ShareImage entity
+        // ShareImage 엔티티 생성 및 저장
         ShareImage shareImage = ShareImage.builder()
-                .originalName(originalName)
+                .originalName(file.getOriginalFilename())
                 .serverName(serverName)
                 .mineType(file.getContentType())
                 .fileSize((int) file.getSize())
@@ -105,6 +74,6 @@ public class ShareImageServiceImpl implements ShareImageService{
 
         shareImageRepository.save(shareImage);
 
-        return "File uploaded successfully " + serverName;
+        return "이미지 업로드에 성공했습니다. " + serverName;
     }
 }
