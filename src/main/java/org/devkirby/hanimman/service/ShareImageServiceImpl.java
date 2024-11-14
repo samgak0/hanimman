@@ -2,7 +2,6 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
@@ -24,6 +23,7 @@ public class ShareImageServiceImpl implements ShareImageService {
     private final ModelMapper modelMapper;
     private final ImageUploadUtil imageUploadUtil;
 
+    public String uploadDir;
     @Override
     @Transactional
     public void create(ShareImageDTO shareImageDTO) {
@@ -74,6 +74,6 @@ public class ShareImageServiceImpl implements ShareImageService {
 
         shareImageRepository.save(shareImage);
 
-        return "이미지 업로드에 성공했습니다. " + serverName;
+        return  serverName;
     }
 }

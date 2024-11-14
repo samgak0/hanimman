@@ -46,7 +46,7 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public ShareDTO read(Integer id, User loginUser) {
         Share share = shareRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Share not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + id));
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         shareDTO.setImageUrls(getImageUrls(share));
 
@@ -87,7 +87,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findByIsEndIsFalse(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageUrls(share));
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
@@ -97,7 +97,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findAll(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageUrls(share));
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
@@ -111,7 +111,7 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    shareDTO.setImageUrls(getImageUrls(share));
+                    shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
                     Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                     shareDTO.setFavoriteCount(favoriteCount);
@@ -143,6 +143,16 @@ public class ShareServiceImpl implements ShareService {
         if (imageUrls.isEmpty()) {
             imageUrls.add(defaultImageUrl);
         }
+        return imageUrls;
+    }
+
+    private List<String> getImageThumbnailUrls(Share share) {
+        List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+                .stream()
+                .map(shareImage -> "t_" + shareImage.getServerName()) // 썸네일 이미지 이름 생성
+                .findFirst()
+                .map(List::of)
+                .orElseGet(() -> List.of(defaultImageUrl));
         return imageUrls;
     }
 }

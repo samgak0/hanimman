@@ -47,7 +47,7 @@ public class ImageUploadUtil {
             throw new IOException("이미지 업로드에 실패했습니다.", e);
         }
 
-        return "이미지가 성공적으로 업로드되었습니다." + serverName;
+        return  serverName;
     }
 
     public List<String> uploadImages(List<MultipartFile> files) throws IOException {
