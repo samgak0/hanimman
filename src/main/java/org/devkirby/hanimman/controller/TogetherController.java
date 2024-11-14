@@ -40,8 +40,8 @@ public class TogetherController {
     }
 
     @GetMapping
-    public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable) {
-        return togetherService.listAll(pageable);
+    public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable, @RequestParam(required = false) Boolean isEnd) {
+        return togetherService.listAll(pageable, isEnd);
     }
 
     @GetMapping("/search")
@@ -49,8 +49,10 @@ public class TogetherController {
         return togetherService.searchByKeywords(keyword, pageable);
     }
 
+    /*
     @GetMapping("/not-end")
     public Page<TogetherDTO> listNotEndTogethers(@PageableDefault(size = 10) Pageable pageable) {
         return togetherService.listNotEnd(pageable);
     }
+     */
 }

@@ -12,9 +12,9 @@ public interface ShareService {
     void update(ShareDTO shareDTO);
     void delete(Integer id);
 
-    Page<ShareDTO> listAll(Pageable pageable);
+    Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd);
 
     Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable);
 
-    Page<ShareDTO> listNotEnd(Pageable pageable);
+//    Page<ShareDTO> listNotEnd(Pageable pageable);
 }
