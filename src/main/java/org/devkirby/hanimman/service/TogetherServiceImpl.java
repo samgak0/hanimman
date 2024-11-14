@@ -73,16 +73,29 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> listAll(Pageable pageable) {
-        return togetherRepository.findAll(pageable)
-                .map(together -> {
-                    TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    togetherDTO.setImageUrls(getImageUrls(together));
+    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd) {
+        if(!isEnd){
+            return togetherRepository.findByIsEndIsFalse(pageable)
+                    .map(together -> {
+                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                        togetherDTO.setImageUrls(getImageUrls(together));
 
-                    Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                    togetherDTO.setFavoriteCount(favoriteCount);
-                    return togetherDTO;
-                });
+                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                        togetherDTO.setFavoriteCount(favoriteCount);
+                        return togetherDTO;
+                    });
+        }
+        else{
+            return togetherRepository.findAll(pageable)
+                    .map(together -> {
+                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                        togetherDTO.setImageUrls(getImageUrls(together));
+
+                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                        togetherDTO.setFavoriteCount(favoriteCount);
+                        return togetherDTO;
+                    });
+        }
     }
 
     @Override
@@ -97,7 +110,7 @@ public class TogetherServiceImpl implements TogetherService {
                     return togetherDTO;
                 });
     }
-
+/*
     @Override
     public Page<TogetherDTO> listNotEnd(Pageable pageable) {
         return togetherRepository.findByIsEndIsFalse(pageable)
@@ -110,6 +123,8 @@ public class TogetherServiceImpl implements TogetherService {
                     return togetherDTO;
                 });
     }
+
+ */
 
     private List<String> getImageUrls(Together together) {
         List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)

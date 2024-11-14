@@ -12,6 +12,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/share")
 @RequiredArgsConstructor
@@ -19,8 +22,20 @@ public class ShareController {
     private final ShareService shareService;
 
     @PostMapping
-    public void createShare(@RequestBody ShareRequest shareRequest) {
-        shareService.create(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
+    public Map<String, Object> createShare(@RequestBody ShareRequest shareRequest) {
+        Map<String, Object> map = new HashMap<>();
+        if(shareRequest.getShareDTO().getTitle().length() > 255 || shareRequest.getShareDTO().getTitle().isEmpty()){
+            throw new IllegalArgumentException("제목의 길이는 1byte 이상, 255byte 이하여야 합니다. 현재 길이: "
+                    + shareRequest.getShareDTO().getTitle().length());
+        }else if(shareRequest.getShareDTO().getContent().length() > 65535){
+            throw new IllegalArgumentException("내용의 길이는 65535byte 이하여야 합니다. 현재 길이: "
+                    + shareRequest.getShareDTO().getContent().length());
+        }else{
+            shareService.create(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
+            map.put("code", 200);
+            map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
+        }
+        return map;
     }
 
     @GetMapping("/{id}")
@@ -29,9 +44,9 @@ public class ShareController {
     }
 
     @PutMapping("/{id}")
-    public void updateShare(@PathVariable Integer id, @RequestBody ShareDTO shareDTO) {
-        shareDTO.setId(id);
-        shareService.update(shareDTO);
+    public void updateShare(@PathVariable Integer id, @RequestBody ShareRequest shareRequest) {
+        shareRequest.getShareDTO().setId(id);
+        shareService.update(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
     }
 
     @DeleteMapping("/{id}")
@@ -40,8 +55,8 @@ public class ShareController {
     }
 
     @GetMapping
-    public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable) {
-        return shareService.listAll(pageable);
+    public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable, @RequestBody(required = false) Boolean isEnd) {
+        return shareService.listAll(pageable, isEnd);
     }
 
     @GetMapping("/search")
@@ -49,8 +64,10 @@ public class ShareController {
         return shareService.searchByKeywords(keyword, pageable);
     }
 
+    /*
     @GetMapping("/not-end")
     public Page<ShareDTO> listNotEndShares(@PageableDefault(size = 10) Pageable pageable) {
         return shareService.listNotEnd(pageable);
     }
+     */
 }

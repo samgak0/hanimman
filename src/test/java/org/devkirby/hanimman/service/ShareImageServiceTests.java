@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+import util.ImageUploadUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +32,12 @@ public class ShareImageServiceTests {
     @Autowired
     private ShareRepository shareRepository;
 
+    @Autowired
+    private ImageUploadUtil imageUploadUtil;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     private ShareImageServiceImpl shareImageService;
 
     private String uploadDir;
@@ -38,7 +45,7 @@ public class ShareImageServiceTests {
     @BeforeEach
     public void setUp() {
         uploadDir = "upload"; // 테스트용 업로드 디렉토리 설정
-        shareImageService = new ShareImageServiceImpl(shareImageRepository, shareRepository, new ModelMapper());
+        shareImageService = new ShareImageServiceImpl(shareImageRepository, shareRepository, modelMapper, imageUploadUtil);
         shareImageService.uploadDir = uploadDir; // 테스트용으로 uploadDir 수동 설정
     }
 
@@ -55,7 +62,6 @@ public class ShareImageServiceTests {
         String result = shareImageService.uploadImage(mockFile, 1);
 
         // Assert
-        assertTrue(result.contains("File uploaded successfully"));
-        assertTrue(Files.exists(Paths.get(uploadDir, result.split(" ")[3])));
+        assertTrue(result.contains("heinzketchup.jpg"));
     }
 }

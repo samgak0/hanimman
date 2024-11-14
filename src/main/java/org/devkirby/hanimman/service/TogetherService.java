@@ -13,9 +13,9 @@ public interface TogetherService {
     void update(TogetherDTO togetherDTO);
     void delete(Integer id);
 
-    Page<TogetherDTO> listAll(Pageable pageable);;
+    Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd);;
 
     Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable);
 
-    Page<TogetherDTO> listNotEnd(Pageable pageable);
+//    Page<TogetherDTO> listNotEnd(Pageable pageable);
 }

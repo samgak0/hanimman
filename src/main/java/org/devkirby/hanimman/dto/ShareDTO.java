@@ -11,6 +11,7 @@ import lombok.*;
 @Builder
 public class ShareDTO {
     private Integer id;
+
     private String title;
     private String content;
     private Integer views;

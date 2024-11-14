@@ -33,18 +33,20 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void create(ShareDTO shareDTO, ShareImageDTO shareImageDTO) {
+    public void create(ShareDTO shareDTO, List<ShareImageDTO> shareImageDTOList) {
         Share share = modelMapper.map(shareDTO, Share.class);
-        ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
         shareRepository.save(share);
-        shareImage.setParent(share);
-        shareImageRepository.save(shareImage);
+        for (ShareImageDTO shareImageDTO : shareImageDTOList) {
+            ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
+            shareImage.setParent(share);
+            shareImageRepository.save(shareImage);
+        }
     }
 
     @Override
     public ShareDTO read(Integer id, User loginUser) {
         Share share = shareRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Share not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + id));
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         shareDTO.setImageUrls(getImageUrls(share));
 
@@ -58,10 +60,16 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void update(ShareDTO shareDTO) {
+    public void update(ShareDTO shareDTO, List<ShareImageDTO> shareImageDTOList) {
         shareDTO.setModifiedAt(Instant.now());
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
+
+        for (ShareImageDTO shareImageDTO : shareImageDTOList) {
+            ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
+            shareImage.setParent(share);
+            shareImageRepository.save(shareImage);
+        }
     }
 
     @Override
@@ -74,16 +82,28 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
-    public Page<ShareDTO> listAll(Pageable pageable) {
-        return shareRepository.findAll(pageable)
-                .map(share -> {
-                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    shareDTO.setImageUrls(getImageUrls(share));
+    public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd) {
+        if(!isEnd){
+            return shareRepository.findByIsEndIsFalse(pageable)
+                    .map(share -> {
+                        ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
-                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
-                    shareDTO.setFavoriteCount(favoriteCount);
-                    return shareDTO;
-                });
+                        Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                        shareDTO.setFavoriteCount(favoriteCount);
+                        return shareDTO;
+                    });
+        } else{
+            return shareRepository.findAll(pageable)
+                    .map(share -> {
+                        ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+
+                        Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                        shareDTO.setFavoriteCount(favoriteCount);
+                        return shareDTO;
+                    });
+        }
     }
 
     @Override
@@ -91,7 +111,7 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(share -> {
                     ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    shareDTO.setImageUrls(getImageUrls(share));
+                    shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
                     Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                     shareDTO.setFavoriteCount(favoriteCount);
@@ -99,7 +119,8 @@ public class ShareServiceImpl implements ShareService {
                 });
     }
 
-    // 끝나지 않은 게시글 조회
+    /*
+    // 끝나지 않은 게시글 조회 // 따로 두지 않고 listAll에 isEnd=false 조건 추가
     @Override
     public Page<ShareDTO> listNotEnd(Pageable pageable) {
         return shareRepository.findByIsEndIsFalse(pageable)
@@ -112,6 +133,7 @@ public class ShareServiceImpl implements ShareService {
                     return shareDTO;
                 });
     }
+     */
 
     private List<String> getImageUrls(Share share) {
         List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
@@ -121,6 +143,16 @@ public class ShareServiceImpl implements ShareService {
         if (imageUrls.isEmpty()) {
             imageUrls.add(defaultImageUrl);
         }
+        return imageUrls;
+    }
+
+    private List<String> getImageThumbnailUrls(Share share) {
+        List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+                .stream()
+                .map(shareImage -> "t_" + shareImage.getServerName()) // 썸네일 이미지 이름 생성
+                .findFirst()
+                .map(List::of)
+                .orElseGet(() -> List.of(defaultImageUrl));
         return imageUrls;
     }
 }
