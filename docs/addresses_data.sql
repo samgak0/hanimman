@@ -15,25 +15,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- 테이블 hanimman.addresses 구조 내보내기
-CREATE TABLE IF NOT EXISTS `addresses` (
-  `id` varchar(20) NOT NULL,
-  `part1_name` varchar(50) DEFAULT NULL,
-  `part2_name` varchar(50) DEFAULT NULL,
-  `part3_name` varchar(50) DEFAULT NULL,
-  `part4_name` varchar(50) DEFAULT NULL,
-  `part1_code` varchar(10) DEFAULT NULL,
-  `part2_code` varchar(10) DEFAULT NULL,
-  `part3_code` varchar(10) DEFAULT NULL,
-  `part4_code` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `part1_code` (`part1_code`) USING BTREE,
-  KEY `part2_code` (`part2_code`) USING BTREE,
-  KEY `part3_code` (`part3_code`) USING BTREE,
-  KEY `part4_code` (`part4_code`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+CREATE TABLE `addresses` (
+	`id` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`city_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`district_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`neighborhood_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`village_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`city_code` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`district_code` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`neighborhood_code` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`village_code` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `city_code` (`city_code`) USING BTREE,
+	INDEX `district_code` (`district_code`) USING BTREE,
+	INDEX `neighborhood_code` (`neighborhood_code`) USING BTREE,
+	INDEX `village_code` (`village_code`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+
 
 -- 테이블 데이터 hanimman.addresses:~20,555 rows (대략적) 내보내기
-INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_name`, `part1_code`, `part2_code`, `part3_code`, `part4_code`) VALUES
+INSERT INTO addresses (id, city_name, district_name, neighborhood_name, village_name, city_code, district_code, neighborhood_code, village_code) VALUES
 	('1100000000', '서울특별시', NULL, NULL, NULL, '11', '00', '00', '00'),
 	('1111000000', '서울특별시', '종로구', NULL, NULL, '11', '110', '00', '00'),
 	('1111010100', '서울특별시', '종로구', '청운동', NULL, '11', '110', '101', '00'),
@@ -9786,7 +9790,7 @@ INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_
 	('4679035000', '전라남도', '화순군', '능주면', NULL, '46', '790', '350', '00'),
 	('4679035021', '전라남도', '화순군', '능주면', '남정리', '46', '790', '350', '21'),
 	('4679035022', '전라남도', '화순군', '능주면', '정남리', '46', '790', '350', '22');
-INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_name`, `part1_code`, `part2_code`, `part3_code`, `part4_code`) VALUES
+INSERT INTO addresses (id, city_name, district_name, neighborhood_name, village_name, city_code, district_code, neighborhood_code, village_code) VALUES
 	('4679035023', '전라남도', '화순군', '능주면', '석고리', '46', '790', '350', '23'),
 	('4679035024', '전라남도', '화순군', '능주면', '잠정리', '46', '790', '350', '24'),
 	('4679035025', '전라남도', '화순군', '능주면', '내리', '46', '790', '350', '25'),
@@ -10521,7 +10525,7 @@ INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_
 	('4684025327', '전라남도', '무안군', '일로읍', '용산리', '46', '840', '253', '27'),
 	('4684025328', '전라남도', '무안군', '일로읍', '산정리', '46', '840', '253', '28'),
 	('4684025329', '전라남도', '무안군', '일로읍', '광암리', '46', '840', '253', '29');
-INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_name`, `part1_code`, `part2_code`, `part3_code`, `part4_code`) VALUES
+INSERT INTO addresses (id, city_name, district_name, neighborhood_name, village_name, city_code, district_code, neighborhood_code, village_code) VALUES
 	('4684025330', '전라남도', '무안군', '일로읍', '상신기리', '46', '840', '253', '30'),
 	('4684025331', '전라남도', '무안군', '일로읍', '복룡리', '46', '840', '253', '31'),
 	('4684025332', '전라남도', '무안군', '일로읍', '지장리', '46', '840', '253', '32'),
@@ -19907,7 +19911,7 @@ INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_
 	('5273035025', '전북특별자치도', '무주군', '부남면', '굴암리', '52', '730', '350', '25'),
 	('5273035026', '전북특별자치도', '무주군', '부남면', '가당리', '52', '730', '350', '26'),
 	('5274000000', '전북특별자치도', '장수군', NULL, NULL, '52', '740', '00', '00');
-INSERT INTO `addresses` (`id`, `part1_name`, `part2_name`, `part3_name`, `part4_name`, `part1_code`, `part2_code`, `part3_code`, `part4_code`) VALUES
+INSERT INTO addresses (id, city_name, district_name, neighborhood_name, village_name, city_code, district_code, neighborhood_code, village_code) VALUES
 	('5274025000', '전북특별자치도', '장수군', '장수읍', NULL, '52', '740', '250', '00'),
 	('5274025021', '전북특별자치도', '장수군', '장수읍', '장수리', '52', '740', '250', '21'),
 	('5274025022', '전북특별자치도', '장수군', '장수읍', '노하리', '52', '740', '250', '22'),
