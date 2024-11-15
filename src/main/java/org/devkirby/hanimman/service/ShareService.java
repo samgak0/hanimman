@@ -12,7 +12,7 @@ import java.util.List;
 public interface ShareService {
     void create(ShareDTO shareDTO) throws IOException;
     ShareDTO read(Integer id, User loginUser);
-    void update(ShareDTO shareDTO, List<ShareImageDTO> shareImageDTOList);
+    void update(ShareDTO shareDTO);
     void delete(Integer id);
 
     Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd);

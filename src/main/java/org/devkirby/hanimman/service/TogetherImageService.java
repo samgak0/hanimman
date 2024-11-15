@@ -4,6 +4,7 @@ import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface TogetherImageService {
     void create(TogetherImageDTO togetherImageDTO);
@@ -12,4 +13,5 @@ public interface TogetherImageService {
     void delete(Integer id);
 
     String uploadImage(MultipartFile file, Integer togetherId) throws IOException;
+    List<String> uploadImages(List<MultipartFile> files, Integer togetherId) throws IOException;
 }

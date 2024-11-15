@@ -7,8 +7,10 @@ import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
+
 public interface TogetherService {
-    void create(TogetherDTO togetherDTO, TogetherImageDTO togetherImageDTO);
+    void create(TogetherDTO togetherDTO) throws IOException;
     TogetherDTO read(Integer id, User loginUser);
     void update(TogetherDTO togetherDTO);
     void delete(Integer id);

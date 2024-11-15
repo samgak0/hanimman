@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherRepository togetherRepository;
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherFavoriteRepository togetherFavoriteRepository;
+    private final TogetherImageService togetherImageService;
     private final ModelMapper modelMapper;
 
     @Value("${com.devkirby.hanimman.upload.default_image.png}")
@@ -33,9 +35,10 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     @Transactional
-    public void create(TogetherDTO togetherDTO, TogetherImageDTO togetherImageDTO) {
+    public void create(TogetherDTO togetherDTO) throws IOException {
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherRepository.save(together);
+        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getUserId());
     }
 
     @Override
@@ -78,7 +81,7 @@ public class TogetherServiceImpl implements TogetherService {
             return togetherRepository.findByIsEndIsFalse(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageUrls(together));
+                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
 
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
@@ -89,7 +92,7 @@ public class TogetherServiceImpl implements TogetherService {
             return togetherRepository.findAll(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageUrls(together));
+                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
 
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
@@ -103,7 +106,7 @@ public class TogetherServiceImpl implements TogetherService {
         return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    togetherDTO.setImageUrls(getImageUrls(together));
+                    togetherDTO.setImageUrls(getImageThumbnailUrls(together));
 
                     Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                     togetherDTO.setFavoriteCount(favoriteCount);
@@ -134,6 +137,16 @@ public class TogetherServiceImpl implements TogetherService {
         if (imageUrls.isEmpty()) {
             imageUrls.add(defaultImageUrl);
         }
+        return imageUrls;
+    }
+
+    private List<String> getImageThumbnailUrls(Together together){
+        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+                .stream()
+                .map(togetherimage -> "t_" + togetherimage.getServerName())
+                .findFirst()
+                .map(List::of)
+                .orElseGet(() -> List.of(defaultImageUrl));
         return imageUrls;
     }
 }

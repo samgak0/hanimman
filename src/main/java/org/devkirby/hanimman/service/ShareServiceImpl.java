@@ -56,16 +56,11 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void update(ShareDTO shareDTO, List<ShareImageDTO> shareImageDTOList) {
+    public void update(ShareDTO shareDTO) {
         shareDTO.setModifiedAt(Instant.now());
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
 
-        for (ShareImageDTO shareImageDTO : shareImageDTOList) {
-            ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
-            shareImage.setParent(share);
-            shareImageRepository.save(shareImage);
-        }
     }
 
     @Override

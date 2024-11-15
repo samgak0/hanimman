@@ -38,7 +38,5 @@ public class ShareDTO {
     @Builder.Default
     private Integer favoriteCount=0;
 
-    private List<ShareImageDTO> shareImageDTOList;
-
     private List<MultipartFile> files;
 }

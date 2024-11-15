@@ -3,6 +3,7 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareRequest;
+import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.ShareImageService;
 import org.devkirby.hanimman.service.ShareService;
@@ -23,19 +24,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ShareController {
     private final ShareService shareService;
-    private final ShareImageService shareImageService;
 
     @PostMapping
     public Map<String, Object> createShare(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
-            throw new IllegalArgumentException("제목의 길이는 1byte 이상, 255byte 이하여야 합니다. 현재 길이: "
+            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
         }else if(shareDTO.getContent().length() > 65535){
-            throw new IllegalArgumentException("내용의 길이는 65535byte 이하여야 합니다. 현재 길이: "
+            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
         }else{
-            List<MultipartFile> files = shareDTO.getFiles();
             shareDTO.setUserId(loginUser.getId());
             shareService.create(shareDTO);
             map.put("code", 200);
@@ -50,9 +49,9 @@ public class ShareController {
     }
 
     @PutMapping("/{id}")
-    public void updateShare(@PathVariable Integer id, @RequestBody ShareRequest shareRequest) {
-        shareRequest.getShareDTO().setId(id);
-        shareService.update(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
+    public void updateShare(@PathVariable Integer id, @RequestBody ShareDTO shareDTO) {
+        shareDTO.setId(id);
+        shareService.update(shareDTO);
     }
 
     @DeleteMapping("/{id}")

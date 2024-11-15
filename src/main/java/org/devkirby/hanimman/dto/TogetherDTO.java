@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -35,4 +36,7 @@ public class TogetherDTO {
     // 찜 수
     @Builder.Default
     private Integer favoriteCount = 0;
+
+    private List<MultipartFile> files;
+
 }
