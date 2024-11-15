@@ -55,6 +55,16 @@ public class ShareImageServiceImpl implements ShareImageService {
 
     @Override
     @Transactional
+    public void deleteByParent(Integer shareId) {
+        List<ShareImage> shareImages = shareImageRepository.findAllByParentId(shareId);
+        for(ShareImage shareImage : shareImages){
+            shareImage.setDeletedAt(Instant.now());
+            shareImageRepository.save(shareImage);
+        }
+    }
+
+    @Override
+    @Transactional
     public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
         // 이미지 업로드
         String serverName = imageUploadUtil.uploadImage(file);

@@ -17,4 +17,6 @@ public interface ShareImageRepository extends JpaRepository<ShareImage, Integer>
 
     // 특정 parent에 대해 deletedAt이 null인 이미지들만 조회
     List<ShareImage> findByParentAndDeletedAtIsNull(Share parent);
+
+    List<ShareImage> findAllByParentId(Integer shareId);
 }

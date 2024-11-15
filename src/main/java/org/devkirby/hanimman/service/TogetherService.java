@@ -12,7 +12,7 @@ import java.io.IOException;
 public interface TogetherService {
     void create(TogetherDTO togetherDTO) throws IOException;
     TogetherDTO read(Integer id, User loginUser);
-    void update(TogetherDTO togetherDTO);
+    void update(TogetherDTO togetherDTO) throws IOException;
     void delete(Integer id);
 
     Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd);;

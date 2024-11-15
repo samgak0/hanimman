@@ -11,7 +11,9 @@ public interface TogetherImageService {
     TogetherImageDTO read(Integer id);
     void update(TogetherImageDTO togetherImageDTO);
     void delete(Integer id);
+    void deleteByParent(Integer togetherId);
 
     String uploadImage(MultipartFile file, Integer togetherId) throws IOException;
     List<String> uploadImages(List<MultipartFile> files, Integer togetherId) throws IOException;
+
 }

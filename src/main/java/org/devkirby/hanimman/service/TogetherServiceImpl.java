@@ -44,14 +44,12 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     public TogetherDTO read(Integer id, User loginUser) {
         Together together = togetherRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Together not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + id));
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
         togetherDTO.setImageUrls(getImageUrls(together));
 
         boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(loginUser, together);
         togetherDTO.setFavorite(isFavorite);
-
-
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
 
@@ -60,17 +58,21 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     @Transactional
-    public void update(TogetherDTO togetherDTO) {
-        togetherDTO.setModifiedAt(Instant.now());
-        Together together = modelMapper.map(togetherDTO, Together.class);
-        togetherRepository.save(together);
+    public void update(TogetherDTO togetherDTO) throws IOException {
+        Together existingTogether = togetherRepository.findById(togetherDTO.getId())
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + togetherDTO.getId()));
+        togetherImageService.deleteByParent(togetherDTO.getId());
+        existingTogether.setModifiedAt(Instant.now());
+        togetherRepository.save(existingTogether);
+
+        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getUserId());
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
         Together together = togetherRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Together not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다. : " + id));
         together.setDeletedAt(Instant.now());
         togetherRepository.save(together);
     }

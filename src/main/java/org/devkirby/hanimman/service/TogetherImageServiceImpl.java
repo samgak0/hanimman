@@ -67,6 +67,16 @@ public class TogetherImageServiceImpl implements TogetherImageService {
 
     @Override
     @Transactional
+    public void deleteByParent(Integer togetherId){
+        List<TogetherImage> togetherImages = togetherImageRepository.findAllByParentId(togetherId);
+        for(TogetherImage togetherImage : togetherImages){
+            togetherImage.setDeletedAt(Instant.now());
+            togetherImageRepository.save(togetherImage);
+        }
+    }
+
+    @Override
+    @Transactional
     public String uploadImage(MultipartFile file, Integer togetherId) throws IOException {
         String serverName = imageUploadUtil.uploadImage(file);
         Together together = togetherRepository.findById(togetherId)

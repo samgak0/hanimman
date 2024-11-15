@@ -11,6 +11,7 @@ public interface ShareImageService {
     ShareImageDTO read(Integer id);
     void update (ShareImageDTO shareImageDTO);
     void delete (Integer id);
+    void deleteByParent(Integer shareId);
 
     String uploadImage(MultipartFile file, Integer shareId) throws IOException;
     List<String> uploadImages(List<MultipartFile> files, Integer shareId) throws IOException;

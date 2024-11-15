@@ -56,11 +56,16 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void update(ShareDTO shareDTO) {
-        shareDTO.setModifiedAt(Instant.now());
-        Share share = modelMapper.map(shareDTO, Share.class);
-        shareRepository.save(share);
+    public void update(ShareDTO shareDTO) throws IOException {
+        Share existingShare = shareRepository.findById(shareDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + shareDTO.getId()));
+        shareImageService.deleteByParent(shareDTO.getId());
 
+        modelMapper.map(shareDTO, existingShare);
+        existingShare.setModifiedAt(Instant.now());
+        shareRepository.save(existingShare);
+
+        shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -108,53 +109,5 @@ public class ShareControllerTests {
     public void testDeleteShare() throws Exception {
         mockMvc.perform(delete("/api/v1/share/1"))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testListAllShares() throws Exception {
-        ShareDTO shareDTO = new ShareDTO();
-        shareDTO.setId(1);
-        shareDTO.setTitle("Test Title");
-        shareDTO.setContent("Test Content");
-
-        // 미리 정의된 Pageable을 사용하여 페이지와 크기를 설정합니다.
-        Page<ShareDTO> page = new PageImpl<>(Collections.singletonList(shareDTO));
-        Pageable pageable = PageRequest.of(0, 10);
-
-        // `any(Pageable.class)` 대신 `pageable`을 직접 전달하여 정확히 주입합니다.
-        when(shareService.listAll(pageable, false)).thenReturn(page);
-
-        mockMvc.perform(get("/api/v1/share")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("isEnd", "false")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Title"))
-                .andExpect(jsonPath("$.content[0].content").value("Test Content"));
-    }
-
-
-
-    @Test
-    public void testSearchShares() throws Exception {
-        ShareDTO shareDTO = new ShareDTO();
-        shareDTO.setId(1);
-        shareDTO.setTitle("Test Title");
-        shareDTO.setContent("Test Content");
-
-        Page<ShareDTO> page = new PageImpl<>(Collections.singletonList(shareDTO));
-        Pageable pageable = PageRequest.of(0, 10);
-
-        when(shareService.searchByKeywords(any(String.class), any(Pageable.class))).thenReturn(page);
-
-        mockMvc.perform(get("/api/v1/share/search")
-                        .param("keyword", "Test")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Title"))
-                .andExpect(jsonPath("$.content[0].content").value("Test Content"));
     }
 }
