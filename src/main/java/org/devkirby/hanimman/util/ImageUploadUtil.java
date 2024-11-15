@@ -1,4 +1,4 @@
-package util;
+package org.devkirby.hanimman.util;
 
 import jakarta.annotation.PostConstruct;
 import net.coobird.thumbnailator.Thumbnails;
@@ -67,5 +67,17 @@ public class ImageUploadUtil {
         Thumbnails.of(imagePath.toFile())
                 .size(200, 200)
                 .toFile(thumbnailPath.toFile());
+    }
+
+    public void deleteImage(String serverName) throws IOException {
+        Path imagePath = Paths.get(uploadDir).resolve(serverName);
+        Path thumbnailPath = Paths.get(uploadDir).resolve("t_" + serverName);
+
+        try {
+            Files.deleteIfExists(imagePath);
+            Files.deleteIfExists(thumbnailPath);
+        } catch (IOException e) {
+            throw new IOException("이미지 삭제에 실패했습니다.", e);
+        }
     }
 }

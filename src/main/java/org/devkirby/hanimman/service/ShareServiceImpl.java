@@ -7,15 +7,14 @@ import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.entity.User;
-import org.devkirby.hanimman.repository.ShareFavoriteRepository;
-import org.devkirby.hanimman.repository.ShareImageRepository;
-import org.devkirby.hanimman.repository.ShareRepository;
+import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +25,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareRepository shareRepository;
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
+    private final ShareImageService shareImageService;
     private final ModelMapper modelMapper;
 
     @Value("${com.devkirby.hanimman.upload.default_image.png}")
@@ -33,14 +33,10 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void create(ShareDTO shareDTO, List<ShareImageDTO> shareImageDTOList) {
+    public void create(ShareDTO shareDTO) throws IOException {
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
-        for (ShareImageDTO shareImageDTO : shareImageDTOList) {
-            ShareImage shareImage = modelMapper.map(shareImageDTO, ShareImage.class);
-            shareImage.setParent(share);
-            shareImageRepository.save(shareImage);
-        }
+        shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
     }
 
     @Override
@@ -76,10 +72,11 @@ public class ShareServiceImpl implements ShareService {
     @Transactional
     public void delete(Integer id) {
         Share share = shareRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Share not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + id));
         share.setDeletedAt(Instant.now());
         shareRepository.save(share);
     }
+
 
     @Override
     public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd) {

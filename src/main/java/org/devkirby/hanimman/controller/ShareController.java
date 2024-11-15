@@ -2,17 +2,20 @@ package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
-import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.dto.ShareRequest;
 import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.service.ShareImageService;
 import org.devkirby.hanimman.service.ShareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,18 +23,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ShareController {
     private final ShareService shareService;
+    private final ShareImageService shareImageService;
 
     @PostMapping
-    public Map<String, Object> createShare(@RequestBody ShareRequest shareRequest) {
+    public Map<String, Object> createShare(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
-        if(shareRequest.getShareDTO().getTitle().length() > 255 || shareRequest.getShareDTO().getTitle().isEmpty()){
+        if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1byte 이상, 255byte 이하여야 합니다. 현재 길이: "
-                    + shareRequest.getShareDTO().getTitle().length());
-        }else if(shareRequest.getShareDTO().getContent().length() > 65535){
+                    + shareDTO.getTitle().length());
+        }else if(shareDTO.getContent().length() > 65535){
             throw new IllegalArgumentException("내용의 길이는 65535byte 이하여야 합니다. 현재 길이: "
-                    + shareRequest.getShareDTO().getContent().length());
+                    + shareDTO.getContent().length());
         }else{
-            shareService.create(shareRequest.getShareDTO(), shareRequest.getShareImageDTO());
+            List<MultipartFile> files = shareDTO.getFiles();
+            shareDTO.setUserId(loginUser.getId());
+            shareService.create(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
         }

@@ -7,13 +7,14 @@ import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import util.ImageUploadUtil;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +76,15 @@ public class ShareImageServiceImpl implements ShareImageService {
         shareImageRepository.save(shareImage);
 
         return  serverName;
+    }
+
+    @Override
+    @Transactional
+    public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer shareId) throws IOException{
+        List<String> serverNames = null;
+        for(MultipartFile file : multipartFiles){
+            serverNames.add(uploadImage(file, shareId));
+        }
+        return serverNames;
     }
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -36,4 +37,8 @@ public class ShareDTO {
     // 찜 수
     @Builder.Default
     private Integer favoriteCount=0;
+
+    private List<ShareImageDTO> shareImageDTOList;
+
+    private List<MultipartFile> files;
 }
