@@ -50,7 +50,7 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     private Address secondlyAddress;
 
-    @Column(nullable = false)
+    @Column
     private String deviceUnique;
 
     @Column
@@ -62,4 +62,11 @@ public class User {
 
     @Column
     private Instant deletedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();  // 엔티티가 저장될 때 현재 시간으로 설정
+        }
+    }
 }
