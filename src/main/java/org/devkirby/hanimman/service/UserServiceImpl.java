@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
@@ -13,24 +14,25 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     // 회원 생성
     @Transactional
-    public void createUser(UserDTO userDTO) {
-        System.out.println("???? 여기 왜 안오시나요");
-        try{
+    public UserDTO createUser(UserDTO userDTO) {
+        try {
             User user = modelMapper.map(userDTO, User.class);
-            System.out.println(user);
             User savedUser = userRepository.save(user);
-            System.out.println(savedUser);
+            log.info("User saved: " + savedUser);
+            return modelMapper.map(savedUser, UserDTO.class); // 저장된 사용자 정보를 DTO로 변환하여 반환
         } catch (Exception e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
+            log.error("Error during user creation", e);
+            throw new RuntimeException("회원가입 중 오류가 발생했습니다.", e);
         }
     }
+
 
     // 회원조회
     public UserDTO selectUser(UserDTO userDTO) {

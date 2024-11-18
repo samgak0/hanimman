@@ -41,6 +41,7 @@ public class UserController {
         try {
             // ResultRequest -> UserDTO 변환
             UserDTO userDTO = JsonToDTO(resultData);
+            log.info("UserDTO created from ResultRequest: " + userDTO);
 
             // 유저가 존재하는지 확인
             UserDTO existingUser = userService.selectUser(userDTO);
@@ -52,15 +53,18 @@ public class UserController {
 
                 userDTO.setCodenum(codeNum);
                 userDTO.setNickname(nickname);
+                log.info("Generated nickname and codeNum for new user");
 
                 // 유저 생성
-                userService.createUser(userDTO);
+                UserDTO savedUserDTO = userService.createUser(userDTO);
+                log.info("New user created: " + savedUserDTO);
 
                 // JWT 토큰 발행 및 응답
-                return generateResponseWithToken(userDTO, HttpStatus.CREATED, "Sign-up successful.");
+                return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
             }
 
             // 로그인 성공 -> JWT 생성 및 응답
+            log.info("Existing user found: " + existingUser);
             return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
 
         } catch (IllegalArgumentException e) {
@@ -80,34 +84,43 @@ public class UserController {
         claims.put("username", userDTO.getName());
         claims.put("phoneNumber", userDTO.getPhonenum());
 
-        String token = JWTUtil.generateToken(claims, userDTO.getId());
-        log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
+        try {
+            String token = JWTUtil.generateToken(claims, userDTO.getId());
+            log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        log.info("Response Headers: " + headers.toString());  // 헤더 로그
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + token);
+            log.info("Response Headers: " + headers.toString());  // 헤더 로그
 
-        return ResponseEntity.status(status)
-                .headers(headers)
-                .body(new SuccessResponse(message));
+            return ResponseEntity.status(status)
+                    .headers(headers)
+                    .body(new SuccessResponse(message));
+        } catch (Exception e) {
+            log.error("Error generating token or setting headers", e);
+            throw new RuntimeException("Token generation or header setting failed", e);
+        }
     }
 
     // ResultRequest to UserDTO 변환
     private UserDTO JsonToDTO(ResultRequest resultData) {
         Gender gender = resultData.getGender().equalsIgnoreCase("MALE") ? Gender.M : Gender.F;
-        return UserDTO.builder()
+        UserDTO userDTO = UserDTO.builder()
                 .name(resultData.getName())
                 .phonenum(resultData.getPhoneNumber())
                 .gender(gender)
                 .birth(LocalDate.parse(resultData.getBirthDate()))
                 .build();
+        log.info("Converted ResultRequest to UserDTO: " + userDTO);
+        return userDTO;
     }
 
     public String nicknameGenerator() {
         Random random = new Random();
         Nickname[] nicknames = Nickname.values();
         Nickname selectNickname = nicknames[random.nextInt(nicknames.length)];
-        return selectNickname.toString().replace("_", " "); // Ensure the replacement is applied
+        String generatedNickname = selectNickname.toString().replace("_", " ");
+        log.info("Generated nickname: " + generatedNickname);
+        return generatedNickname;
     }
 
     public String generateUniqueCodenum() {
@@ -115,6 +128,7 @@ public class UserController {
         do {
             codeNum = codenumGenerator();
         } while (userService.isExistCodeNum(codeNum));
+        log.info("Generated unique codeNum: " + codeNum);
         return codeNum;
     }
 
@@ -129,7 +143,9 @@ public class UserController {
             code.append(characters.charAt(randomIndex));
         }
 
-        return code.toString();
+        String generatedCode = code.toString();
+        log.info("Generated codeNum: " + generatedCode);
+        return generatedCode;
     }
 
     // Error response DTO
