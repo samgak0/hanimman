@@ -7,6 +7,7 @@ import org.devkirby.hanimman.entity.Notice;
 import org.devkirby.hanimman.entity.NoticeFile;
 import org.devkirby.hanimman.repository.NoticeFileRepository;
 import org.devkirby.hanimman.repository.NoticeRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,6 +33,7 @@ public class NoticeFileServiceImpl implements NoticeFileService {
 
     private final NoticeFileRepository noticeFileRepository;
     private final NoticeRepository noticeRepository;
+    private final ImageUploadUtil imageUploadUtil;
     private final ModelMapper modelMapper;
 
     @Override
@@ -63,26 +67,24 @@ public class NoticeFileServiceImpl implements NoticeFileService {
 
     @Override
     @Transactional
+    public void deleteByParent(Integer noticeId) {
+        List<NoticeFile> noticeFiles = noticeFileRepository.findAllByParentId(noticeId);
+        for(NoticeFile noticeFile : noticeFiles){
+            noticeFile.setDeletedAt(Instant.now());
+            noticeFileRepository.save(noticeFile);
+        }
+    }
+
+    @Override
+    @Transactional
     public String uploadFile(MultipartFile file, Integer noticeId) throws IOException {
-        File uploadFile = new File(uploadDir);
-        if(!uploadFile.exists()) {
-            uploadFile.mkdirs();
-        }
-
-        String originalName = file.getOriginalFilename();
-        String serverName = UUID.randomUUID().toString() + "_" + originalName;
-        Path targetPath = Paths.get(uploadDir).resolve(serverName);
-
-        try(InputStream inputStream = file.getInputStream()){
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        }catch (IOException e){
-            throw new IOException("공지 파일 업로드 실패!!!", e);
-        }
-
-        Notice notice = noticeRepository.findById(noticeId).orElseThrow();
+        String serverName = imageUploadUtil.uploadImage(file);
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(()->
+                        new IllegalArgumentException("해당 ID의 공지사항이 없습니다 : " + noticeId));
 
         NoticeFile noticeFile = NoticeFile.builder()
-                .originalName(originalName)
+                .originalName(file.getOriginalFilename())
                 .serverName(serverName)
                 .mineType(file.getContentType())
                 .fileSize((int)file.getSize())
@@ -91,7 +93,16 @@ public class NoticeFileServiceImpl implements NoticeFileService {
                 .build();
 
         noticeFileRepository.save(noticeFile);
+        return serverName;
+    }
 
-        return "파일이 정상적으로 올라갔습니다. 파일이름 : " + serverName;
+    @Override
+    @Transactional
+    public List<String> uploadFiles(List<MultipartFile> files, Integer noticeId) throws IOException {
+        List<String> result = new ArrayList<>();
+        for(MultipartFile file : files){
+            result.add(uploadFile(file, noticeId));
+        }
+        return result;
     }
 }

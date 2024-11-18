@@ -7,13 +7,15 @@ import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import util.ImageUploadUtil;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,13 +56,22 @@ public class ShareImageServiceImpl implements ShareImageService {
 
     @Override
     @Transactional
-    public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
-        // 이미지 업로드
-        String serverName = imageUploadUtil.uploadImage(file);
+    public void deleteByParent(Integer shareId) {
+        List<ShareImage> shareImages = shareImageRepository.findAllByParentId(shareId);
+        for(ShareImage shareImage : shareImages){
+            shareImage.setDeletedAt(Instant.now());
+            shareImageRepository.save(shareImage);
+        }
+    }
 
+    @Override
+    @Transactional
+    public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
         // Share 엔티티 조회
         Share share = shareRepository.findById(shareId)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 나눠요 게시글 ID 입니다."));
+        // 이미지 업로드
+        String serverName = imageUploadUtil.uploadImage(file);
 
         // ShareImage 엔티티 생성 및 저장
         ShareImage shareImage = ShareImage.builder()
@@ -75,5 +86,15 @@ public class ShareImageServiceImpl implements ShareImageService {
         shareImageRepository.save(shareImage);
 
         return  serverName;
+    }
+
+    @Override
+    @Transactional
+    public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer shareId) throws IOException{
+        List<String> serverNames = new ArrayList<>();
+        for(MultipartFile file : multipartFiles){
+            serverNames.add(uploadImage(file, shareId));
+        }
+        return serverNames;
     }
 }

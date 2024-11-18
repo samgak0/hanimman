@@ -9,6 +9,7 @@ import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,22 +23,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class TogetherImageServiceImpl implements TogetherImageService {
-    @Value("${com.devkirby.hanimman.upload}")
-    String uploadDir;
-
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherRepository togetherRepository;
+    private final ImageUploadUtil imageUploadUtil;
     private final ModelMapper modelMapper;
 
-    public TogetherImageServiceImpl(TogetherImageRepository togetherImageRepository, TogetherRepository togetherRepository, ModelMapper modelMapper) {
-        this.togetherImageRepository = togetherImageRepository;
-        this.togetherRepository = togetherRepository;
-        this.modelMapper = modelMapper;
-    }
+    public String uploadDir;
 
     @Override
     @Transactional
@@ -70,31 +67,23 @@ public class TogetherImageServiceImpl implements TogetherImageService {
 
     @Override
     @Transactional
+    public void deleteByParent(Integer togetherId){
+        List<TogetherImage> togetherImages = togetherImageRepository.findAllByParentId(togetherId);
+        for(TogetherImage togetherImage : togetherImages){
+            togetherImage.setDeletedAt(Instant.now());
+            togetherImageRepository.save(togetherImage);
+        }
+    }
+
+    @Override
+    @Transactional
     public String uploadImage(MultipartFile file, Integer togetherId) throws IOException {
-        // Ensure the upload directory exists
-        File uploadFile = new File(uploadDir);
-        if (!uploadFile.exists()) {
-            uploadFile.mkdirs();
-        }
+        String serverName = imageUploadUtil.uploadImage(file);
+        Together together = togetherRepository.findById(togetherId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 함께요 게시글이 없습니다 : " + togetherId));
 
-        // Generate a unique file name
-        String originalName = file.getOriginalFilename();
-        String serverName = UUID.randomUUID().toString() + "_" + originalName;
-        Path targetPath = Paths.get(uploadDir).resolve(serverName);
-
-        // Save the file to the target path
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("Failed to save file", e);
-        }
-
-        // Retrieve the share entity
-        Together together = togetherRepository.findById(togetherId).orElseThrow(() -> new IllegalArgumentException("Invalid together ID"));
-
-        // Create and save the ShareImage entity
         TogetherImage togetherImage = TogetherImage.builder()
-                .originalName(originalName)
+                .originalName(file.getOriginalFilename())
                 .serverName(serverName)
                 .mineType(file.getContentType())
                 .fileSize((int) file.getSize())
@@ -104,6 +93,16 @@ public class TogetherImageServiceImpl implements TogetherImageService {
 
         togetherImageRepository.save(togetherImage);
 
-        return "File uploaded successfully " + serverName;
+        return serverName;
+    }
+
+    @Override
+    @Transactional
+    public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer togetherId) throws IOException {
+        List<String> serverNames = null;
+        for(MultipartFile file : multipartFiles){
+            serverNames.add(uploadImage(file, togetherId));
+        }
+        return serverNames;
     }
 }

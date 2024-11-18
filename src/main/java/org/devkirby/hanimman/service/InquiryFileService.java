@@ -4,6 +4,7 @@ import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface InquiryFileService {
     void create(InquiryFileDTO inquiryFileDTO);
@@ -12,4 +13,5 @@ public interface InquiryFileService {
     void delete(Integer id);
 
     String uploadFile(MultipartFile file, Integer inquiryId) throws IOException;
+    List<String> uploadFiles(List<MultipartFile> files, Integer inquiryId) throws IOException;
 }

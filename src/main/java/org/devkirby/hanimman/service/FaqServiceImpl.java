@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.FaqDTO;
 import org.devkirby.hanimman.dto.FaqFileDTO;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,20 +23,21 @@ import java.util.stream.Collectors;
 public class FaqServiceImpl implements FaqService {
     private final FaqRepository faqRepository;
     private final FaqFileRepository faqFileRepository;
+    private final FaqFileService faqFileService;
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(FaqDTO faqDTO, FaqFileDTO faqFileDTO) {
+    @Transactional
+    public void create(FaqDTO faqDTO) throws IOException {
         Faq faq = modelMapper.map(faqDTO, Faq.class);
-        FaqFile faqFile = modelMapper.map(faqFileDTO, FaqFile.class);
         faqRepository.save(faq);
-        faqFile.setParent(faq);
-        faqFileRepository.save(faqFile);
+        faqFileService.uploadFiles(faqDTO.getFiles(), faq.getId());
     }
 
     @Override
     public FaqDTO read(Integer id) {
-        Faq faq = faqRepository.findById(id).orElseThrow();
+        Faq faq = faqRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 자주 묻는 질문이 없습니다 : " + id));
         FaqDTO faqDTO = modelMapper.map(faq, FaqDTO.class);
         List<FaqFile> faqFiles = faqFileRepository.findByParent(faq);
         List<String> fileUrls = faqFiles.stream()
@@ -45,15 +48,23 @@ public class FaqServiceImpl implements FaqService {
     }
 
     @Override
-    public void update(FaqDTO faqDTO) {
+    @Transactional
+    public void update(FaqDTO faqDTO) throws IOException {
+        Faq existingFaq = faqRepository.findById(faqDTO.getId())
+                .orElseThrow(()->
+                        new IllegalArgumentException("해당 ID의 자주 묻는 질문이 없습니다 : " + faqDTO.getId()));
+        faqFileRepository.deleteByParent(existingFaq);
         faqDTO.setModifiedAt(Instant.now());
-        Faq faq = modelMapper.map(faqDTO, Faq.class);
-        faqRepository.save(faq);
+        modelMapper.map(faqDTO, existingFaq);
+        faqRepository.save(existingFaq);
+
+        faqFileService.uploadFiles(faqDTO.getFiles(), faqDTO.getId());
     }
 
     @Override
     public void delete(Integer id) {
-        Faq faq = faqRepository.findById(id).orElseThrow();
+        Faq faq = faqRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 자주 묻는 질문이 없습니다 : " + id));
         faq.setDeletedAt(Instant.now());
         faqRepository.save(faq);
     }

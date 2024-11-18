@@ -11,4 +11,6 @@ import java.util.List;
 public interface NoticeFileRepository extends JpaRepository<NoticeFile, Integer> {
     // 공지사항에 대해 삭제되지 않은 파일만 가져오기
     List<NoticeFile> findByParentAndDeletedAtIsNull(Notice parent);
+
+    List<NoticeFile> findAllByParentId(Integer noticeId);
 }

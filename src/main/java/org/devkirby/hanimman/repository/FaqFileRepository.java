@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface FaqFileRepository extends JpaRepository<FaqFile, Integer> {
     List<FaqFile> findByParent(Faq parent);
+
+    void deleteByParent(Faq existingFaq);
 }

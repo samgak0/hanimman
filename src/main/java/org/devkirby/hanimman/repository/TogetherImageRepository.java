@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.repository;
 
+import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.entity.Together;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface TogetherImageRepository extends JpaRepository<TogetherImage, In
 
     // 특정 parent에 대해 deletedAt이 null인 이미지들만 조회
     List<TogetherImage> findByParentAndDeletedAtIsNull(Together parent);
+
+    List<TogetherImage> findAllByParentId(Integer shareId);
 }

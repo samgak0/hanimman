@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +22,6 @@ public class FaqDTO {
 
     // 파일 리스트 추가
     private List<String> fileUrls;
+
+    private List<MultipartFile> files;
 }

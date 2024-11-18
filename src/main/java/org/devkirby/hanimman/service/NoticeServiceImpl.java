@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,22 +23,21 @@ import java.util.stream.Collectors;
 public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
     private final NoticeFileRepository noticeFileRepository;
+    private final NoticeFileService noticeFileService;
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public void create(NoticeDTO noticeDTO, NoticeFileDTO noticeFileDTO) {
+    public void create(NoticeDTO noticeDTO) throws IOException {
         Notice notice = modelMapper.map(noticeDTO, Notice.class);
-        NoticeFile noticeFile = modelMapper.map(noticeFileDTO, NoticeFile.class);
         noticeRepository.save(notice);
-        noticeFile.setParent(notice);
-        noticeFileRepository.save(noticeFile);
+        noticeFileService.uploadFiles(noticeDTO.getFiles(), noticeDTO.getId());
     }
 
     @Override
     public NoticeDTO read(Integer id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notice not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공지사항이 없습니다 : " + id));
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
         List<NoticeFile> noticeFiles = noticeFileRepository.findByParentAndDeletedAtIsNull(notice);
         List<String> fileUrls = noticeFiles.stream()
@@ -49,17 +49,22 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional
-    public void update(NoticeDTO noticeDTO) {
-        noticeDTO.setModifiedAt(Instant.now());
-        Notice notice = modelMapper.map(noticeDTO, Notice.class);
-        noticeRepository.save(notice);
+    public void update(NoticeDTO noticeDTO) throws IOException {
+        Notice existingNotice = noticeRepository.findById(noticeDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공지사항이 없습니다 : " + noticeDTO.getId()));
+        noticeFileService.deleteByParent(noticeDTO.getId());
+
+        modelMapper.map(noticeDTO, existingNotice);
+        noticeRepository.save(existingNotice);
+
+        noticeFileService.uploadFiles(noticeDTO.getFiles(), noticeDTO.getId());
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notice not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공지사항이 없습니다 : " + id));
         notice.setDeletedAt(Instant.now());
         noticeRepository.save(notice);
     }
