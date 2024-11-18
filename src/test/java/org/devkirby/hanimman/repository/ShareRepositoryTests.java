@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.repository;
 
+import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.entity.Share;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ class ShareRepositoryTests {
     private ShareRepository shareRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Test
     @DisplayName("나눠요 게시글 등록 테스트")
@@ -27,6 +30,7 @@ class ShareRepositoryTests {
                 .quantity(3)
                 .item("락스 3L")
                 .user(userRepository.findById(2).orElseThrow())
+                .address(addressRepository.findById("1111010200").get())
                 .build();
         shareRepository.save(share);
     }
