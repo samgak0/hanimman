@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, String> {
     Optional<Address> findById(String id);
+    Optional<Address> findByNeighborhoodName(String neighborhoodName);
 }

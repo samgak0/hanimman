@@ -54,7 +54,7 @@ class AddressRepositoryTests {
     void findAddress(){
         Optional<Address> address = addressRepository.findById("2635010500");
         Address SelectAddress = address.orElseThrow();
-        System.out.println(SelectAddress);
+        System.out.println(SelectAddress + "주소 정보 조회");
     }
 
 

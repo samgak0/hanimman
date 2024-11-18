@@ -65,6 +65,7 @@ public class AddressService {
                         .neighborhoodCode(region.optString("region_3depth_code"))
 //                        .neighborhoodCode(id.substring(5, 3))
                         .villageCode(region.optString("region_4depth_code", null))
+
                         .build(); // DTO로 반환
             }
         }
