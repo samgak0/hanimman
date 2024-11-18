@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.InquiryDTO;
 import org.devkirby.hanimman.dto.InquiryFileDTO;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 
 @Service
@@ -19,15 +21,15 @@ import java.time.Instant;
 public class InquiryServiceImpl implements InquiryService {
     private final InquiryRepository inquiryRepository;
     private final InquiryFileRepository inquiryFileRepository;
+    private final InquiryFileService inquiryFileService;
     private final ModelMapper modelMapper;
 
     @Override
-    public void create(InquiryDTO inquiryDTO, InquiryFileDTO inquiryFileDTO) {
+    @Transactional
+    public void create(InquiryDTO inquiryDTO) throws IOException {
         Inquiry inquiry = modelMapper.map(inquiryDTO, Inquiry.class);
-        InquiryFile inquiryFile = modelMapper.map(inquiryFileDTO, InquiryFile.class);
         inquiryRepository.save(inquiry);
-        inquiryFile.setParent(inquiry);
-        inquiryFileRepository.save(inquiryFile);
+        inquiryFileService.uploadFiles(inquiryDTO.getFiles(), inquiryDTO.getId());
     }
 
     @Override

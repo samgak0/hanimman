@@ -7,6 +7,7 @@ import org.devkirby.hanimman.entity.Faq;
 import org.devkirby.hanimman.entity.FaqFile;
 import org.devkirby.hanimman.repository.FaqFileRepository;
 import org.devkirby.hanimman.repository.FaqRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,6 +33,7 @@ public class FaqFileServiceImpl implements FaqFileService {
     private final FaqFileRepository faqFileRepository;
     private final FaqRepository faqRepository;
     private final ModelMapper modelMapper;
+    private final ImageUploadUtil imageUploadUtil;
 
     @Override
     @Transactional
@@ -61,33 +65,32 @@ public class FaqFileServiceImpl implements FaqFileService {
     @Override
     @Transactional
     public String uploadFile(MultipartFile file, Integer faqId) throws IOException{
-        File uploadFile = new File(uploadDir);
-        if (!uploadFile.exists()) {
-            uploadFile.mkdirs();
-        }
+        String serverName = imageUploadUtil.uploadImage(file);
 
-        String originalName = file.getOriginalFilename();
-        String serverName = UUID.randomUUID().toString() + "_" + originalName;
-        Path targetPath = Paths.get(uploadDir).resolve(serverName);
-
-        try(InputStream inputStream = file.getInputStream()){
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        }catch (IOException e) {
-            throw new IOException("FAQ 파일 업로드 실패!!!", e);
-        }
-
-        Faq faq = faqRepository.findById(faqId).orElseThrow();
+        Faq faq = faqRepository.findById(faqId)
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 FAQ ID 입니다 : " + faqId));
 
         FaqFile faqFile = FaqFile.builder()
-                .originalName(originalName)
                 .serverName(serverName)
+                .originalName(file.getOriginalFilename())
                 .mineType(file.getContentType())
                 .fileSize((int)file.getSize())
                 .parent(faq)
                 .user(faq.getUser())
                 .build();
+        faqFileRepository.save(faqFile);
 
-        return "파일이 정상적으로 올라갔습니다. 파일이름 : " + serverName;
+        return serverName;
+    }
+
+    @Override
+    @Transactional
+    public List<String> uploadFiles(List<MultipartFile> files, Integer faqId) throws IOException {
+        List<String> serverNames = new ArrayList<>();
+        for(MultipartFile file : files){
+            serverNames.add(uploadFile(file, faqId));
+        }
+        return serverNames;
     }
 
 }

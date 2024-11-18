@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -66,12 +67,11 @@ public class ShareImageServiceImpl implements ShareImageService {
     @Override
     @Transactional
     public String uploadImage(MultipartFile file, Integer shareId) throws IOException {
-        // 이미지 업로드
-        String serverName = imageUploadUtil.uploadImage(file);
-
         // Share 엔티티 조회
         Share share = shareRepository.findById(shareId)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 나눠요 게시글 ID 입니다."));
+        // 이미지 업로드
+        String serverName = imageUploadUtil.uploadImage(file);
 
         // ShareImage 엔티티 생성 및 저장
         ShareImage shareImage = ShareImage.builder()
@@ -91,7 +91,7 @@ public class ShareImageServiceImpl implements ShareImageService {
     @Override
     @Transactional
     public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer shareId) throws IOException{
-        List<String> serverNames = null;
+        List<String> serverNames = new ArrayList<>();
         for(MultipartFile file : multipartFiles){
             serverNames.add(uploadImage(file, shareId));
         }

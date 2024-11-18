@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,4 +22,6 @@ public class NoticeDTO {
 
     // 파일 리스트 추가
     private List<String> fileUrls;
+
+    private List<MultipartFile> files;
 }

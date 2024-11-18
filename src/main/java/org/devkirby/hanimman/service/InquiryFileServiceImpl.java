@@ -7,6 +7,7 @@ import org.devkirby.hanimman.entity.Inquiry;
 import org.devkirby.hanimman.entity.InquiryFile;
 import org.devkirby.hanimman.repository.InquiryFileRepository;
 import org.devkirby.hanimman.repository.InquiryRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,6 +34,7 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     private final InquiryFileRepository inquiryFileRepository;
     private final InquiryRepository inquiryRepository;
     private final ModelMapper modelMapper;
+    private final ImageUploadUtil imageUploadUtil;
 
     @Override
     @Transactional
@@ -64,34 +68,31 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     @Override
     @Transactional
     public String uploadFile(MultipartFile file, Integer inquiryId) throws IOException {
-        File uploadFile= new File(uploadDir);
-        if(!uploadFile.exists()) {
-            uploadFile.mkdirs();
-        }
+        Inquiry inquiry = inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 1:1문의 ID 입니다 : " + inquiryId));
+        String serverName = imageUploadUtil.uploadImage(file);
 
-        String originalName = file.getOriginalFilename();
-        String serverName = UUID.randomUUID().toString() + "_" + originalName;
-        Path targetPath = Paths.get(uploadDir).resolve(serverName);
-
-        try(InputStream inputStream = file.getInputStream()){
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        }catch (IOException e){
-            throw new IOException("공지 파일 업로드 실패!!!", e);
-        }
-
-        Inquiry inquiry = inquiryRepository.findById(inquiryId).orElseThrow();
-
-        InquiryFile inquiryFile = InquiryFile.builder()
-                .originalName(originalName)
-                .serverName(serverName)
-                .mineType(file.getContentType())
-                .fileSize((int)file.getSize())
-                .parent(inquiry)
-                .user(inquiry.getUser())
-                .build();
+       InquiryFile inquiryFile = InquiryFile.builder()
+               .originalName(file.getOriginalFilename())
+               .serverName(serverName)
+               .mineType(file.getContentType())
+               .fileSize((int)file.getSize())
+               .parent(inquiry)
+               .user(inquiry.getUser())
+               .build();
 
         inquiryFileRepository.save(inquiryFile);
 
-        return "파일이 정상적으로 올라갔습니다. 파일이름 : " + serverName;
+        return serverName;
+    }
+
+    @Override
+    @Transactional
+    public List<String> uploadFiles(List<MultipartFile> files, Integer inquiryId) throws IOException {
+        List<String> result = new ArrayList<>();
+        for (MultipartFile file : files) {
+            result.add(uploadFile(file, inquiryId));
+        }
+        return result;
     }
 }
