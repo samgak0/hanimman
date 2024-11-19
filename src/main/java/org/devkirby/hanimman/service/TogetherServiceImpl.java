@@ -45,6 +45,12 @@ public class TogetherServiceImpl implements TogetherService {
     public TogetherDTO read(Integer id, User loginUser) {
         Together together = togetherRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + id));
+
+        //조회수 증가
+        Integer view = together.getViews() + 1;
+        together.setViews(view);
+        togetherRepository.save(together);
+
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
         togetherDTO.setImageUrls(getImageUrls(together));
 
@@ -79,6 +85,7 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd) {
+        Instant now = Instant.now();
         if(!isEnd){
             return togetherRepository.findByIsEndIsFalse(pageable)
                     .map(together -> {
@@ -105,6 +112,7 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable) {
+        Instant now = Instant.now();
         return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(together -> {
                     TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);

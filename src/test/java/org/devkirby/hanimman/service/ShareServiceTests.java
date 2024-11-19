@@ -43,4 +43,11 @@ class ShareServiceTests {
 
         shareDTOPage.forEach(shareDTO -> log.info("ShareDTO: {}", shareDTO));
     }
+
+    @Test
+    @DisplayName("나눠요 게시글 read 테스트")
+    public void testRead(){
+        ShareDTO shareDTO = shareService.read(20, null);
+        log.info("ShareDTO: {}", shareDTO);
+    }
 }

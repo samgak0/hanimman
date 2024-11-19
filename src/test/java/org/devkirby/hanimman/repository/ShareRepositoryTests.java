@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @SpringBootTest
@@ -29,6 +31,7 @@ class ShareRepositoryTests {
                 .content("락스 3L짜리 3통 파는거 샀어요. 1통씩 사실분 연락부탁드려요")
                 .quantity(3)
                 .item("락스 3L")
+                .createdAt(Instant.now().plus(9, ChronoUnit.HOURS))
                 .user(userRepository.findById(2).orElseThrow())
                 .address(addressRepository.findById("1111010200").get())
                 .build();

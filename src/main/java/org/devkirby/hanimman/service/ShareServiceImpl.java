@@ -43,6 +43,12 @@ public class ShareServiceImpl implements ShareService {
     public ShareDTO read(Integer id, User loginUser) {
         Share share = shareRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + id));
+
+        //조회수 증가
+        Integer view = share.getViews() + 1;
+        share.setViews(view);
+        shareRepository.save(share);
+
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         shareDTO.setImageUrls(getImageUrls(share));
 

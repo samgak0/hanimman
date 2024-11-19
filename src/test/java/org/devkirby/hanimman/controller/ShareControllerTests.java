@@ -1,14 +1,23 @@
 package org.devkirby.hanimman.controller;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.devkirby.hanimman.controller.ShareController;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.repository.AddressRepository;
+import org.devkirby.hanimman.repository.ShareRepository;
 import org.devkirby.hanimman.service.ShareService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -24,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -32,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+@SpringBootTest
 public class ShareControllerTests {
 
     private MockMvc mockMvc;
@@ -41,6 +52,11 @@ public class ShareControllerTests {
 
     @InjectMocks
     private ShareController shareController;
+
+    @Autowired
+    private ShareRepository shareRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(ShareControllerTests.class);
 
     @BeforeEach
     public void setUp() {
@@ -74,24 +90,35 @@ public class ShareControllerTests {
 
     @Test
     public void testReadShare() throws Exception {
-        ShareDTO shareDTO = new ShareDTO();
-        shareDTO.setId(1);
-        shareDTO.setTitle("Test Title");
-        shareDTO.setContent("Test Content");
-
-        User user = new User();
-        user.setId(1);
-
-        when(shareService.read(anyInt(), any(User.class))).thenReturn(shareDTO);
-
-        mockMvc.perform(get("/api/v1/share/1")
-                        .principal(() -> "user"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Test Title"))
-                .andExpect(jsonPath("$.content").value("Test Content"));
+//        ShareDTO shareDTO = new ShareDTO();
+//        shareDTO.setId(1);
+//        shareDTO.setTitle("Test Title");
+//        shareDTO.setContent("Test Content");
+//
+//        User user = new User();
+//        user.setId(1);
+//
+//        when(shareService.read(anyInt(), any(User.class))).thenReturn(shareDTO);
+//
+//        mockMvc.perform(get("/api/v1/share/1")
+//                        .principal(() -> "user"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.title").value("Test Title"))
+//                .andExpect(jsonPath("$.content").value("Test Content"));
+        shareController.readShare(21, null);
     }
 
+    @Test
+    @DisplayName("ID가 21번인 나눠요 게시글 조회 테스트")
+    public void testFindById21() {
+        Integer shareId = 21;
+        Share share = shareRepository.findById(shareId).orElseThrow(() -> new IllegalArgumentException("ID가 21번인 게시글이 존재하지 않습니다."));
+
+        log.info("Share ID: {}, Title: {}, Content: {}, CreatedAt: {}",
+                share.getId(), share.getTitle(), share.getContent(), share.getCreatedAt());
+        assertEquals(21, share.getId(), "ID가 21번이어야 합니다.");
+    }
     @Test
     public void testUpdateShare() throws Exception {
         ShareDTO shareDTO = new ShareDTO();

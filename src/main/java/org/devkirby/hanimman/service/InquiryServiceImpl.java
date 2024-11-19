@@ -34,7 +34,8 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     public InquiryDTO read(Integer id) {
-        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow();
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 문의사항이 없습니다 : " + id));
         return modelMapper.map(inquiry, InquiryDTO.class);
     }
 

@@ -2,21 +2,18 @@ package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
-import org.devkirby.hanimman.dto.ShareRequest;
-import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.User;
-import org.devkirby.hanimman.service.ShareImageService;
 import org.devkirby.hanimman.service.ShareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,6 +25,9 @@ public class ShareController {
     @PostMapping
     public Map<String, Object> createShare(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
+        Instant now = Instant.now();
+        Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
+        Instant limitDay = now.plus(15, ChronoUnit.DAYS);
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
@@ -37,6 +37,8 @@ public class ShareController {
         }else if(shareDTO.getFiles().size()>10){
             throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
                     + shareDTO.getFiles().size());
+        } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
+            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 15일 이전이어야 합니다.");
         } else {
             shareDTO.setUserId(loginUser.getId());
             shareService.create(shareDTO);
@@ -55,6 +57,9 @@ public class ShareController {
     public Map<String, Object> updateShare(@PathVariable Integer id, @RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         shareDTO.setId(id);
+        Instant now = Instant.now();
+        Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
+        Instant limitDay = now.plus(15, ChronoUnit.DAYS);
         if(!loginUser.getId().equals(shareDTO.getUserId())){
             throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
         }if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
@@ -63,6 +68,8 @@ public class ShareController {
         }else if(shareDTO.getContent().length() > 65535){
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
+        } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
+            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 15일 이전이어야 합니다.");
         }else{
             shareService.update(shareDTO);
             map.put("code", 200);
