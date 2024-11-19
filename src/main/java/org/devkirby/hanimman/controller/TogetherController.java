@@ -32,7 +32,7 @@ public class TogetherController {
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
-        Instant limitDay = now.plus(15, ChronoUnit.DAYS);
+        Instant limitDay = now.plus(7, ChronoUnit.DAYS);
         if(togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()){
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
@@ -43,7 +43,7 @@ public class TogetherController {
             throw new IllegalStateException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수 : " +
                     +togetherDTO.getFiles().size());
         }else if(togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
-            throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 15일 이전이어야 합니다.");
+            throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
             togetherDTO.setUserId(loginUser.getId());
             togetherService.create(togetherDTO);

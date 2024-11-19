@@ -19,5 +19,7 @@ public interface ShareService {
 
     Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable);
 
+    void updateIsEnd();
+
 //    Page<ShareDTO> listNotEnd(Pageable pageable);
 }

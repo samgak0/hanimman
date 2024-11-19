@@ -123,6 +123,20 @@ public class TogetherServiceImpl implements TogetherService {
                     return togetherDTO;
                 });
     }
+
+    @Override
+    @Transactional
+    public void updateIsEnd() {
+        List<Together> togethers = togetherRepository.findByIsEndIsFalse();
+        Instant now = Instant.now();
+        togethers.forEach(together -> {
+            if(together.getMeetingAt().isBefore(now)){
+                together.setIsEnd(true);
+                togetherRepository.save(together);
+            }
+        });
+
+    }
 /*
     @Override
     public Page<TogetherDTO> listNotEnd(Pageable pageable) {

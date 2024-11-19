@@ -19,5 +19,7 @@ public interface TogetherService {
 
     Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable);
 
+    void updateIsEnd();
+
 //    Page<TogetherDTO> listNotEnd(Pageable pageable);
 }

@@ -27,7 +27,7 @@ public class ShareController {
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
-        Instant limitDay = now.plus(15, ChronoUnit.DAYS);
+        Instant limitDay = now.plus(7, ChronoUnit.DAYS);
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
@@ -38,7 +38,7 @@ public class ShareController {
             throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
                     + shareDTO.getFiles().size());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
-            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 15일 이전이어야 합니다.");
+            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
             shareDTO.setUserId(loginUser.getId());
             shareService.create(shareDTO);

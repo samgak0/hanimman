@@ -121,6 +121,19 @@ public class ShareServiceImpl implements ShareService {
                 });
     }
 
+    @Override
+    @Transactional
+    public void updateIsEnd() {
+        List<Share> shares = shareRepository.findByIsEndIsFalse();
+        Instant now = Instant.now();
+        shares.forEach(share -> {
+            if(share.getLocationDate().isBefore(now)){
+                share.setIsEnd(true);
+                shareRepository.save(share);
+            }
+        });
+    }
+
     /*
     // 끝나지 않은 게시글 조회 // 따로 두지 않고 listAll에 isEnd=false 조건 추가
     @Override
@@ -157,4 +170,6 @@ public class ShareServiceImpl implements ShareService {
                 .orElseGet(() -> List.of(defaultImageUrl));
         return imageUrls;
     }
+
+
 }
