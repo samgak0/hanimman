@@ -1,8 +1,6 @@
 package org.devkirby.hanimman.service;
 
-import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
-import org.devkirby.hanimman.dto.TogetherImageDTO;
 import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

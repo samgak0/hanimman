@@ -1,10 +1,7 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.TogetherDTO;
-import org.devkirby.hanimman.dto.TogetherImageDTO;
-import org.devkirby.hanimman.dto.TogetherRequest;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.TogetherService;
 import org.springframework.data.domain.Page;
@@ -12,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
