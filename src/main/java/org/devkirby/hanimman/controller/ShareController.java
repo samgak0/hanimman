@@ -59,7 +59,7 @@ public class ShareController {
         shareDTO.setId(id);
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
-        Instant limitDay = now.plus(15, ChronoUnit.DAYS);
+        Instant limitDay = now.plus(7, ChronoUnit.DAYS);
         if(!loginUser.getId().equals(shareDTO.getUserId())){
             throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
         }if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
@@ -69,7 +69,7 @@ public class ShareController {
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
-            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 15일 이전이어야 합니다.");
+            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         }else{
             shareService.update(shareDTO);
             map.put("code", 200);
@@ -93,16 +93,16 @@ public class ShareController {
 
     @GetMapping
     public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable,
-                                        @RequestParam(required = false) Boolean isEnd,
-                                        @RequestParam(required = false) String sortBy) {
+                                        @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
+                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         return shareService.listAll(pageable, isEnd, sortBy);
     }
 
     @GetMapping("/search")
     public Page<ShareDTO> searchShares(@PageableDefault(size = 10) Pageable pageable,
                                        @RequestParam String keyword,
-                                       @RequestParam(required = false) Boolean isEnd,
-                                       @RequestParam(required = false) String sortBy) {
+                                       @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
+                                       @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 

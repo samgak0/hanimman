@@ -93,7 +93,7 @@ public class ShareServiceImpl implements ShareService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(!isEnd){
+        if(isEnd){
             return shareRepository.findByIsEndIsFalse(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
@@ -125,7 +125,7 @@ public class ShareServiceImpl implements ShareService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(!isEnd){
+        if(isEnd){
             return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);

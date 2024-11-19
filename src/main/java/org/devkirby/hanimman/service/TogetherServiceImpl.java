@@ -93,7 +93,7 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(!isEnd){
+        if(isEnd){
             return togetherRepository.findByIsEndIsFalse(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
@@ -126,7 +126,7 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(!isEnd){
+        if(isEnd){
             return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(
                             keyword, keyword, pageable)
                     .map(together -> {
