@@ -5,6 +5,7 @@ import java.util.List;
 import org.devkirby.hanimman.entity.Share;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +23,11 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
     // 품목에 키워드 포함
     List<Share> findByItemContainingAndDeletedAtIsNull(String keyword);
 
-    Page<Share> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword, String contentKeyword, Pageable pageable);
+    Page<Share> findByTitleContainingOrContentContainingAndDeletedAtIsNull(String titleKeyword,
+                                                                           String contentKeyword, Pageable pageable);
+
+    Page<Share> findByTitleContainingOrContentContaining(String titleKeyword,
+                                                         String contentKeyword, Pageable pageable);
 
     Page<Share> findByIsEndIsFalse(Pageable pageable);
 

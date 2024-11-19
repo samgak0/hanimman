@@ -31,7 +31,7 @@ class ShareRepositoryTests {
                 .content("락스 3L짜리 3통 파는거 샀어요. 1통씩 사실분 연락부탁드려요")
                 .quantity(3)
                 .item("락스 3L")
-                .createdAt(Instant.now().plus(9, ChronoUnit.HOURS))
+                .createdAt(Instant.now())
                 .user(userRepository.findById(2).orElseThrow())
                 .address(addressRepository.findById("1111010200").get())
                 .build();

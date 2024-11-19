@@ -74,8 +74,8 @@ public class ShareController {
             shareService.update(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 수정에 성공했습니다.");
-            return map;
         }
+        return map;
     }
 
     @DeleteMapping("/{id}")
@@ -87,18 +87,23 @@ public class ShareController {
             shareService.delete(id);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 삭제에 성공했습니다.");
-            return map;
         }
+        return map;
     }
 
     @GetMapping
-    public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable, @RequestBody(required = false) Boolean isEnd) {
-        return shareService.listAll(pageable, isEnd);
+    public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable,
+                                        @RequestParam(required = false) Boolean isEnd,
+                                        @RequestParam(required = false) String sortBy) {
+        return shareService.listAll(pageable, isEnd, sortBy);
     }
 
     @GetMapping("/search")
-    public Page<ShareDTO> searchShares(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
-        return shareService.searchByKeywords(keyword, pageable);
+    public Page<ShareDTO> searchShares(@PageableDefault(size = 10) Pageable pageable,
+                                       @RequestParam String keyword,
+                                       @RequestParam(required = false) Boolean isEnd,
+                                       @RequestParam(required = false) String sortBy) {
+        return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
     /*

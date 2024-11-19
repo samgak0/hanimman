@@ -97,13 +97,18 @@ public class TogetherController {
     }
 
     @GetMapping
-    public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable, @RequestParam(required = false) Boolean isEnd) {
-        return togetherService.listAll(pageable, isEnd);
+    public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
+                                              @RequestParam(required = false) Boolean isEnd,
+                                              @RequestParam(required = false) String sortBy) {
+        return togetherService.listAll(pageable, isEnd, sortBy);
     }
 
     @GetMapping("/search")
-    public Page<TogetherDTO> searchTogethers(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
-        return togetherService.searchByKeywords(keyword, pageable);
+    public Page<TogetherDTO> searchTogethers(@RequestParam String keyword,
+                                             @PageableDefault(size = 10) Pageable pageable,
+                                             @RequestParam(required = false) Boolean isEnd,
+                                             @RequestParam(required = false) String sortBy) {
+        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
     /*

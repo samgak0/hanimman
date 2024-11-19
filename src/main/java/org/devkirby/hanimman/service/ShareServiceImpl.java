@@ -11,7 +11,9 @@ import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -84,7 +86,14 @@ public class ShareServiceImpl implements ShareService {
 
 
     @Override
-    public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd) {
+    public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
+        if (sortBy.equals("locationDate")) {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
+        } else {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        }
         if(!isEnd){
             return shareRepository.findByIsEndIsFalse(pageable)
                     .map(share -> {
@@ -109,16 +118,36 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
-    public Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable) {
-        return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
-                .map(share -> {
-                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    shareDTO.setImageUrls(getImageThumbnailUrls(share));
+    public Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
+        if (sortBy.equals("locationDate")) {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
+        } else {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        }
+        if(!isEnd){
+            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+                    .map(share -> {
+                        ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
 
-                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
-                    shareDTO.setFavoriteCount(favoriteCount);
-                    return shareDTO;
-                });
+                        Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                        shareDTO.setFavoriteCount(favoriteCount);
+                        return shareDTO;
+                    });
+        }else{
+            return shareRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+                    .map(share -> {
+                        ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+
+                        Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+                        shareDTO.setFavoriteCount(favoriteCount);
+                        return shareDTO;
+                    });
+        }
+
     }
 
     @Override

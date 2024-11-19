@@ -5,6 +5,7 @@ import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,9 +16,9 @@ public interface ShareService {
     void update(ShareDTO shareDTO) throws IOException;
     void delete(Integer id);
 
-    Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd);
+    Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy);
 
-    Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable);
+    Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy);
 
     void updateIsEnd();
 

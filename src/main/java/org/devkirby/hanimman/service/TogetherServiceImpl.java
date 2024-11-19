@@ -13,7 +13,9 @@ import org.devkirby.hanimman.repository.TogetherRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -84,8 +86,14 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd) {
-        Instant now = Instant.now();
+    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
+        if (sortBy.equals("meetingAt")) {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("meetingAt")));
+        } else {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        }
         if(!isEnd){
             return togetherRepository.findByIsEndIsFalse(pageable)
                     .map(together -> {
@@ -111,17 +119,37 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable) {
-        Instant now = Instant.now();
-        return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
-                .map(together -> {
-                    TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
+        if (sortBy.equals("meetingAt")) {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("meetingAt")));
+        } else {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        }
+        if(!isEnd){
+            return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(
+                            keyword, keyword, pageable)
+                    .map(together -> {
+                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
 
-                    Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                    togetherDTO.setFavoriteCount(favoriteCount);
-                    return togetherDTO;
-                });
+                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                        togetherDTO.setFavoriteCount(favoriteCount);
+                        return togetherDTO;
+                    });
+        }else{
+            return togetherRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+                    .map(together -> {
+                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+
+                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+                        togetherDTO.setFavoriteCount(favoriteCount);
+                        return togetherDTO;
+                    });
+        }
+
     }
 
     @Override
