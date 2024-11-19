@@ -81,11 +81,13 @@ public class UserController {
     private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status, String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
-        claims.put("username", userDTO.getName());
-        claims.put("phoneNumber", userDTO.getPhonenum());
+        claims.put("nicName", userDTO.getNickname());
+        claims.put("id", userDTO.getId());
+
+        String addKey = userDTO.getId() + userDTO.getCodenum() + userDTO.getCreatedAt();
 
         try {
-            String token = JWTUtil.generateToken(claims, userDTO.getId());
+            String token = JWTUtil.generateToken(claims, 30, addKey);
             log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
 
             HttpHeaders headers = new HttpHeaders();

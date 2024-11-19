@@ -14,7 +14,7 @@ public class JWTUtil {
 
     private static String key = "1234567890123456789012345678901234567890";
 
-    public static String generateToken(Map<String, Object> valueMap, int min) {
+    public static String generateToken(Map<String, Object> valueMap, int min, String addKey) {
 
         SecretKey key = null;
 
