@@ -38,6 +38,11 @@ public class FaqServiceImpl implements FaqService {
     public FaqDTO read(Integer id) {
         Faq faq = faqRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 자주 묻는 질문이 없습니다 : " + id));
+
+        Integer view = faq.getViews() + 1;
+        faq.setViews(view);
+        faqRepository.save(faq);
+
         FaqDTO faqDTO = modelMapper.map(faq, FaqDTO.class);
         List<FaqFile> faqFiles = faqFileRepository.findByParent(faq);
         List<String> fileUrls = faqFiles.stream()

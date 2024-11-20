@@ -18,7 +18,7 @@ public class ShareParticipant {
     private Integer id;
 
     @Column(nullable = false)
-    private LocalDate date;
+    private Instant date;
 
     @Column(nullable = false)
     private Integer quantity;

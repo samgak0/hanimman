@@ -38,6 +38,10 @@ public class NoticeServiceImpl implements NoticeService {
     public NoticeDTO read(Integer id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공지사항이 없습니다 : " + id));
+        Integer view = notice.getViews() + 1;
+        notice.setViews(view);
+        noticeRepository.save(notice);
+
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
         List<NoticeFile> noticeFiles = noticeFileRepository.findByParentAndDeletedAtIsNull(notice);
         List<String> fileUrls = noticeFiles.stream()

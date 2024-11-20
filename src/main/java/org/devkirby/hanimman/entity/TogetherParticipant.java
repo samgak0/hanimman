@@ -19,7 +19,7 @@ public class TogetherParticipant {
     @Column(nullable = false)
     private Instant date;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP(6)")
+    @Column(nullable = false)
     private Integer quantity;
 
     @Column(nullable = false)
