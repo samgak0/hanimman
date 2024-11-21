@@ -30,5 +30,11 @@ public class ShareReview {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private User target;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
+
+    @Column(nullable = false)
+    private Integer rating;
 }

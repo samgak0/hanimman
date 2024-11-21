@@ -29,4 +29,5 @@ public class UserDTO {
     private Instant modifiedAt;
     private Instant createdAt;
     private Instant deletedAt;
+    private Integer brix;
 }

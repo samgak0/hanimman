@@ -17,6 +17,7 @@ public class TogetherReviewDTO {
     private Instant createdAt;
     private Instant deletedAt;
     private Integer userId;
+    private Integer targetId;
     private Integer parentId;
-
+    private Integer rating;
 }

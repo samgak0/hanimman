@@ -30,5 +30,11 @@ public class TogetherReview {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    private User target;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Together parent;
+
+    @Column(nullable = false)
+    private Integer rating;
 }
