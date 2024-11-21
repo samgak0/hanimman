@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +22,30 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     @Transactional
     public void create(TogetherParticipantDTO togetherParticipantDTO) {
         TogetherParticipant togetherParticipant = modelMapper.map(togetherParticipantDTO, TogetherParticipant.class);
-        TogetherParticipant result = togetherParticipantRepository.save(togetherParticipant);
+        togetherParticipantRepository.save(togetherParticipant);
     }
 
     @Override
     public TogetherParticipantDTO read(Integer id) {
-        TogetherParticipant result = togetherParticipantRepository.findById(id).orElseThrow();
+        TogetherParticipant result = togetherParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
         return modelMapper.map(result, TogetherParticipantDTO.class);
     }
 
     @Override
     @Transactional
     public void update(TogetherParticipantDTO togetherParticipantDTO) {
+        togetherParticipantRepository.findById(togetherParticipantDTO.getId())
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
         TogetherParticipant togetherParticipant = modelMapper.map(togetherParticipantDTO, TogetherParticipant.class);
-        TogetherParticipant result = togetherParticipantRepository.save(togetherParticipant);
+        togetherParticipantRepository.save(togetherParticipant);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
-        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id).orElseThrow();
+        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
         togetherParticipant.setDeletedAt(Instant.now());
         togetherParticipantRepository.save(togetherParticipant);
     }
@@ -47,8 +53,23 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     @Override
     @Transactional
     public void rejected(Integer id) {
-        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id).orElseThrow();
+        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
         togetherParticipant.setRejected(true);
         togetherParticipantRepository.save(togetherParticipant);
+    }
+
+    @Override
+    public List<TogetherParticipantDTO> listAllByParentId(Integer parentId) {
+        return togetherParticipantRepository.findByParentId(parentId).stream()
+                .map(togetherParticipant -> modelMapper.map(togetherParticipant, TogetherParticipantDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId) {
+        return togetherParticipantRepository.findByParentIdAndRejectedIsFalse(parentId).stream()
+                .map(togetherParticipant -> modelMapper.map(togetherParticipant, TogetherParticipantDTO.class))
+                .collect(Collectors.toList());
     }
 }

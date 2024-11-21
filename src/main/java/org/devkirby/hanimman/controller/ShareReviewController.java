@@ -18,8 +18,8 @@ public class ShareReviewController {
 
     @PostMapping
     public Map<String, Object> createReview(ShareReviewDTO shareReviewDTO) {
-        if(shareReviewDTO.getContent().length() >65535){
-            throw new IllegalArgumentException("후기 내용은 65535자 이하로 작성해주세요.");
+        if(shareReviewDTO.getContent().length() >100){
+            throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");
         }else if(shareReviewDTO.getRating() < -2 || shareReviewDTO.getRating() > 2){
             throw new IllegalArgumentException("평점은 1점 이상 5점 이하로 작성해주세요.");
         }

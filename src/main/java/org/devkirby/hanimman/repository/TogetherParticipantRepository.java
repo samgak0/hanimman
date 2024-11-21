@@ -11,7 +11,7 @@ import java.util.List;
 public interface TogetherParticipantRepository extends JpaRepository<TogetherParticipant, Integer> {
     List<TogetherParticipant> findByUserId(Integer userId);
 
-    List<TogetherParticipant> findByParent(Together parent);
+    List<TogetherParticipant> findByParentId(Integer parentId);
 
-    List<TogetherParticipant> findByParentAndRejectedFalse(Together parent);
+    List<TogetherParticipant> findByParentIdAndRejectedIsFalse(Integer parentId);
 }

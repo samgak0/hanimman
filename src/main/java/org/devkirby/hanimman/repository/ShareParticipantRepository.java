@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface ShareParticipantRepository extends JpaRepository<ShareParticipant, Integer> {
     List<ShareParticipant> findByUserId(Integer userId);
 
-    List<ShareParticipant> findByParent(Share parent);
+    List<ShareParticipant> findByParentId(Integer parentId);
 
-    List<ShareParticipant> findByParentAndRejectedFalse(Share parent);
+    List<ShareParticipant> findByParentIdAndRejectedIsFalse(Integer parentId);
 }

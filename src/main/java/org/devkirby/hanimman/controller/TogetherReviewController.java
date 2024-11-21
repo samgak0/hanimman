@@ -18,6 +18,11 @@ public class TogetherReviewController {
 
     @PostMapping
     public Map<String, Object> createReview(TogetherReviewDTO togetherReviewDTO) {
+        if (togetherReviewDTO.getContent().length() > 100) {
+            throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");
+        } else if (togetherReviewDTO.getRating() < -2 || togetherReviewDTO.getRating() > 2) {
+            throw new IllegalArgumentException("평점은 1점 이상 5점 이하로 작성해주세요.");
+        }
         togetherReviewService.createReview(togetherReviewDTO);
         return Map.of("code", 200, "msg", "후기 작성에 성공했습니다.");
     }
