@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Log4j2
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -81,15 +81,20 @@ public class UserController {
     private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status, String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
-        claims.put("username", userDTO.getName());
-        claims.put("phoneNumber", userDTO.getPhonenum());
+        claims.put("nicName", userDTO.getNickname());
+        claims.put("id", userDTO.getId());
+
+        String addKey = userDTO.getId() + userDTO.getCodenum() + userDTO.getCreatedAt();
 
         try {
-            String token = JWTUtil.generateToken(claims, userDTO.getId());
+            String token = JWTUtil.generateToken(claims, addKey);
+            String refreshToken = JWTUtil.generateRefreshToken(addKey);
             log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
+            log.info("Generated Refresh Token:" + refreshToken); //리프레시 토큰 생성 로그
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
+            headers.set("Refresh-Token", refreshToken);
             log.info("Response Headers: " + headers.toString());  // 헤더 로그
 
             return ResponseEntity.status(status)

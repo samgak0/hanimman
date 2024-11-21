@@ -25,6 +25,7 @@ public class SecurityConfig {
                         authorizeRequests
 //                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers("/*/**").permitAll() // 모든 정적 리소스 접근 허용
+                                .requestMatchers("/identity-verifications/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

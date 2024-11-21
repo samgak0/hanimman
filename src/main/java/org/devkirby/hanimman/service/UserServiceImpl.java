@@ -6,6 +6,7 @@ import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Log4j2
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
@@ -57,8 +58,8 @@ public class UserServiceImpl implements UserService{
             // 기존 사용자 정보 업데이트
             existingUser.setName(user.getName());
             existingUser.setNickname(user.getNickname());
-            existingUser.setPrimaryAddress(user.getPrimaryAddress());
-            existingUser.setSecondlyAddress(user.getSecondlyAddress());
+            existingUser.setPrimaryAddressId(user.getPrimaryAddressId());
+            existingUser.setSecondlyAddressId(user.getSecondlyAddressId());
             existingUser.setDeviceUnique(user.getDeviceUnique());
 
             // 업데이트된 사용자 저장
@@ -104,4 +105,20 @@ public class UserServiceImpl implements UserService{
     public boolean isExistCodeNum(String codenum) {
         return userRepository.existsByCodenum(codenum);
     }
+
+    @Override
+    public UserDetails loadUserByCodeNum(String codenum) {
+        Optional<User> opt = userRepository.findByCodenum(codenum);
+        if (opt.isPresent()) {
+            User user = opt.get();
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getCodenum())
+                    .authorities("ROLE_USER")
+                    .build();
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+
 }

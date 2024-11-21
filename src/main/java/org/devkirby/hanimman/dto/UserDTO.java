@@ -23,8 +23,8 @@ public class UserDTO {
     private String codenum;
     private Boolean privilege;
     private Instant blockedAt;
-    private Integer primaryRegionId;
-    private Integer secondlyRegionId;
+    private Integer primaryAddressId;
+    private Integer secondlyAddressId;
     private String deviceUniqueNum;
     private Instant modifiedAt;
     private Instant createdAt;
