@@ -29,12 +29,13 @@ public class ShareReviewServiceImpl implements ShareReviewService {
         Integer targetId = shareReviewDTO.getTargetId();
         Integer parentId = shareReviewDTO.getParentId();
 
-        if(shareReviewRepository.findByUserIdAndTargetIdAndParentIdAndDeletedAtIsNull(userId, targetId, parentId) != null) {
+        Optional<ShareReview> existingReview = shareReviewRepository.findByUserIdAndTargetIdAndParentIdAndDeletedAtIsNull(userId, targetId, parentId);
+        if (existingReview.isPresent()) {
             throw new IllegalArgumentException("이미 해당 나눠요에 대한 후기를 작성하셨습니다.");
-        } else {
-            ShareReview shareReview = modelMapper.map(shareReviewDTO, ShareReview.class);
-            shareReviewRepository.save(shareReview);
         }
+        setRating(targetId, shareReviewDTO.getRating());
+        ShareReview shareReview = modelMapper.map(shareReviewDTO, ShareReview.class);
+        shareReviewRepository.save(shareReview);
     }
 
     @Override
@@ -50,6 +51,9 @@ public class ShareReviewServiceImpl implements ShareReviewService {
     public void updateReview(ShareReviewDTO shareReviewDTO) {
         ShareReview shareReview = shareReviewRepository.findById(shareReviewDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 후기가 존재하지 않습니다."));
+        Optional<User> user = userRepository.findById(shareReview.getTarget().getId());
+        Integer brix = user.get().getBrix() - shareReview.getRating() + shareReviewDTO.getRating();
+        setRating(shareReviewDTO.getTargetId(), brix);
         modelMapper.map(shareReviewDTO, shareReview);
         shareReviewRepository.save(shareReview);
     }
@@ -60,6 +64,7 @@ public class ShareReviewServiceImpl implements ShareReviewService {
         ShareReview shareReview = shareReviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 후기가 존재하지 않습니다."));
         shareReview.setDeletedAt(Instant.now());
+        shareReviewRepository.save(shareReview);
     }
 
     @Override
@@ -69,12 +74,18 @@ public class ShareReviewServiceImpl implements ShareReviewService {
     }
 
     @Override
-    public Page<ShareReviewDTO> getMyReviews(Integer targetId, Pageable page) {
+    public Page<ShareReviewDTO> getAcceptReviews(Integer targetId, Pageable page) {
         return shareReviewRepository.findByTargetIdAndDeletedAtIsNull(targetId, page)
                 .map(shareReview -> modelMapper.map(shareReview, ShareReviewDTO.class));
     }
 
     private void setRating(Integer userId, Integer rating) {
         Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 사용자가 존재하지 않습니다.");
+        }
+        Integer brix = user.get().getBrix() + rating;
+        user.get().setBrix(brix);
+        userRepository.save(user.get());
     }
 }

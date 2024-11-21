@@ -11,5 +11,5 @@ public interface ShareReviewService {
     void deleteReview(Integer id);
 
     Page<ShareReviewDTO> getWrittenReviews(Integer userId, Pageable page);
-    Page<ShareReviewDTO> getMyReviews(Integer targetId, Pageable page);
+    Page<ShareReviewDTO> getAcceptReviews(Integer targetId, Pageable page);
 }

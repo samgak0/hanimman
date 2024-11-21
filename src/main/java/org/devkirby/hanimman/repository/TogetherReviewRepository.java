@@ -8,8 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TogetherReviewRepository extends JpaRepository<TogetherReview, Integer> {
-    Page<TogetherReview> findByUserId(Integer userId, Pageable pageable);
+    Page<TogetherReview> findByUserIdAndDeletedAtIsNull(Integer userId, Pageable pageable);
+    Page<TogetherReview> findByTargetIdAndDeletedAtIsNull(Integer targetId, Pageable pageable);
+
+    Optional<TogetherReview> findByUserIdAndTargetIdAndParentIdAndDeletedAtIsNull
+            (Integer userId, Integer targetId, Integer parentId);
 }
