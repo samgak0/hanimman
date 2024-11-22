@@ -2,7 +2,6 @@ package org.devkirby.hanimman.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,8 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.time.Instant;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -43,6 +41,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         try {
+            // JWT 토큰을 파싱하여 사용자 정보 추출
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
@@ -52,19 +51,34 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String codenum = claims.getSubject();
 
             if (codenum != null) {
-                var userDetails = userService.loadUserByCodeNum(codenum);
+                // 사용자 정보 (DTO) 로드
+                var customUserDetails = userService.loadUserByCodeNum(codenum);
 
-                System.out.println(userDetails.getClass().toString());
-                var authentication = new UsernamePasswordAuthenticationToken(userDetails.getClass(), userDetails, null);
+                // DTO에서 사용자 상태 확인 (블록 상태, 탈퇴 상태)
+                Instant blockedAt = customUserDetails.getBlockedAt();
+                Instant deletedAt = customUserDetails.getDeletedAt();
+
+                // 계정이 블록되었거나 탈퇴된 경우 인증 실패 처리
+                Instant now = Instant.now();
+                if (blockedAt != null && blockedAt.isBefore(now)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 계정이 블록된 경우
+                    return;
+                }
+                if (deletedAt != null && deletedAt.isBefore(now)) {
+                    response.setStatus(HttpServletResponse.SC_GONE); // 계정이 탈퇴된 경우
+                    return;
+                }
+
+                // 인증 성공 - 사용자 상태가 유효한 경우
+                var authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             // JWT 토큰이 유효하지 않은 경우
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
         filterChain.doFilter(request, response);
-        }
-
     }
-
+}

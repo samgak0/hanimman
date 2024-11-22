@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
@@ -107,11 +108,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByCodeNum(String codenum) {
+    public CustomUserDetails loadUserByCodeNum(String codenum) {
         Optional<User> opt = userRepository.findByCodenum(codenum);
         if (opt.isPresent()) {
             User user = opt.get();
-            return org.springframework.security.core.userdetails.User.builder()
+            return (CustomUserDetails) org.springframework.security.core.userdetails.User.builder()
                     .username(user.getCodenum())
                     .authorities("ROLE_USER")
                     .build();

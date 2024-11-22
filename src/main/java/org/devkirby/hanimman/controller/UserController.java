@@ -63,8 +63,12 @@ public class UserController {
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
             }
 
-            // 로그인 성공 -> JWT 생성 및 응답
+            // 유저는 있으나 blocked처리 된 경우
             log.info("Existing user found: " + existingUser);
+            if(existingUser.getBlockedAt() != null){
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
+            }
+
             return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
 
         } catch (IllegalArgumentException e) {
