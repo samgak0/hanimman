@@ -33,6 +33,16 @@ public class ShareParticipantController {
         shareParticipantService.rejected(id);
     }
 
+    @PutMapping("/{id}/accepted")
+    public void acceptedParticipant(Integer id) {
+        shareParticipantService.accepted(id);
+    }
+
+    @PutMapping("/{id}/complete")
+    public void completeParticipant(Integer id) {
+        shareParticipantService.complete(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteParticipant(Integer id) {
         shareParticipantService.delete(id);
@@ -45,6 +55,6 @@ public class ShareParticipantController {
 
     @GetMapping("/list/{parentId}/rejected-false")
     public List<ShareParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId) {
-        return shareParticipantService.listAllByParentIdAndRejectedIsFalse(parentId);
+        return shareParticipantService.listAllByParentIdAndRejectedIsNull(parentId);
     }
 }

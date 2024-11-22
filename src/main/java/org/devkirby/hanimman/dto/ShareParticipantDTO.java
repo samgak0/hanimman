@@ -12,7 +12,9 @@ public class ShareParticipantDTO {
     private Integer id;
     private Instant date;
     private Integer quantity;
-    private Boolean rejected;
+    private Instant rejected;
+    private Instant accepted;
+    private Instant complete;
     private Integer userId;   // User의 ID만 전달
     private Integer shareId;  // Share의 ID만 전달
     private Instant deletedAt;

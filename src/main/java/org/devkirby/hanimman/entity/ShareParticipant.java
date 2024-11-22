@@ -23,9 +23,9 @@ public class ShareParticipant {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean rejected = false;
+    private Instant rejected;
+    private Instant accepted;
+    private Instant complete;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;

@@ -2,9 +2,7 @@ package org.devkirby.hanimman.repository;
 
 import java.util.List;
 
-import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareParticipant;
-import org.devkirby.hanimman.entity.Together;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +12,5 @@ public interface ShareParticipantRepository extends JpaRepository<ShareParticipa
 
     List<ShareParticipant> findByParentId(Integer parentId);
 
-    List<ShareParticipant> findByParentIdAndRejectedIsFalse(Integer parentId);
+    List<ShareParticipant> findByParentIdAndRejectedIsNull(Integer parentId);
 }

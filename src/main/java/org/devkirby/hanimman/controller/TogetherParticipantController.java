@@ -33,6 +33,16 @@ public class TogetherParticipantController {
         togetherParticipantService.rejected(id);
     }
 
+    @PutMapping("/{id}/accepted")
+    public void acceptedParticipant(Integer id) {
+        togetherParticipantService.accepted(id);
+    }
+
+    @PutMapping("/{id}/complete")
+    public void completeParticipant(Integer id) {
+        togetherParticipantService.complete(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteParticipant(Integer id) {
         togetherParticipantService.delete(id);
@@ -45,6 +55,6 @@ public class TogetherParticipantController {
 
     @GetMapping("/list/{parentId}/rejected-false")
     public List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId) {
-        return togetherParticipantService.listAllByParentIdAndRejectedIsFalse(parentId);
+        return togetherParticipantService.listAllByParentIdAndRejectedIsNull(parentId);
     }
 }

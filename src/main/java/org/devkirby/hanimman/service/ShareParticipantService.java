@@ -11,8 +11,10 @@ public interface ShareParticipantService {
     void delete(Integer id);
 
     void rejected(Integer id);
+    void accepted(Integer id);
+    void complete(Integer id);
 
     List<ShareParticipantDTO> listAllByParentId(Integer parentId);
 
-    List<ShareParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId);
+    List<ShareParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId);
 }

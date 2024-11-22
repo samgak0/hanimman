@@ -55,7 +55,25 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     public void rejected(Integer id) {
         TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
-        togetherParticipant.setRejected(true);
+        togetherParticipant.setRejected(Instant.now());
+        togetherParticipantRepository.save(togetherParticipant);
+    }
+
+    @Override
+    @Transactional
+    public void accepted(Integer id) {
+        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
+        togetherParticipant.setAccepted(Instant.now());
+        togetherParticipantRepository.save(togetherParticipant);
+    }
+
+    @Override
+    @Transactional
+    public void complete(Integer id) {
+        TogetherParticipant togetherParticipant = togetherParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
+        togetherParticipant.setComplete(Instant.now());
         togetherParticipantRepository.save(togetherParticipant);
     }
 
@@ -67,8 +85,8 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     }
 
     @Override
-    public List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId) {
-        return togetherParticipantRepository.findByParentIdAndRejectedIsFalse(parentId).stream()
+    public List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId) {
+        return togetherParticipantRepository.findByParentIdAndRejectedIsNull(parentId).stream()
                 .map(togetherParticipant -> modelMapper.map(togetherParticipant, TogetherParticipantDTO.class))
                 .collect(Collectors.toList());
     }

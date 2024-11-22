@@ -15,7 +15,9 @@ public class TogetherParticipantDTO {
     private Integer id;
     private Instant date;
     private Integer quantity;
-    private Boolean rejected;
+    private Instant rejected;
+    private Instant accepted;
+    private Instant complete;
     private Integer userId;  // User의 ID
     private Integer togetherId;  // Together의 ID
     private Instant deletedAt;

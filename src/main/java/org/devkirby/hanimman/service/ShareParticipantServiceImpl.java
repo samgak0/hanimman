@@ -55,7 +55,25 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
     public void rejected(Integer id) {
         ShareParticipant shareParticipant = shareParticipantRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
-        shareParticipant.setRejected(true);
+        shareParticipant.setRejected(Instant.now());
+        shareParticipantRepository.save(shareParticipant);
+    }
+
+    @Override
+    @Transactional
+    public void accepted(Integer id) {
+        ShareParticipant shareParticipant = shareParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
+        shareParticipant.setAccepted(Instant.now());
+        shareParticipantRepository.save(shareParticipant);
+    }
+
+    @Override
+    @Transactional
+    public void complete(Integer id) {
+        ShareParticipant shareParticipant = shareParticipantRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 참여자가 존재하지 않습니다."));
+        shareParticipant.setComplete(Instant.now());
         shareParticipantRepository.save(shareParticipant);
     }
 
@@ -68,8 +86,8 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
     }
 
     @Override
-    public List<ShareParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId) {
-        List<ShareParticipant> shareParticipants = shareParticipantRepository.findByParentIdAndRejectedIsFalse(parentId);
+    public List<ShareParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId) {
+        List<ShareParticipant> shareParticipants = shareParticipantRepository.findByParentIdAndRejectedIsNull(parentId);
         return shareParticipants.stream()
                 .map(shareParticipant -> modelMapper.map(shareParticipant, ShareParticipantDTO.class))
                 .collect(Collectors.toList());

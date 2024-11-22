@@ -11,8 +11,10 @@ public interface TogetherParticipantService {
     void delete(Integer id);
 
     void rejected(Integer id);
+    void accepted(Integer id);
+    void complete(Integer id);
 
     List<TogetherParticipantDTO> listAllByParentId(Integer parentId);
 
-    List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsFalse(Integer parentId);
+    List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId);
 }

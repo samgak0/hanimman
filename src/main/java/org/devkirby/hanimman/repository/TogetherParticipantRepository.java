@@ -1,6 +1,5 @@
 package org.devkirby.hanimman.repository;
 
-import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherParticipant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +12,5 @@ public interface TogetherParticipantRepository extends JpaRepository<TogetherPar
 
     List<TogetherParticipant> findByParentId(Integer parentId);
 
-    List<TogetherParticipant> findByParentIdAndRejectedIsFalse(Integer parentId);
+    List<TogetherParticipant> findByParentIdAndRejectedIsNull(Integer parentId);
 }
