@@ -14,6 +14,10 @@ public class JWTUtil {
 
     private static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+    public static SecretKey getKey(){
+        return key;
+    }
+
     public static String generateToken(Map<String, Object> valueMap, String addKey) {
         long expirationTime = 1000 * 60 * 15; //15분
 

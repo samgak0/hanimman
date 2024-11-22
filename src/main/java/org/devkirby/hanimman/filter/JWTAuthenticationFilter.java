@@ -8,22 +8,26 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.devkirby.hanimman.service.UserService;
+import org.devkirby.hanimman.util.JWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 
+@Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
+    private final SecretKey key = JWTUtil.getKey();
     private final UserService userService;
 
+    @Autowired
     public JWTAuthenticationFilter(UserService userService){
         this.userService = userService;
     }
@@ -37,22 +41,27 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
+
         try {
-            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+
             String codenum = claims.getSubject();
+
             if (codenum != null) {
                 var userDetails = userService.loadUserByCodeNum(codenum);
+
+                System.out.println(userDetails.getClass().toString());
                 var authentication = new UsernamePasswordAuthenticationToken(userDetails.getClass(), userDetails, null);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }catch (Exception e){
             // JWT 토큰이 유효하지 않은 경우
             SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         filterChain.doFilter(request, response);
         }
