@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Date;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -26,14 +27,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final UserService userService;
 
     @Autowired
-    public JWTAuthenticationFilter(UserService userService){
+    public JWTAuthenticationFilter(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(header == null || !header.startsWith("Barer ")){
+        System.out.println(header);
+        if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -73,6 +76,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 var authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+        } catch (BlockedUserException e) {
+            // 블록된 사용자일 경우, 인증 실패
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Blocked user: Access denied");
         } catch (Exception e) {
             // JWT 토큰이 유효하지 않은 경우
             SecurityContextHolder.clearContext();
