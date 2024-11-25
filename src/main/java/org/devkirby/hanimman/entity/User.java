@@ -63,6 +63,10 @@ public class User {
     @Column
     private Instant deletedAt;
 
+    @Column
+    @Builder.Default
+    private Integer brix = 15;
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
