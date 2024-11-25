@@ -45,10 +45,10 @@ public class User {
     private Instant blockedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Address primaryAddress;
+    private Address primaryAddressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Address secondlyAddress;
+    private Address secondlyAddressId;
 
     @Column
     private String deviceUnique;
@@ -63,14 +63,11 @@ public class User {
     @Column
     private Instant deletedAt;
 
-    @Column
-    @Builder.Default
-    private Integer brix = 15;
-
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
             this.createdAt = Instant.now();  // 엔티티가 저장될 때 현재 시간으로 설정
         }
     }
+
 }

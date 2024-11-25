@@ -2,10 +2,12 @@ package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Log4j2
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
@@ -57,8 +59,8 @@ public class UserServiceImpl implements UserService{
             // 기존 사용자 정보 업데이트
             existingUser.setName(user.getName());
             existingUser.setNickname(user.getNickname());
-            existingUser.setPrimaryAddress(user.getPrimaryAddress());
-            existingUser.setSecondlyAddress(user.getSecondlyAddress());
+            existingUser.setPrimaryAddressId(user.getPrimaryAddressId());
+            existingUser.setSecondlyAddressId(user.getSecondlyAddressId());
             existingUser.setDeviceUnique(user.getDeviceUnique());
 
             // 업데이트된 사용자 저장
@@ -69,6 +71,31 @@ public class UserServiceImpl implements UserService{
             return null;
             // throw new UserNotFoundException("회원을 찾을 수 없습니다: " + userDTO.getId());
         }
+    }
+
+    // 회원 blocked
+    @Transactional
+    public void blockedUser(UserDTO userDTO){
+        if(userDTO == null || userDTO.getId() == null){
+            throw new IllegalArgumentException("회원 데이터가 존재하지 않습니다.");
+        }
+        // 사용자 ID로 조회
+        Optional<User> opt = userRepository.findById(userDTO.getId());
+
+        if(opt.isPresent()){
+            User user = opt.get();
+            if(user.getBlockedAt() != null) {
+                System.out.println("이 사용자는 이미 블록된 회원입니다.");
+            } else {
+                user.setBlockedAt(Instant.now());
+                userRepository.save(user);
+                System.out.println("사용자가 블록 처리 되었습니다.");
+            }
+        }else {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+
+
     }
 
     // 회원 탈퇴
@@ -104,4 +131,20 @@ public class UserServiceImpl implements UserService{
     public boolean isExistCodeNum(String codenum) {
         return userRepository.existsByCodenum(codenum);
     }
+
+    @Override
+    public CustomUserDetails loadUserByCodeNum(String codenum) {
+        Optional<User> opt = userRepository.findByCodenum(codenum);
+        if (opt.isPresent()) {
+            User user = opt.get();
+            return (CustomUserDetails) org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getCodenum())
+                    .authorities("ROLE_USER")
+                    .build();
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+
 }

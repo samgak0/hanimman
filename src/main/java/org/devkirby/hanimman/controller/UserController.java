@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Log4j2
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -64,7 +64,12 @@ public class UserController {
             }
 
             // 로그인 성공 -> JWT 생성 및 응답
+            // 유저는 있으나 blocked처리 된 경우
             log.info("Existing user found: " + existingUser);
+            if(existingUser.getBlockedAt() != null){
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
+            }
+
             return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
 
         } catch (IllegalArgumentException e) {
@@ -87,11 +92,14 @@ public class UserController {
         String addKey = userDTO.getId() + userDTO.getCodenum() + userDTO.getCreatedAt();
 
         try {
-            String token = JWTUtil.generateToken(claims, 30, addKey);
+            String token = JWTUtil.generateToken(claims, addKey);
+            String refreshToken = JWTUtil.generateRefreshToken(addKey);
             log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
+            log.info("Generated Refresh Token:" + refreshToken); //리프레시 토큰 생성 로그
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
+            headers.set("Refresh-Token", refreshToken);
             log.info("Response Headers: " + headers.toString());  // 헤더 로그
 
             return ResponseEntity.status(status)
