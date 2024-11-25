@@ -18,7 +18,7 @@ public class TogetherDTO {
     private Instant createdAt;
     private Instant modifiedAt;
     private Instant deletedAt;
-    private Integer regionId;   // Region의 ID
+    private String addressId;   // Region의 ID
     private String meetingLocation;
     private Instant meetingAt;
     private String item;
@@ -39,4 +39,5 @@ public class TogetherDTO {
 
     private List<MultipartFile> files;
 
+    private String address;
 }

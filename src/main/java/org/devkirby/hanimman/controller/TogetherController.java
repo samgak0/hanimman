@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -26,25 +27,30 @@ public class TogetherController {
     private final TogetherService togetherService;
     private final Logger log = LoggerFactory.getLogger(TogetherController.class);
 
-    @PostMapping
-    public Map<String, Object> createTogether(@RequestBody TogetherDTO togetherDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    @PostMapping("/create")
+    public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,
+                                              @RequestPart("files") List<MultipartFile> files,
+                                              @AuthenticationPrincipal User loginUser) throws IOException {
+
+        log.info("성공적으로 작성 완료" + togetherDTO.getTitle());
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
-        if(togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()){
+        if (togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
-        }else if(togetherDTO.getContent().length() > 1000){
+        } else if (togetherDTO.getContent().length() > 1000) {
             throw new IllegalStateException("내용의 길이는 65535자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getContent().length());
-        }else if(togetherDTO.getFiles().size()>10) {
+        } else if (files.size() > 10) {
             throw new IllegalStateException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수 : " +
-                    +togetherDTO.getFiles().size());
-        }else if(togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
+                    + files.size());
+        } else if (togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
-            togetherDTO.setUserId(loginUser.getId());
+//            togetherDTO.setUserId(loginUser.getId());
+            togetherDTO.setFiles(files); // 파일 설정
             togetherService.create(togetherDTO);
             map.put("code", 200);
             map.put("msg", "같이가요 게시글 작성에 성공했습니다.");

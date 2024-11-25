@@ -19,7 +19,7 @@ public class ShareDTO {
     private Instant createdAt;
     private Instant modifiedAt;
     private Instant deletedAt;
-    private Integer regionId; // Region의 ID만 전달
+    private String addressId; // Region의 ID만 전달
     private String location;
     private Instant locationDate;
     private String item;
@@ -39,4 +39,6 @@ public class ShareDTO {
     private Integer favoriteCount=0;
 
     private List<MultipartFile> files;
+
+    private String address;
 }

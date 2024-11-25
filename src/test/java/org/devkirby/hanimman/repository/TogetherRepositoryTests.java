@@ -45,4 +45,12 @@ public class TogetherRepositoryTests {
 
         togetherRepository.saveAll(togethers);
     }
+
+    @Test
+    @DisplayName("together address 조회")
+    public void readTogetherAddress() {
+        Together together = togetherRepository.findById(1).orElseThrow();
+        String address = together.getAddress().getCityName();
+        log.info("together address : {}", together);
+    }
 }
