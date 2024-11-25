@@ -45,5 +45,4 @@ public class TogetherRepositoryTests {
 
         togetherRepository.saveAll(togethers);
     }
-
 }

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 @Service
 public class AddressService {
 
-    private static final String API_KEY = "1c578ebba0b0917bd0c431c43eb0a128"; // 발급받은 API 키
+    private static final String API_KEY = "d3f9d15a27f865ac85590c91e07a00a7"; // 발급받은 API 키
 
     public AddressDTO getAdministrativeArea(double lat, double lng) {
         String url = String.format("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=%f&y=%f", lng, lat);
@@ -23,7 +23,7 @@ public class AddressService {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET"); // GET 방식으로 요청
-            con.setRequestProperty("Authorization", "KakaoAK " + API_KEY); // API 키를 헤더에 추가
+            con.setRequestProperty("Authorization", "KakaoAK " + API_KEY);// API 키를 헤더에 추가
 
             int responseCode = con.getResponseCode(); // 응답 코드 확인
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 응답인 경우

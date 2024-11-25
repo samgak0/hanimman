@@ -31,8 +31,8 @@ class AddressRepositoryTests {
                 .villageName("") // 리 이름 (optional)
                 .cityCode("26") // 시 코드
                 .districtCode("350") // 구 코드
-                .neighborhoodCode("10500") // 동 코드
-                .villageCode(null) // 리 코드 (optional)
+                .neighborhoodCode("105") // 동 코드
+                .villageCode("00") // 리 코드 (optional)
                 .build();
 
         // When: 주소 정보 저장
