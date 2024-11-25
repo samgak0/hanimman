@@ -59,7 +59,7 @@ public class TogetherImageServiceTests {
                 "image/jpeg", imageBytes);
 
         // Act
-        String result = togetherImageService.uploadImage(mockFile, 1);
+        String result = togetherImageService.uploadImage(mockFile, 2);
 
         // Assert
         assertTrue(result.contains("heinzketchup.jpg"));

@@ -183,10 +183,10 @@ public class TogetherServiceImpl implements TogetherService {
     private List<String> getImageUrls(Together together) {
         List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
                 .stream()
-                .map(TogetherImage::getServerName)
+                .map(togetherImage -> "http://localhost:8080/uploads/" + togetherImage.getServerName())
                 .collect(Collectors.toList());
         if (imageUrls.isEmpty()) {
-            imageUrls.add(defaultImageUrl);
+            imageUrls.add("http://localhost:8080/"+defaultImageUrl);
         }
         return imageUrls;
     }
@@ -194,10 +194,10 @@ public class TogetherServiceImpl implements TogetherService {
     private List<String> getImageThumbnailUrls(Together together){
         List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
                 .stream()
-                .map(togetherimage -> "t_" + togetherimage.getServerName())
+                .map(togetherimage -> "http://localhost:8080/uploads/t_" + togetherimage.getServerName())
                 .findFirst()
                 .map(List::of)
-                .orElseGet(() -> List.of(defaultImageUrl));
+                .orElseGet(() -> List.of("http://localhost:8080/"+defaultImageUrl));
         return imageUrls;
     }
 }
