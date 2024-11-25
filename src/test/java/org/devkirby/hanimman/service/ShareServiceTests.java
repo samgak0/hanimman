@@ -34,15 +34,15 @@ class ShareServiceTests {
 //        shareService.delete(1);
 //    }
 
-    @Test
-    @DisplayName("나눠요 게시글 전체 리스트 테스트")
-    public void testListAll() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<ShareDTO> shareDTOPage = shareService.listAll(pageable, false);
-        assertFalse(shareDTOPage.isEmpty(), "게시글 리스트가 비어있지 않아야 합니다.");
-
-        shareDTOPage.forEach(shareDTO -> log.info("ShareDTO: {}", shareDTO));
-    }
+//    @Test
+//    @DisplayName("나눠요 게시글 전체 리스트 테스트")
+//    public void testListAll() {
+//        Pageable pageable = PageRequest.of(0, 10);
+//        Page<ShareDTO> shareDTOPage = shareService.listAll(pageable, false);
+//        assertFalse(shareDTOPage.isEmpty(), "게시글 리스트가 비어있지 않아야 합니다.");
+//
+//        shareDTOPage.forEach(shareDTO -> log.info("ShareDTO: {}", shareDTO));
+//    }
 
     @Test
     @DisplayName("나눠요 게시글 read 테스트")

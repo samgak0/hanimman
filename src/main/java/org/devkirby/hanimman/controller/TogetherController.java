@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.TogetherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TogetherController {
     private final TogetherService togetherService;
+    private final Logger log = LoggerFactory.getLogger(TogetherController.class);
 
     @PostMapping
     public Map<String, Object> createTogether(@RequestBody TogetherDTO togetherDTO, @AuthenticationPrincipal User loginUser) throws IOException {
@@ -92,10 +95,11 @@ public class TogetherController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
                                               @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
+        log.info("together list 출력");
         return togetherService.listAll(pageable, isEnd, sortBy);
     }
 

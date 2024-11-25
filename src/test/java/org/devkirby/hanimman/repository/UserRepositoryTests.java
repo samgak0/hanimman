@@ -30,8 +30,8 @@ class UserRepositoryTests {
                 .nickname("Dragon01")
                 .codenum("dieRlq")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device02")
                 .build();
         userRepository.save(user);
@@ -47,8 +47,8 @@ class UserRepositoryTests {
                 .nickname("철수")
                 .codenum("aBcD12")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device01")
                 .build();
 
@@ -60,8 +60,8 @@ class UserRepositoryTests {
                 .nickname("영희")
                 .codenum("XyZpQw")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device02")
                 .build();
 
@@ -73,8 +73,8 @@ class UserRepositoryTests {
                 .nickname("준호")
                 .codenum("FgHiJk")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device03")
                 .build();
 
@@ -86,8 +86,8 @@ class UserRepositoryTests {
                 .nickname("민지")
                 .codenum("LmNoPq")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device04")
                 .build();
 
@@ -99,8 +99,8 @@ class UserRepositoryTests {
                 .nickname("다솜")
                 .codenum("ZyXwVu")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device05")
                 .build();
 
@@ -112,8 +112,8 @@ class UserRepositoryTests {
                 .nickname("호석")
                 .codenum("RstUvW")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device06")
                 .build();
 
@@ -125,8 +125,8 @@ class UserRepositoryTests {
                 .nickname("지혜")
                 .codenum("MnoPQr")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device07")
                 .build();
 
@@ -138,8 +138,8 @@ class UserRepositoryTests {
                 .nickname("민준")
                 .codenum("GhIjKl")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device08")
                 .build();
 
@@ -151,8 +151,8 @@ class UserRepositoryTests {
                 .nickname("보라")
                 .codenum("WxYzAb")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device09")
                 .build();
 
@@ -164,8 +164,8 @@ class UserRepositoryTests {
                 .nickname("도현")
                 .codenum("CdEfGh")
                 .privilege(false)
-                .primaryAddress(null)
-                .secondlyAddress(null)
+                .primaryAddressId(null)
+                .secondlyAddressId(null)
                 .deviceUnique("device10")
                 .build();
 

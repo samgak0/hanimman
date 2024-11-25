@@ -12,28 +12,35 @@ import javax.crypto.SecretKey;
 @Log4j2
 public class JWTUtil {
 
-    private static String key = "1234567890123456789012345678901234567890";
+    private static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String generateToken(Map<String, Object> valueMap, int min, String addKey) {
+    public static SecretKey getKey(){
+        return key;
+    }
 
-        SecretKey key = null;
-
-        try{
-            key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
-
-        }catch(Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
+    public static String generateToken(Map<String, Object> valueMap, String addKey) {
+        long expirationTime = 1000 * 60 * 15; //15분
 
         String jwtStr = Jwts.builder()
                 .setHeader(Map.of("typ","JWT"))
                 .setClaims(valueMap)
                 .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(min).toInstant()))
+                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationTime).toInstant()))
                 .signWith(key)
                 .compact();
 
         return jwtStr;
+    }
+
+    public static String generateRefreshToken(String username){
+        long expirationTime = 60 * 24 * 7; // 7일
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationTime).toInstant()))
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
     }
 
     public static Map<String, Object> validateToken(String token) {
@@ -41,9 +48,6 @@ public class JWTUtil {
         Map<String, Object> claim = null;
 
         try{
-
-            SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
-
             claim = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
