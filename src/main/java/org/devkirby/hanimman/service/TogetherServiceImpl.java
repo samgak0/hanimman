@@ -45,8 +45,8 @@ public class TogetherServiceImpl implements TogetherService {
     @Transactional
     public void create(TogetherDTO togetherDTO) throws IOException {
         Together together = modelMapper.map(togetherDTO, Together.class);
-        togetherRepository.save(together);
-        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getUserId());
+        togetherDTO.setId(togetherRepository.save(together).getId());
+        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
     }
 
     @Override
