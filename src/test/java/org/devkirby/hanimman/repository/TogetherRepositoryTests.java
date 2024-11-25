@@ -39,6 +39,7 @@ public class TogetherRepositoryTests {
                         .meetingAt(Instant.now().plus(i* 2L, ChronoUnit.HOURS))
                         .user(user)
                         .address(address)
+                        .quantity(4)
                         .build())
                 .collect(Collectors.toList());
 
