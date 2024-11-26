@@ -46,7 +46,9 @@ public class TogetherServiceImpl implements TogetherService {
     public void create(TogetherDTO togetherDTO) throws IOException {
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherDTO.setId(togetherRepository.save(together).getId());
-        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
+        if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
+            togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
+        }
     }
 
     @Override
@@ -98,7 +100,7 @@ public class TogetherServiceImpl implements TogetherService {
     public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
-                    pageable.getPageSize(), Sort.by(Sort.Order.desc("meetingAt")));
+                    pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
         } else {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
@@ -138,7 +140,7 @@ public class TogetherServiceImpl implements TogetherService {
     public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
-                    pageable.getPageSize(), Sort.by(Sort.Order.desc("meetingAt")));
+                    pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
         } else {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));

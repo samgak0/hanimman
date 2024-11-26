@@ -41,7 +41,11 @@ public class ShareServiceImpl implements ShareService {
     public void create(ShareDTO shareDTO) throws IOException {
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
-        shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+        if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
+            shareDTO.setId(share.getId());
+            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+        }
+
     }
 
     @Override

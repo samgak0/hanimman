@@ -26,7 +26,7 @@ public class ShareController {
 
     @PostMapping("/create")
     public Map<String, Object> createShare(@RequestPart("togetherDTO") ShareDTO shareDTO,
-                                           @RequestPart("files") List<MultipartFile> files,
+                                           @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                            @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
@@ -38,14 +38,16 @@ public class ShareController {
         }else if(shareDTO.getContent().length() > 65535){
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
-        }else if(shareDTO.getFiles().size()>10){
+        }else if(files != null && files.size()>10){
             throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
                     + shareDTO.getFiles().size());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
             shareDTO.setUserId(loginUser.getId());
-            shareDTO.setFiles(files);
+            if(files != null && !files.isEmpty()){
+                shareDTO.setFiles(files);
+            }
             shareService.create(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");

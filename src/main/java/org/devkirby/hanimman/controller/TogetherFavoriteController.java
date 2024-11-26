@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class TogetherFavoriteController {
     private final TogetherFavoriteService togetherFavoriteService;
 
-    @PostMapping
+    @PostMapping("/create")
     public void createTogetherFavorite(@RequestBody TogetherDTO togetherDTO, @AuthenticationPrincipal UserDTO loginUser) {
         togetherFavoriteService.create(togetherDTO.getId(), loginUser.getId());
     }
