@@ -180,28 +180,13 @@ public class TogetherServiceImpl implements TogetherService {
         List<Together> togethers = togetherRepository.findByIsEndIsFalse();
         Instant now = Instant.now();
         togethers.forEach(together -> {
-            if(together.getMeetingAt().isBefore(now)){
+            Instant meetingAt = together.getMeetingAt();
+            if(meetingAt != null && together.getMeetingAt().isBefore(now)){
                 together.setIsEnd(true);
                 togetherRepository.save(together);
             }
         });
-
     }
-/*
-    @Override
-    public Page<TogetherDTO> listNotEnd(Pageable pageable) {
-        return togetherRepository.findByIsEndIsFalse(pageable)
-                .map(together -> {
-                    TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                    togetherDTO.setImageUrls(getImageUrls(together));
-
-                    Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                    togetherDTO.setFavoriteCount(favoriteCount);
-                    return togetherDTO;
-                });
-    }
-
- */
 
     private List<String> getImageUrls(Together together) {
         List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)

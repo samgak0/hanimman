@@ -177,28 +177,13 @@ public class ShareServiceImpl implements ShareService {
         List<Share> shares = shareRepository.findByIsEndIsFalse();
         Instant now = Instant.now();
         shares.forEach(share -> {
-            if(share.getLocationDate().isBefore(now)){
+            Instant locationDate = share.getLocationDate();
+            if(locationDate != null && share.getLocationDate().isBefore(now)){
                 share.setIsEnd(true);
                 shareRepository.save(share);
             }
         });
     }
-
-    /*
-    // 끝나지 않은 게시글 조회 // 따로 두지 않고 listAll에 isEnd=false 조건 추가
-    @Override
-    public Page<ShareDTO> listNotEnd(Pageable pageable) {
-        return shareRepository.findByIsEndIsFalse(pageable)
-                .map(share -> {
-                    ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                    shareDTO.setImageUrls(getImageUrls(share));
-
-                    Integer favoriteCount = shareFavoriteRepository.countByParent(share);
-                    shareDTO.setFavoriteCount(favoriteCount);
-                    return shareDTO;
-                });
-    }
-     */
 
     private List<String> getImageUrls(Share share) {
         List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
