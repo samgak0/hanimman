@@ -116,11 +116,4 @@ public class TogetherController {
                                              @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
-
-    /*
-    @GetMapping("/not-end")
-    public Page<TogetherDTO> listNotEndTogethers(@PageableDefault(size = 10) Pageable pageable) {
-        return togetherService.listNotEnd(pageable);
-    }
-     */
 }

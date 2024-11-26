@@ -9,11 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,8 +24,10 @@ import java.util.Map;
 public class ShareController {
     private final ShareService shareService;
 
-    @PostMapping
-    public Map<String, Object> createShare(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    @PostMapping("/create")
+    public Map<String, Object> createShare(@RequestPart("togetherDTO") ShareDTO shareDTO,
+                                           @RequestPart("files") List<MultipartFile> files,
+                                           @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
@@ -41,6 +45,7 @@ public class ShareController {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
             shareDTO.setUserId(loginUser.getId());
+            shareDTO.setFiles(files);
             shareService.create(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
@@ -91,7 +96,7 @@ public class ShareController {
         return map;
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable,
                                         @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
                                         @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
@@ -105,11 +110,4 @@ public class ShareController {
                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
-
-    /*
-    @GetMapping("/not-end")
-    public Page<ShareDTO> listNotEndShares(@PageableDefault(size = 10) Pageable pageable) {
-        return shareService.listNotEnd(pageable);
-    }
-     */
 }

@@ -203,10 +203,10 @@ public class ShareServiceImpl implements ShareService {
     private List<String> getImageUrls(Share share) {
         List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
                 .stream()
-                .map(ShareImage::getServerName)
+                .map(shareImage->"http://localhost:8080/uploads/" + shareImage.getServerName())
                 .collect(Collectors.toList());
         if (imageUrls.isEmpty()) {
-            imageUrls.add(defaultImageUrl);
+            imageUrls.add("http://localhost:8080/" +defaultImageUrl);
         }
         return imageUrls;
     }
@@ -214,12 +214,10 @@ public class ShareServiceImpl implements ShareService {
     private List<String> getImageThumbnailUrls(Share share) {
         List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
                 .stream()
-                .map(shareImage -> "t_" + shareImage.getServerName()) // 썸네일 이미지 이름 생성
+                .map(shareImage -> "http://localhost:8080/uploads/" + "t_" + shareImage.getServerName()) // 썸네일 이미지 이름 생성
                 .findFirst()
                 .map(List::of)
-                .orElseGet(() -> List.of(defaultImageUrl));
+                .orElseGet(() -> List.of("http://localhost:8080/" +defaultImageUrl));
         return imageUrls;
     }
-
-
 }
