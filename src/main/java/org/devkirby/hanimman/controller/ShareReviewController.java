@@ -16,7 +16,7 @@ import java.util.Map;
 public class ShareReviewController {
     private final ShareReviewService shareReviewService;
 
-    @PostMapping
+    @PostMapping("/create")
     public Map<String, Object> createReview(ShareReviewDTO shareReviewDTO) {
         if(shareReviewDTO.getContent().length() >100){
             throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");

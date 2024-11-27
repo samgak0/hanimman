@@ -13,7 +13,7 @@ import java.util.List;
 public class ShareParticipantController {
     private final ShareParticipantService shareParticipantService;
 
-    @PostMapping
+    @PostMapping("/create")
     public void createParticipant(ShareParticipantDTO shareParticipantDTO) {
         shareParticipantService.create(shareParticipantDTO);
     }

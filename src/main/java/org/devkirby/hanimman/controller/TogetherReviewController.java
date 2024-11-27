@@ -16,7 +16,7 @@ import java.util.Map;
 public class TogetherReviewController {
     private final TogetherReviewService togetherReviewService;
 
-    @PostMapping
+    @PostMapping("/create")
     public Map<String, Object> createReview(TogetherReviewDTO togetherReviewDTO) {
         if (togetherReviewDTO.getContent().length() > 100) {
             throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");

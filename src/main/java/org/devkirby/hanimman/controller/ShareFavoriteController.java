@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ShareFavoriteController {
     private final ShareFavoriteService shareFavoriteService;;
 
-    @PostMapping
+    @PostMapping("/create")
     public void createShareFavorite(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal UserDTO loginUser) {
         shareFavoriteService.create(shareDTO.getId(), loginUser.getId());
     }
