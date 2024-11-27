@@ -14,20 +14,21 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class UserDTO {
-    private Integer id;
-    private String name;
-    private LocalDate birth;
-    private Gender gender;
-    private String phonenum;
-    private String nickname;
-    private String codenum;
-    private Boolean privilege;
-    private Instant blockedAt;
-    private Integer primaryAddressId;
-    private Integer secondlyAddressId;
-    private String deviceUniqueNum;
-    private Instant modifiedAt;
-    private Instant createdAt;
-    private Instant deletedAt;
-    private Integer brix;
+    private Integer id; // PK
+    private String name; // 이름
+    private LocalDate birth; // 생년월일
+    private Gender gender; // 성별
+    private String phonenum; //핸드폰번호
+    private String nickname; // 닉네임
+    private String codenum; // 코드번호
+    private Boolean privilege; // 관리자 여부
+    private Instant blockedAt; // 블록된 여부
+    private Integer primaryAddressId; // 동네1
+    private Integer secondlyAddressId; // 동네2
+    private String deviceUniqueNum; // 기기 번호
+    private Instant validatedAt; // 동네 인증 여부(인증된 일자)
+    private Instant modifiedAt; // 수정 여부(수정된 일자)
+    private Instant createdAt; // 가입 일자
+    private Instant deletedAt; // 삭제 일자
+    private Integer brix; // 당도
 }
