@@ -5,6 +5,7 @@ import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
 import java.io.IOException;
 
 public interface ShareService {
@@ -19,5 +20,5 @@ public interface ShareService {
 
     void updateIsEnd();
 
-//    Page<ShareDTO> listNotEnd(Pageable pageable);
+    File downloadImage(Integer id) throws IOException;
 }

@@ -18,7 +18,7 @@ public class TogetherDTO {
     private Instant createdAt;
     private Instant modifiedAt;
     private Instant deletedAt;
-    private Integer regionId;   // Region의 ID
+    private String addressId;   // Region의 ID
     private String meetingLocation;
     private Instant meetingAt;
     private String item;
@@ -28,6 +28,8 @@ public class TogetherDTO {
 
     // 이미지 리스트 추가
     private List<String> imageUrls;
+
+    private List<Integer> imageIds;
 
     // 찜 여부
     @Builder.Default
@@ -39,4 +41,5 @@ public class TogetherDTO {
 
     private List<MultipartFile> files;
 
+    private String address;
 }

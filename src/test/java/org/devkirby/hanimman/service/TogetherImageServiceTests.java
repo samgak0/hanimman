@@ -52,16 +52,16 @@ public class TogetherImageServiceTests {
     @Test
     public void testUploadImage() throws IOException {
         // Arrange
-        Path imagePath = Paths.get("heinzketchup.jpg");
+        Path imagePath = Paths.get("heinz2.png");
         byte[] imageBytes = Files.readAllBytes(imagePath);
         MultipartFile mockFile = new MockMultipartFile(
-                "file", "heinzketchup.jpg",
+                "file", "heinz2.png",
                 "image/jpeg", imageBytes);
 
         // Act
         String result = togetherImageService.uploadImage(mockFile, 2);
 
         // Assert
-        assertTrue(result.contains("heinzketchup.jpg"));
+        assertTrue(result.contains("heinz2.png"));
     }
 }

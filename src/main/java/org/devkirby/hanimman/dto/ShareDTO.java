@@ -19,7 +19,7 @@ public class ShareDTO {
     private Instant createdAt;
     private Instant modifiedAt;
     private Instant deletedAt;
-    private Integer regionId; // Region의 ID만 전달
+    private String addressId; // Region의 ID만 전달
     private String location;
     private Instant locationDate;
     private String item;
@@ -30,6 +30,8 @@ public class ShareDTO {
     // 이미지 리스트 추가
     private List<String> imageUrls;
 
+    private List<Integer> imageIds;
+
     // 찜 여부
     @Builder.Default
     private boolean favorite = false;;
@@ -39,4 +41,6 @@ public class ShareDTO {
     private Integer favoriteCount=0;
 
     private List<MultipartFile> files;
+
+    private String address;
 }

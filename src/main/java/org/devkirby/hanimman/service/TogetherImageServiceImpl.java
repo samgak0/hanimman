@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -99,7 +100,7 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     @Override
     @Transactional
     public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer togetherId) throws IOException {
-        List<String> serverNames = null;
+        List<String> serverNames = new ArrayList<>();
         for(MultipartFile file : multipartFiles){
             serverNames.add(uploadImage(file, togetherId));
         }
