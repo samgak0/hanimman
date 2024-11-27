@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -44,11 +45,8 @@ public class FaqServiceImpl implements FaqService {
         faqRepository.save(faq);
 
         FaqDTO faqDTO = modelMapper.map(faq, FaqDTO.class);
-        List<FaqFile> faqFiles = faqFileRepository.findByParent(faq);
-        List<String> fileUrls = faqFiles.stream()
-                .map(FaqFile::getServerName)
-                .collect(Collectors.toList());
-        faqDTO.setFileUrls(fileUrls);
+        faqDTO.setImageIds(getFaqFiles(faq));
+
         return faqDTO;
     }
 
@@ -67,6 +65,7 @@ public class FaqServiceImpl implements FaqService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         Faq faq = faqRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 자주 묻는 질문이 없습니다 : " + id));
@@ -84,5 +83,21 @@ public class FaqServiceImpl implements FaqService {
     public Page<FaqDTO> searchByKeywords(String keyword, Pageable pageable) {
         return faqRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(faq -> modelMapper.map(faq, FaqDTO.class));
+    }
+
+    @Override
+    public File downloadImage(Integer id) throws IOException {
+        FaqFile faqFile = faqFileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 파일이 없습니다 : " + id));
+        File file = new File("C:/upload/" + faqFile.getServerName());
+        return file;
+    }
+
+    private List<Integer> getFaqFiles(Faq faq){
+        List<Integer> imageIds = faqFileRepository.findByParent(faq)
+                .stream()
+                .map(faqFile -> faqFile.getId())
+                .collect(Collectors.toList());
+        return imageIds;
     }
 }

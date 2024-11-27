@@ -5,6 +5,7 @@ import org.devkirby.hanimman.dto.NoticeFileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface NoticeService {
     Page<NoticeDTO> listAll(Pageable pageable);
 
     Page<NoticeDTO> searchByKeywords(String keyword, Pageable pageable);
+
+    File downloadImage(Integer id) throws IOException;
 }
