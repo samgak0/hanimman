@@ -6,14 +6,23 @@ import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.devkirby.hanimman.dto.InquiryRequest;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.InquiryService;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,8 +31,10 @@ import java.util.Map;
 public class InquiryController {
     private final InquiryService inquiryService;
 
-    @PostMapping
-    public Map<String, Object> createInquiry(@RequestBody InquiryDTO inquiryDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    @PostMapping("/create")
+    public Map<String, Object> createInquiry(@RequestPart("inquiryDTD") InquiryDTO inquiryDTO,
+                                             @RequestPart(name = "files", required = false) List<MultipartFile> files,
+                                             @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if(inquiryDTO.getTitle().length() > 255 || inquiryDTO.getTitle().isEmpty()) {
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
@@ -35,7 +46,9 @@ public class InquiryController {
             throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
                     + inquiryDTO.getFiles().size());
         } else {
-            inquiryDTO.setUserId(loginUser.getId());
+            if(files != null && files.isEmpty()){
+                inquiryDTO.setFiles(files);
+            }
             inquiryService.create(inquiryDTO);
             map.put("code", 200);
             map.put("msg", "1:1 문의 작성에 성공했습니다.");
@@ -91,5 +104,17 @@ public class InquiryController {
     @GetMapping("/search")
     public Page<InquiryDTO> searchInquiries(@RequestParam Integer id, @PageableDefault(size = 10) Pageable pageable) {
         return inquiryService.searchById(id, pageable);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
+        File file = inquiryService.downloadImage(id);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .header("content-disposition",
+                        "filename=" + URLEncoder.encode(file.getName(), "utf-8"))
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
     }
 }

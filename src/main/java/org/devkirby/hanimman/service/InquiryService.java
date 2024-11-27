@@ -5,6 +5,7 @@ import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
 import java.io.IOException;
 
 public interface InquiryService {
@@ -16,4 +17,6 @@ public interface InquiryService {
     Page<InquiryDTO> listAll(Pageable pageable);
 
     Page<InquiryDTO> searchById(Integer id, Pageable pageable);
+
+    File downloadImage(Integer id) throws IOException;
 }
