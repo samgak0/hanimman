@@ -15,8 +15,8 @@ public class MarketDTO {
     private String name;
     private String latitude;
     private String longitude;
-    private Integer cityId;
-    private Integer CountryId;
-    private Integer regionId;
+    private String cityCode;
+    private String districtCode;
+    private String neighborhoodCode;
     private String address;
 }
