@@ -18,7 +18,8 @@ public class AddressController {
 
     @GetMapping("/administrative") //위도경도를 통해 지역정보를 반환(법정코드포함)
     public ResponseEntity<AddressDTO> getAdministrativeArea(@RequestParam double latitude, @RequestParam double longitude) {
-        AddressDTO addressDTO = addressService.getAdministrativeArea(latitude, longitude);
+        System.out.println("Received request with latitude: " + latitude + " and longitude: " + longitude);
+        AddressDTO addressDTO = addressService.getAdministrative(latitude, longitude);
         return ResponseEntity.ok(addressDTO);
     }
 

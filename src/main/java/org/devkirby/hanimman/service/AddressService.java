@@ -15,7 +15,7 @@ public class AddressService {
 
     private static final String API_KEY = "d3f9d15a27f865ac85590c91e07a00a7"; // 발급받은 API 키
 
-    public AddressDTO getAdministrativeArea(double lat, double lng) {
+    public AddressDTO getAdministrative(double lat, double lng) {
         String url = String.format("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=%f&y=%f", lng, lat);
         StringBuilder result = new StringBuilder();
 
@@ -42,31 +42,32 @@ public class AddressService {
             throw new RuntimeException("API 호출 오류: " + e.getMessage());
         }
 
+        System.out.println("API Response: " + result.toString());
+
         // JSON 파싱
         JSONObject jsonResponse = new JSONObject(result.toString());
         JSONArray regions = jsonResponse.getJSONArray("documents");
+
 
         // 법정동 정보만 추출
         for (int i = 0; i < regions.length(); i++) {
             JSONObject region = regions.getJSONObject(i);
             String regionType = region.getString("region_type");
+            System.out.println("Region Type: " + regionType);
             if ("B".equals(regionType)) { // 법정동인 경우
-                String id = region.getString("code");
+                String id = region.getString("code");// ID 설정
                 return AddressDTO.builder()
-                        .id(region.getString("code"))
+                        .id(id)
                         .cityName(region.getString("region_1depth_name"))
                         .districtName(region.getString("region_2depth_name"))
                         .neighborhoodName(region.getString("region_3depth_name"))
                         .villageName(region.optString("region_4depth_name", null))
                         .cityCode(id.substring(0, 2))
-//                        .cityCode(region.optString("region_1depth_code"))
                         .districtCode(id.substring(2, 5))
-//                        .districtCode(region.optString("region_2depth_code"))
-                        .neighborhoodCode(region.optString("region_3depth_code"))
-//                        .neighborhoodCode(id.substring(5, 3))
+                        .neighborhoodCode(region.optString("region_3depth_code", null))
                         .villageCode(region.optString("region_4depth_code", null))
-
                         .build(); // DTO로 반환
+
             }
         }
 
