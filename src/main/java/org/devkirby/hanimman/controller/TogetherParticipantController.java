@@ -13,7 +13,7 @@ import java.util.List;
 public class TogetherParticipantController {
     private final TogetherParticipantService togetherParticipantService;
 
-    @PostMapping
+    @PostMapping("/create")
     public void createParticipant(TogetherParticipantDTO togetherParticipantDTO) {
         togetherParticipantService.create(togetherParticipantDTO);
     }
