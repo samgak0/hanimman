@@ -5,6 +5,8 @@ import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public interface TogetherService {
@@ -19,5 +21,5 @@ public interface TogetherService {
 
     void updateIsEnd();
 
-//    Page<TogetherDTO> listNotEnd(Pageable pageable);
+    File downloadImage(Integer id) throws IOException;
 }

@@ -15,12 +15,16 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -62,7 +66,7 @@ public class TogetherServiceImpl implements TogetherService {
         togetherRepository.save(together);
 
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-        togetherDTO.setImageUrls(getImageUrls(together));
+        togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -110,7 +114,7 @@ public class TogetherServiceImpl implements TogetherService {
             return togetherRepository.findByIsEndIsFalse(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
                         togetherDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -124,7 +128,7 @@ public class TogetherServiceImpl implements TogetherService {
             return togetherRepository.findAll(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
                         togetherDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -150,7 +154,7 @@ public class TogetherServiceImpl implements TogetherService {
                             keyword, keyword, pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
                         togetherDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -163,7 +167,7 @@ public class TogetherServiceImpl implements TogetherService {
             return togetherRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageUrls(getImageThumbnailUrls(together));
+                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
                         togetherDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -190,24 +194,44 @@ public class TogetherServiceImpl implements TogetherService {
         });
     }
 
-    private List<String> getImageUrls(Together together) {
-        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+    @Override
+    @Transactional
+    public File downloadImage(Integer id) throws IOException {
+        TogetherImage togetherImage = togetherImageRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 이미지가 없습니다. : " + id));
+        File file = new File("C:/upload/" + togetherImage.getServerName());
+
+        return file;
+    }
+
+    private List<Integer> getImageUrls(Together together) {
+        List<Integer> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
                 .stream()
-                .map(togetherImage -> "http://localhost:8080/uploads/" + togetherImage.getServerName())
+                .map(togetherImage -> togetherImage.getId())
                 .collect(Collectors.toList());
-        if (imageUrls.isEmpty()) {
-            imageUrls.add("http://localhost:8080/"+defaultImageUrl);
-        }
+
         return imageUrls;
     }
 
-    private List<String> getImageThumbnailUrls(Together together){
-        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+//    private List<String> getImageThumbnailUrls(Together together){
+//        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+//                .stream()
+//                .map(togetherimage -> "http://localhost:8080/uploads/t_" + togetherimage.getServerName())
+//                .findFirst()
+//                .map(List::of)
+//                .orElseGet(() -> List.of("http://localhost:8080/"+defaultImageUrl));
+//
+//
+//        return imageUrls;
+//    }
+
+    private List<Integer> getImageThumbnailUrls(Together together){
+        List<Integer> imageIds = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
                 .stream()
-                .map(togetherimage -> "http://localhost:8080/uploads/t_" + togetherimage.getServerName())
+                .map(togetherimage -> togetherimage.getId())
                 .findFirst()
-                .map(List::of)
-                .orElseGet(() -> List.of("http://localhost:8080/"+defaultImageUrl));
-        return imageUrls;
+                .map(List::of).orElse(List.of(0));
+
+        return imageIds;
     }
 }

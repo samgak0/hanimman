@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -59,7 +60,7 @@ public class ShareServiceImpl implements ShareService {
         shareRepository.save(share);
 
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-        shareDTO.setImageUrls(getImageUrls(share));
+        shareDTO.setImageIds(getImageUrls(share));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -110,7 +111,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findByIsEndIsFalse(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+                        shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
                         shareDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -123,7 +124,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findAll(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+                        shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
                         shareDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -149,7 +150,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+                        shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
                         shareDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -162,7 +163,7 @@ public class ShareServiceImpl implements ShareService {
             return shareRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
-                        shareDTO.setImageUrls(getImageThumbnailUrls(share));
+                        shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
                         shareDTO.setAddress(address.get()
                                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -189,24 +190,29 @@ public class ShareServiceImpl implements ShareService {
         });
     }
 
-    private List<String> getImageUrls(Share share) {
-        List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+    @Override
+    @Transactional
+    public File downloadImage(Integer id) throws IOException {
+        ShareImage shareImage = shareImageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 이미지가 없습니다 : " + id));
+        return new File("C:/upload/" + shareImage.getServerName());
+    }
+
+    private List<Integer> getImageUrls(Share share) {
+        List<Integer> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
                 .stream()
-                .map(shareImage->"http://localhost:8080/uploads/" + shareImage.getServerName())
+                .map(shareImage->shareImage.getId())
                 .collect(Collectors.toList());
-        if (imageUrls.isEmpty()) {
-            imageUrls.add("http://localhost:8080/" +defaultImageUrl);
-        }
+
         return imageUrls;
     }
 
-    private List<String> getImageThumbnailUrls(Share share) {
-        List<String> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+    private List<Integer> getImageThumbnailUrls(Share share) {
+        List<Integer> imageUrls = shareImageRepository.findByParentAndDeletedAtIsNull(share)
                 .stream()
-                .map(shareImage -> "http://localhost:8080/uploads/" + "t_" + shareImage.getServerName()) // 썸네일 이미지 이름 생성
+                .map(shareImage -> shareImage.getId()) // 썸네일 이미지 이름 생성
                 .findFirst()
-                .map(List::of)
-                .orElseGet(() -> List.of("http://localhost:8080/" +defaultImageUrl));
+                .map(List::of).orElse(List.of(0));
         return imageUrls;
     }
 }

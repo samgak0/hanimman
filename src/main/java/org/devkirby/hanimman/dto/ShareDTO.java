@@ -30,6 +30,8 @@ public class ShareDTO {
     // 이미지 리스트 추가
     private List<String> imageUrls;
 
+    private List<Integer> imageIds;
+
     // 찜 여부
     @Builder.Default
     private boolean favorite = false;;

@@ -4,14 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.ShareService;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -111,5 +118,17 @@ public class ShareController {
                                        @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
+        File file = shareService.downloadImage(id);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .header("content-disposition",
+                        "filename=" + URLEncoder.encode(file.getName(), "utf-8"))
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
     }
 }
