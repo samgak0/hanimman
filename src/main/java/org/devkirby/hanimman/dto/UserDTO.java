@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.devkirby.hanimman.entity.Gender;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Data
 @AllArgsConstructor
@@ -31,4 +33,5 @@ public class UserDTO {
     private Instant createdAt; // 가입 일자
     private Instant deletedAt; // 삭제 일자
     private Integer brix; // 당도
+
 }

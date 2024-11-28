@@ -15,4 +15,6 @@ public interface UserService{
     void deleteUser(UserDTO userDTO);
     boolean isExistCodeNum(String codenum);
     CustomUserDetails loadUserByCodeNum(String codenum);
+
+    UserDTO selectUser(Integer id);
 }
