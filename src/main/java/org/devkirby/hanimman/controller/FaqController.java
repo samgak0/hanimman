@@ -2,8 +2,6 @@ package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.FaqDTO;
-import org.devkirby.hanimman.dto.FaqFileDTO;
-import org.devkirby.hanimman.dto.FaqRequest;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.FaqService;
 import org.springframework.core.io.InputStreamResource;

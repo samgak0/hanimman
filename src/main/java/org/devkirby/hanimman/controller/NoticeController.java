@@ -31,7 +31,7 @@ import java.util.Map;
 public class NoticeController {
     private final NoticeService noticeService;
 
-    @PostMapping
+    @PostMapping("/create")
     public Map<String, Object> createNotice(@RequestPart("noticeDTO") NoticeDTO noticeDTO,
                                             @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                             @AuthenticationPrincipal User loginUser) throws IOException {
@@ -89,7 +89,7 @@ public class NoticeController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public Page<NoticeDTO> listAllNotices(@PageableDefault(size = 10) Pageable pageable) {
         return noticeService.listAll(pageable);
     }
