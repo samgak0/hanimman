@@ -32,7 +32,7 @@ public class UserController {
             @RequestBody ResultRequest resultData,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
 
-        System.out.println("contoller");
+        System.out.println("----------------------------resultData");
         System.out.println(resultData);
 
         // 필수 필드 검증
@@ -48,6 +48,8 @@ public class UserController {
 
             // 유저가 존재하는지 확인
             UserDTO existingUser = userService.selectUser(userDTO);
+            System.out.println("UserController---------------------------------");
+            System.out.println(existingUser);
 
             if (existingUser == null || existingUser.getId() == null) {
                 // 유저가 없으면 회원가입 진행
@@ -66,13 +68,13 @@ public class UserController {
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
             }
 
-            // 로그인 성공 -> JWT 생성 및 응답
-            // 유저는 있으나 blocked처리 된 경우
+            // 유저는 있으나 blocked처리 된 경우 BadRequest
             log.info("Existing user found: " + existingUser);
             if (existingUser.getBlockedAt() != null) {
                 return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
             }
 
+            // 로그인 성공 -> JWT 생성 및 응답
             return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
 
         } catch (IllegalArgumentException e) {
@@ -90,7 +92,7 @@ public class UserController {
             String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
-        claims.put("nicName", userDTO.getNickname());
+        claims.put("nickName", userDTO.getNickname());
         claims.put("id", userDTO.getId());
         claims.put("codenum", userDTO.getCodenum());
 

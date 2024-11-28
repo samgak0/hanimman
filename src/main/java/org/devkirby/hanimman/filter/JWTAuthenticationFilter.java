@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Key key = JWTUtil.getSecretKey();
+    private final Key secretKey = JWTUtil.getSecretKey();
     private final UserService userService;
 
     @Autowired
@@ -47,8 +47,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String refreshHeader = request.getHeader("Refresh-Token");
-        System.out.println(authHeader);
-        System.out.println(refreshHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             if (refreshHeader != null) {
@@ -62,13 +60,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         System.out.println("token" + token);
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            System.out.println(claims);
+            Claims claims = JWTUtil.validateToken(token);
             String codenum = claims.getSubject();
 
             if (codenum != null) {
@@ -93,12 +85,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                         customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (ExpiredJwtException e) {
-            writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired.");
-            return;
-        } catch (Exception e) {
-            writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token.");
-            return;
+        } catch (BlockedUserException e) {
+            // 블록된 사용자일 경우, 인증 실패
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Blocked user: Access denied");
+        } catch (ExpiredJwtException e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("토큰이 만료되었습니다.");
+        }
+        catch (Exception e) {
+            // JWT 토큰이 유효하지 않은 경우
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         filterChain.doFilter(request, response);
