@@ -5,38 +5,38 @@ import org.devkirby.hanimman.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final UserService userService;
 
-    @Autowired
-    public SecurityConfig(UserService userService, JWTAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(UserService userService) {
         this.userService = userService;
     }
 
     @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter(){
+    public JWTAuthenticationFilter jwtAuthenticationFilter() {
         return new JWTAuthenticationFilter(userService);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        System.out.println("SecurityFilterChain");
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // CORS 설정 적용
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/identity-verifications/**").permitAll() // 특정 API 경로 허용
-                        .requestMatchers("/*/**").permitAll()
-                        .anyRequest().authenticated() // 나머지 모든 요청에 대해 인증 필요
+                        .requestMatchers("/users/verify", "/identity-verifications/**").permitAll() // 허용 경로
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 
         return http.build();
     }
-
 }

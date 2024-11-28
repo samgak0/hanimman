@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 
+import java.security.Key;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -12,44 +13,47 @@ import javax.crypto.SecretKey;
 @Log4j2
 public class JWTUtil {
 
-    private static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-    public static SecretKey getKey(){
-        return key;
+//    private static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static  String key = "asdfgh12345678901234567890123456";
+    private static Key secretKey = Keys.hmacShaKeyFor(key.getBytes());  // String을 바이트 배열로 변환한 후 SecretKey 생성
+    public static Key getSecretKey(){
+        return secretKey;
     }
 
     public static String generateToken(Map<String, Object> valueMap, String addKey) {
-        long expirationTime = 1000 * 60 * 15; //15분
+        long expirationTime = 1000 * 60 * 15; // 15분 (밀리초 단위)
 
+
+        // JWT 토큰 생성
         String jwtStr = Jwts.builder()
-                .setHeader(Map.of("typ","JWT"))
-                .setClaims(valueMap)
-                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationTime).toInstant()))
-                .signWith(key)
-                .compact();
+                .setHeaderParam("typ", "JWT")  // 헤더 설정
+                .setClaims(valueMap)  // 페이로드 설정
+                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))  // 발행 시간 설정
+                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationTime).toInstant()))  // 만료 시간 설정
+                .signWith(secretKey, SignatureAlgorithm.HS256)  // 서명 알고리즘과 SecretKey 설정
+                .compact();  // JWT 토큰 생성
 
-        return jwtStr;
+        return jwtStr;  // 생성된 JWT 반환
     }
 
-    public static String generateRefreshToken(String username){
+    public static String generateRefreshToken(String codenum){
         long expirationTime = 60 * 24 * 7; // 7일
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(codenum)
                 .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationTime).toInstant()))
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(secretKey,SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public static Map<String, Object> validateToken(String token) {
+    public static Claims validateToken(String token) {
 
-        Map<String, Object> claim = null;
+        Claims claim = null;
 
         try{
             claim = Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token) // 파싱 및 검증, 실패 시 에러
                     .getBody();
@@ -67,5 +71,7 @@ public class JWTUtil {
         }
         return claim;
     }
+
+
 }
 

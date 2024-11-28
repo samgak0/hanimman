@@ -32,6 +32,9 @@ public class UserController {
             @RequestBody ResultRequest resultData,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
 
+        System.out.println("contoller");
+        System.out.println(resultData);
+
         // 필수 필드 검증
         if (resultData.getName() == null || resultData.getPhoneNumber() == null ||
                 resultData.getBirthDate() == null || resultData.getGender() == null) {
@@ -88,6 +91,7 @@ public class UserController {
         claims.put("role", "user");
         claims.put("nicName", userDTO.getNickname());
         claims.put("id", userDTO.getId());
+        claims.put("codenum", userDTO.getCodenum());
 
         String addKey = userDTO.getId() + userDTO.getCodenum() + userDTO.getCreatedAt();
 

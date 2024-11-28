@@ -146,5 +146,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDTO selectUser(Integer id) {
+        return null;
+    }
+
 
 }
