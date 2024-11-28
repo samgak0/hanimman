@@ -41,7 +41,7 @@ public class FaqController {
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + faqDTO.getContent().length());
         }else{
-            if(files != null && files.isEmpty()){
+            if(files != null && !files.isEmpty()){
                 faqDTO.setFiles(files);
             }
             faqService.create(faqDTO);

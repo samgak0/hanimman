@@ -32,7 +32,9 @@ public class FaqServiceImpl implements FaqService {
     public void create(FaqDTO faqDTO) throws IOException {
         Faq faq = modelMapper.map(faqDTO, Faq.class);
         faqRepository.save(faq);
-        faqFileService.uploadFiles(faqDTO.getFiles(), faq.getId());
+        if(faqDTO.getFiles() != null && !faqDTO.getFiles().isEmpty()){
+            faqFileService.uploadFiles(faqDTO.getFiles(), faq.getId());
+        }
     }
 
     @Override

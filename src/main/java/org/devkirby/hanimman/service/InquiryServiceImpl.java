@@ -31,8 +31,10 @@ public class InquiryServiceImpl implements InquiryService {
     @Transactional
     public void create(InquiryDTO inquiryDTO) throws IOException {
         Inquiry inquiry = modelMapper.map(inquiryDTO, Inquiry.class);
-        inquiryRepository.save(inquiry);
-        inquiryFileService.uploadFiles(inquiryDTO.getFiles(), inquiryDTO.getId());
+        inquiryDTO.setId(inquiryRepository.save(inquiry).getId());
+        if(inquiryDTO.getFiles() != null && !inquiryDTO.getFiles().isEmpty()){
+            inquiryFileService.uploadFiles(inquiryDTO.getFiles(), inquiryDTO.getId());
+        }
     }
 
     @Override

@@ -32,7 +32,10 @@ public class NoticeServiceImpl implements NoticeService {
     public void create(NoticeDTO noticeDTO) throws IOException {
         Notice notice = modelMapper.map(noticeDTO, Notice.class);
         noticeRepository.save(notice);
-        noticeFileService.uploadFiles(noticeDTO.getFiles(), noticeDTO.getId());
+        if(noticeDTO.getFiles() != null && !noticeDTO.getFiles().isEmpty()){
+            noticeFileService.uploadFiles(noticeDTO.getFiles(), notice.getId());
+        }
+
     }
 
     @Override

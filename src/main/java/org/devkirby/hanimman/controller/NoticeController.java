@@ -43,7 +43,7 @@ public class NoticeController {
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + noticeDTO.getContent().length());
         }else{
-            if(files != null && files.isEmpty()){
+            if(files != null && !files.isEmpty()){
                 noticeDTO.setFiles(files);
             }
             noticeService.create(noticeDTO);
