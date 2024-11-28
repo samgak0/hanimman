@@ -21,7 +21,7 @@ public class JWTUtil {
     }
 
     public static String generateToken(Map<String, Object> valueMap, String addKey) {
-        long expirationTime = 1000 * 60 * 15; // 15분 (밀리초 단위)
+        long expirationTime = 1000 * 10; // 15분 (밀리초 단위)
 
 
         // JWT 토큰 생성
@@ -61,6 +61,7 @@ public class JWTUtil {
         }catch(MalformedJwtException malformedJwtException){
             throw new CustomJWTException("MalFormed");
         }catch(ExpiredJwtException expiredJwtException){
+            System.out.println("왜... 이거 안오는...?");
             throw new CustomJWTException("Expired");
         }catch(InvalidClaimException invalidClaimException){
             throw new CustomJWTException("Invalid");

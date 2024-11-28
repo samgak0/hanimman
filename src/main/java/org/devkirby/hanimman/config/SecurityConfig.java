@@ -16,7 +16,7 @@ public class SecurityConfig {
 
     private final UserService userService;
 
-    public SecurityConfig(UserService userService) {
+    public SecurityConfig(UserService userService, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.userService = userService;
     }
 
@@ -32,8 +32,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource)) // CORS 설정 적용
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/users/verify", "/identity-verifications/**").permitAll() // 허용 경로
-                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+                        .requestMatchers("/identity-verifications/**").permitAll() // 특정 API 경로 허용
+                        .requestMatchers("/*/**").permitAll()
+                        .anyRequest().authenticated() // 나머지 모든 요청에 대해 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 
