@@ -71,7 +71,6 @@ public class IdentityVerificationController {
     private ResponseEntity<?> verifyIdentity(String identityVerificationId, HttpSession session) {
         try {
             String url = "https://api.portone.io/identity-verifications/" + identityVerificationId;
-            System.out.println(url);
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "PortOne " + portOneApiSecret);
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -85,7 +84,7 @@ public class IdentityVerificationController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("본인인증 실패");
             }
             JsonNode verifiedCustomer = jsonResponse.get("verifiedCustomer");
-            System.out.println(verifiedCustomer);
+            System.out.println("verifiedCustomer" + verifiedCustomer);
             session.setAttribute("verifiedCustomer", verifiedCustomer);
             return ResponseEntity.ok(verifiedCustomer);
         } catch (Exception e) {

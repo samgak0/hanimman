@@ -8,14 +8,17 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private String username;
+    private String nickname;
     private Instant blockedAt;
+    private Instant createdAt;
     private Instant deletedAt;
     private Collection<? extends GrantedAuthority> authorities;
+    private long id;
+    private String codenum;
 
     // 생성자
-    public CustomUserDetails(String username,  Instant blockedAt, Instant deletedAt, Collection<? extends GrantedAuthority> authorities) {
-        this.username = username;
+    public CustomUserDetails(String nickname,  Instant blockedAt, Instant deletedAt, Collection<? extends GrantedAuthority> authorities) {
+        this.nickname = nickname;
         this.blockedAt = blockedAt;
         this.deletedAt = deletedAt;
         this.authorities = authorities;
@@ -35,7 +38,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return "";
+    }
+
+
+    public String getNickname() {
+        return nickname;
     }
 
     @Override
@@ -55,5 +63,17 @@ public class CustomUserDetails implements UserDetails {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public Long getId(){
+        return id;
+    }
+
+    public String getCodenum() {
+        return codenum;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }

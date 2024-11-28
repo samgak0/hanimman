@@ -9,6 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        System.out.println("addCorsMappings");
         registry.addMapping("/**")  // 모든 경로에 대해 CORS 설정을 적용
                 .allowedOrigins("http://localhost:3000","http://192.168.101.253:3000", "http://192.168.100.207:3000")// React 앱의 주소
                 .allowedHeaders("*")  // 모든 헤더 허용
