@@ -23,5 +23,7 @@ public class FaqDTO {
     // 파일 리스트 추가
     private List<String> fileUrls;
 
+    private List<Integer> imageIds;
+
     private List<MultipartFile> files;
 }

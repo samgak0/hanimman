@@ -13,8 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +31,21 @@ public class InquiryServiceImpl implements InquiryService {
     @Transactional
     public void create(InquiryDTO inquiryDTO) throws IOException {
         Inquiry inquiry = modelMapper.map(inquiryDTO, Inquiry.class);
-        inquiryRepository.save(inquiry);
-        inquiryFileService.uploadFiles(inquiryDTO.getFiles(), inquiryDTO.getId());
+        inquiryDTO.setId(inquiryRepository.save(inquiry).getId());
+        if(inquiryDTO.getFiles() != null && !inquiryDTO.getFiles().isEmpty()){
+            inquiryFileService.uploadFiles(inquiryDTO.getFiles(), inquiryDTO.getId());
+        }
     }
 
     @Override
     public InquiryDTO read(Integer id) {
         Inquiry inquiry = inquiryRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 문의사항이 없습니다 : " + id));
-        return modelMapper.map(inquiry, InquiryDTO.class);
+
+        InquiryDTO inquiryDTO = modelMapper.map(inquiry, InquiryDTO.class);
+        inquiryDTO.setImageIds(getInquiryFiles(inquiry));
+
+        return inquiryDTO;
     }
 
     @Override
@@ -63,5 +72,21 @@ public class InquiryServiceImpl implements InquiryService {
     public Page<InquiryDTO> searchById(Integer id, Pageable pageable) {
         return inquiryRepository.findByIdAndDeletedAtIsNull(id, pageable)
                 .map(inquiry -> modelMapper.map(inquiry, InquiryDTO.class));
+    }
+
+    @Override
+    public File downloadImage(Integer id) throws IOException {
+        InquiryFile inquiryFile = inquiryFileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 이미지 파일이 없습니다 : " + id));
+        File file = new File("C:/upload/inquiry/" + inquiryFile.getServerName());
+        return file;
+    }
+
+    private List<Integer> getInquiryFiles(Inquiry inquiry) {
+        List<Integer> imageIds = inquiryFileRepository.findByParentAndDeletedAtIsNull(inquiry)
+                .stream()
+                .map(inquriyFile -> inquriyFile.getId())
+                .collect(Collectors.toList());
+        return imageIds;
     }
 }

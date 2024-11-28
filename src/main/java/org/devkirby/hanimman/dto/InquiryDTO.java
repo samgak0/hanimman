@@ -22,5 +22,7 @@ public class InquiryDTO {
 
     private List<String> fileUrls;
 
+    private List<Integer> imageIds;
+
     private List<MultipartFile> files;
 }

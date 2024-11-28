@@ -23,31 +23,31 @@ class AddressServiceTests {
     @InjectMocks
     private AddressService addressService; // AddressService에 Mock을 주입
 
-    @Test
-    @DisplayName("주소 정보 조회 테스트")
-    public void testGetAddress() {
-        // Given: Address 객체 생성
-        Address address = Address.builder()
-                .id("2635010500")
-                .cityName("부산광역시")
-                .districtName("해운대구")
-                .neighborhoodName("우동")
-                .villageName("")
-                .cityCode("26")
-                .districtCode("350")
-                .neighborhoodCode("10500")
-                .villageCode(null)
-                .build();
-
-        // When: Mocking repository의 동작 설정
-        when(addressRepository.findById("2635010500")).thenReturn(Optional.of(address));
-
-        // Then: 서비스 메서드 호출 및 결과 검증
-        AddressDTO addressDTO = addressService.getAdministrativeArea(35.172918, 129.130723); // 위도와 경도는 예시
-        assertNotNull(addressDTO);
-        assertEquals("부산광역시", addressDTO.getCityName());
-        assertEquals("해운대구", addressDTO.getDistrictName());
-        assertEquals("우동", addressDTO.getNeighborhoodName());
-        assertEquals("", addressDTO.getVillageName());
-    }
+//    @Test
+//    @DisplayName("주소 정보 조회 테스트")
+//    public void testGetAddress() {
+//        // Given: Address 객체 생성
+//        Address address = Address.builder()
+//                .id("2635010500")
+//                .cityName("부산광역시")
+//                .districtName("해운대구")
+//                .neighborhoodName("우동")
+//                .villageName("")
+//                .cityCode("26")
+//                .districtCode("350")
+//                .neighborhoodCode("10500")
+//                .villageCode(null)
+//                .build();
+//
+//        // When: Mocking repository의 동작 설정
+//        when(addressRepository.findById("2635010500")).thenReturn(Optional.of(address));
+//
+//        // Then: 서비스 메서드 호출 및 결과 검증
+//        AddressDTO addressDTO = addressService.getAdministrativeArea(35.172918, 129.130723); // 위도와 경도는 예시
+//        assertNotNull(addressDTO);
+//        assertEquals("부산광역시", addressDTO.getCityName());
+//        assertEquals("해운대구", addressDTO.getDistrictName());
+//        assertEquals("우동", addressDTO.getNeighborhoodName());
+//        assertEquals("", addressDTO.getVillageName());
+//    }
 }

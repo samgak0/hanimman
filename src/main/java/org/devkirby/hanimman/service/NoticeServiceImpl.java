@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -31,7 +32,10 @@ public class NoticeServiceImpl implements NoticeService {
     public void create(NoticeDTO noticeDTO) throws IOException {
         Notice notice = modelMapper.map(noticeDTO, Notice.class);
         noticeRepository.save(notice);
-        noticeFileService.uploadFiles(noticeDTO.getFiles(), noticeDTO.getId());
+        if(noticeDTO.getFiles() != null && !noticeDTO.getFiles().isEmpty()){
+            noticeFileService.uploadFiles(noticeDTO.getFiles(), notice.getId());
+        }
+
     }
 
     @Override
@@ -43,11 +47,8 @@ public class NoticeServiceImpl implements NoticeService {
         noticeRepository.save(notice);
 
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
-        List<NoticeFile> noticeFiles = noticeFileRepository.findByParentAndDeletedAtIsNull(notice);
-        List<String> fileUrls = noticeFiles.stream()
-                .map(NoticeFile::getServerName)
-                .collect(Collectors.toList());
-        noticeDTO.setFileUrls(fileUrls);
+        noticeDTO.setImageIds(getNoticeFiles(notice));
+
         return noticeDTO;
     }
 
@@ -83,5 +84,22 @@ public class NoticeServiceImpl implements NoticeService {
     public Page<NoticeDTO> searchByKeywords(String keyword, Pageable pageable) {
         return noticeRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                 .map(notice -> modelMapper.map(notice, NoticeDTO.class));
+    }
+
+    @Override
+    @Transactional
+    public File downloadImage(Integer id) throws IOException {
+        NoticeFile noticeFile = noticeFileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 파일이 없습니다 : " + id));
+        File file = new File("C:/upload/" + noticeFile.getServerName());
+        return file;
+    }
+
+    private List<Integer> getNoticeFiles(Notice notice){
+        List<Integer> imageIds = noticeFileRepository.findByParentAndDeletedAtIsNull(notice)
+                .stream()
+                .map(noticeFile -> noticeFile.getId())
+                .collect(Collectors.toList());
+        return imageIds;
     }
 }
