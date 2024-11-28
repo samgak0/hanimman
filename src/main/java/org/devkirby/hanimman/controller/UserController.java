@@ -69,7 +69,7 @@ public class UserController {
             // 로그인 성공 -> JWT 생성 및 응답
             // 유저는 있으나 blocked처리 된 경우
             log.info("Existing user found: " + existingUser);
-            if(existingUser.getBlockedAt() != null){
+            if (existingUser.getBlockedAt() != null) {
                 return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
             }
 
@@ -86,7 +86,8 @@ public class UserController {
         }
     }
 
-    private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status, String message) {
+    private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status,
+            String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
         claims.put("nicName", userDTO.getNickname());
@@ -98,13 +99,13 @@ public class UserController {
         try {
             String token = JWTUtil.generateToken(claims, addKey);
             String refreshToken = JWTUtil.generateRefreshToken(addKey);
-            log.info("Generated JWT Token: " + token);  // 토큰 생성 로그
-            log.info("Generated Refresh Token:" + refreshToken); //리프레시 토큰 생성 로그
+            log.info("Generated JWT Token: " + token); // 토큰 생성 로그
+            log.info("Generated Refresh Token:" + refreshToken); // 리프레시 토큰 생성 로그
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
             headers.set("Refresh-Token", refreshToken);
-            log.info("Response Headers: " + headers.toString());  // 헤더 로그
+            log.info("Response Headers: " + headers.toString()); // 헤더 로그
 
             return ResponseEntity.status(status)
                     .headers(headers)
@@ -197,16 +198,36 @@ public class UserController {
         private String gender;
 
         // Getters and setters
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public String getName() {
+            return name;
+        }
 
-        public String getPhoneNumber() { return phoneNumber; }
-        public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+        public void setName(String name) {
+            this.name = name;
+        }
 
-        public String getBirthDate() { return birthDate; }
-        public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
 
-        public String getGender() { return gender; }
-        public void setGender(String gender) { this.gender = gender; }
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+
+        public String getBirthDate() {
+            return birthDate;
+        }
+
+        public void setBirthDate(String birthDate) {
+            this.birthDate = birthDate;
+        }
+
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
+        }
     }
 }
