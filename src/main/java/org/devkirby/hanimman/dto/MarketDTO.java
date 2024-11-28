@@ -18,5 +18,6 @@ public class MarketDTO {
     private String cityCode;
     private String districtCode;
     private String neighborhoodCode;
-    private String address;
+    private String addressDetail;
+    private String addressId;
 }
