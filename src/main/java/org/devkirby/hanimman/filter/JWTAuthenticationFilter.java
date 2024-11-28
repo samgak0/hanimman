@@ -1,12 +1,11 @@
 package org.devkirby.hanimman.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.Key;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.security.Key;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -35,9 +36,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         System.out.println("doFilterInternal");
+
+        if (request.getRequestURL().toString().startsWith("/verification")
+                || request.getRequestURL().toString().startsWith("/users/verify")) {
+            filterChain.doFilter(request, response);
+        }
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String refreshHeader = request.getHeader("Refresh-Token");
@@ -98,7 +104,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void handleRefreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws IOException {
+    private void handleRefreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken)
+            throws IOException {
         try {
             Claims refreshClaims = JWTUtil.validateToken(refreshToken);
             String codenum = refreshClaims.getSubject();
@@ -112,7 +119,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     claims.put("nickName", customUserDetails.getNickname());
                     claims.put("id", customUserDetails.getId());
 
-                    String addKey = customUserDetails.getId() + customUserDetails.getCodenum() + customUserDetails.getCreatedAt();
+                    String addKey = customUserDetails.getId() + customUserDetails.getCodenum()
+                            + customUserDetails.getCreatedAt();
                     String newAccessToken = JWTUtil.generateToken(claims, addKey);
 
                     response.setStatus(HttpServletResponse.SC_OK);

@@ -7,7 +7,6 @@ import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +34,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     // 회원조회
     public UserDTO selectUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
-        Optional<User> opt = userRepository.findByNameAndPhonenumAndGenderAndBirth(userDTO.getName(), userDTO.getPhonenum(), userDTO.getGender(), userDTO.getBirth());
+        Optional<User> opt = userRepository.findByNameAndPhonenumAndGenderAndBirth(userDTO.getName(),
+                userDTO.getPhonenum(), userDTO.getGender(), userDTO.getBirth());
         User savedUser = new User();
         if (opt.isPresent()) {
             savedUser = opt.get();
@@ -75,26 +74,25 @@ public class UserServiceImpl implements UserService {
 
     // 회원 blocked
     @Transactional
-    public void blockedUser(UserDTO userDTO){
-        if(userDTO == null || userDTO.getId() == null){
+    public void blockedUser(UserDTO userDTO) {
+        if (userDTO == null || userDTO.getId() == null) {
             throw new IllegalArgumentException("회원 데이터가 존재하지 않습니다.");
         }
         // 사용자 ID로 조회
         Optional<User> opt = userRepository.findById(userDTO.getId());
 
-        if(opt.isPresent()){
+        if (opt.isPresent()) {
             User user = opt.get();
-            if(user.getBlockedAt() != null) {
+            if (user.getBlockedAt() != null) {
                 System.out.println("이 사용자는 이미 블록된 회원입니다.");
             } else {
                 user.setBlockedAt(Instant.now());
                 userRepository.save(user);
                 System.out.println("사용자가 블록 처리 되었습니다.");
             }
-        }else {
+        } else {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }
-
 
     }
 
@@ -150,6 +148,5 @@ public class UserServiceImpl implements UserService {
     public UserDTO selectUser(Integer id) {
         return null;
     }
-
 
 }
