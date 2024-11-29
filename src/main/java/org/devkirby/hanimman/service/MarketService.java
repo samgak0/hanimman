@@ -19,9 +19,6 @@ public class MarketService {
 
     /**
      * 주어진 ID로 마켓을 조회합니다.
-     * @param id 조회할 마켓의 ID
-     * @return 해당 ID의 마켓 정보를 담고 있는 MarketDTO 객체
-     * @throws EntityNotFoundException 주어진 ID의 마켓이 존재하지 않을 경우 발생
      */
     public MarketDTO getMarketById(Integer id) {
         // ID로 마켓을 조회하고, 없다면 예외를 발생시킵니다.
@@ -58,8 +55,6 @@ public class MarketService {
 
     /**
      * Market 엔티티를 MarketDTO로 변환합니다.
-     * @param market 변환할 Market 엔티티
-     * @return 변환된 MarketDTO 객체
      */
     private MarketDTO convertToDTO(Market market) {
         // Market 엔티티의 데이터를 사용하여 MarketDTO 객체를 생성합니다.
