@@ -34,10 +34,8 @@ public class MarketController {
     }
 
     // city ID와 카테고리로 주소 조회
-    @GetMapping("/city")
-    public ResponseEntity<List<MarketDTO>> getMarketsByCategoryAndCity(
-            @RequestParam Integer categoryId,
-            @RequestParam String cityCode) {
+    @GetMapping("/category/{categoryId}/citycode/{cityCode}")
+    public ResponseEntity<List<MarketDTO>> getMarketsByCategoryAndCity(@PathVariable Integer categoryId, @PathVariable String cityCode) {
         List<MarketDTO> markets = marketService.getMarketsByAddressAndCategory(categoryId,cityCode);
         System.out.println(markets);
         return ResponseEntity.ok(markets);
