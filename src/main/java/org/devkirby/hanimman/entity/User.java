@@ -37,10 +37,6 @@ public class User {
     @Column(length = 6, nullable = false)
     private String codenum; // 코드번호(회원가입 때 자동 생성. 중복X)
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean privilege = false; // 관리자 여부
-
     @Column
     private Instant blockedAt; // 블록처리 여부
 
@@ -49,12 +45,6 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Address secondlyAddressId; // 주소2
-
-    @Column
-    private Instant ValidatedAt;  // 동네 인증 여부 Null이면 동네 인증 안되어 있고, 날짜가 들어가 있으면 동네 인증 되어있는 것입니다..
-
-    @Column
-    private String deviceUnique; // 기기 고유 번호
 
     @Column
     private Instant modifiedAt; // 회원 수정 일자

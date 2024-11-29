@@ -23,15 +23,12 @@ public class UserDTO {
     private String phonenum; //핸드폰번호
     private String nickname; // 닉네임
     private String codenum; // 코드번호
-    private Boolean privilege; // 관리자 여부
     private Instant blockedAt; // 블록된 여부
     private String primaryAddressId; // 동네1
     private String secondlyAddressId; // 동네2
-    private String deviceUniqueNum; // 기기 번호
-    private Instant validatedAt; // 동네 인증 여부(인증된 일자)
     private Instant modifiedAt; // 수정 여부(수정된 일자)
     private Instant createdAt; // 가입 일자
-    private Instant deletedAt; // 삭제 일자
+    private Instant deletedAt; // 탈퇴 일자
     private Integer brix; // 당도
 
 }
