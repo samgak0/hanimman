@@ -18,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,10 +60,21 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("token" + token);
         try {
             Claims claims = JWTUtil.validateToken(token);
-            String codenum = claims.getSubject();
+            String codenum = claims.get("codenum",String.class);
+            System.out.println(codenum);
+
+
 
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
+                System.out.println(customUserDetails);
+
+                if (customUserDetails == null) {
+                    System.out.println("[JWT 필터] 사용자 정보가 null입니다. codenum: " + codenum);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Unauthorized: User not found");
+                    return;
+                }
 
                 // 계정 상태 확인
                 Instant blockedAt = customUserDetails.getBlockedAt();
@@ -81,9 +91,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 // 인증 성공
+                System.out.println("인증 객체 생성 및 SecurityContext 설정 시도...");
                 var authentication = new UsernamePasswordAuthenticationToken(
                         customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("SecurityContext에 인증 정보 설정 완료!");
             }
         } catch (BlockedUserException e) {
             // 블록된 사용자일 경우, 인증 실패
@@ -96,10 +108,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         catch (Exception e) {
             // JWT 토큰이 유효하지 않은 경우
-            SecurityContextHolder.clearContext();
+            System.out.println("[JWT 필터] 예외 발생: " + e.getMessage());
+            e.printStackTrace();
+//            SecurityContextHolder.clearContext();
+            response.getWriter().write("Authentication failed");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-
+        // 7. 필터 체인 통과
+        System.out.println("[JWT 필터] 인증 및 검증 완료, 다음 필터로 전달");
         filterChain.doFilter(request, response);
     }
 
@@ -109,8 +125,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             Claims refreshClaims = JWTUtil.validateToken(refreshToken);
             String codenum = refreshClaims.getSubject();
 
+
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
+                System.out.println("customUserDetails");
+                System.out.println(customUserDetails);
 
                 if (customUserDetails != null) {
                     Map<String, Object> claims = new HashMap<>();

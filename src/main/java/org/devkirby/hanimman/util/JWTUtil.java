@@ -61,7 +61,6 @@ public class JWTUtil {
         }catch(MalformedJwtException malformedJwtException){
             throw new CustomJWTException("MalFormed");
         }catch(ExpiredJwtException expiredJwtException){
-            System.out.println("왜... 이거 안오는...?");
             throw new CustomJWTException("Expired");
         }catch(InvalidClaimException invalidClaimException){
             throw new CustomJWTException("Invalid");

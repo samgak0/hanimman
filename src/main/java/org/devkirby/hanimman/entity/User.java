@@ -44,7 +44,7 @@ public class User {
     @Column
     private Instant blockedAt; // 블록처리 여부
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Address primaryAddressId; // 주소1
 
     @ManyToOne(fetch = FetchType.LAZY)
