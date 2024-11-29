@@ -57,13 +57,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        System.out.println("token" + token);
         try {
             Claims claims = JWTUtil.validateToken(token);
             String codenum = claims.get("codenum",String.class);
-            System.out.println(codenum);
-
-
 
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
@@ -128,8 +124,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
-                System.out.println("customUserDetails");
-                System.out.println(customUserDetails);
 
                 if (customUserDetails != null) {
                     Map<String, Object> claims = new HashMap<>();

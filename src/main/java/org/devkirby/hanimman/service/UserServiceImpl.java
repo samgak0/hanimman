@@ -137,16 +137,11 @@ public class UserServiceImpl implements UserService {
     public CustomUserDetails loadUserByCodeNum(String codenum) {
         Optional<User> opt = userRepository.findByCodenum(codenum);
         System.out.println("----------------------------------serviceimpl");
-        System.out.println(opt);
 
         if (opt.isPresent()) {
             User user = opt.get();
-
-            System.out.println(user);
-
             // 사용자 권한 설정
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-            System.out.println(authorities);
 
             // CustomUserDetails 객체 생성 후 반환
             return new CustomUserDetails(user.getId(), user.getNickname(), user.getCodenum(), user.getPrimaryAddressId(), authorities);

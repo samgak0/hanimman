@@ -14,7 +14,6 @@ public class MainController {
     public void main(@AuthenticationPrincipal CustomUserDetails loginUser){
         System.out.println("-------------------------------메인 컨트롤러");
         System.out.println(loginUser);
-        System.out.println(loginUser.toString());
 
     }
 }
