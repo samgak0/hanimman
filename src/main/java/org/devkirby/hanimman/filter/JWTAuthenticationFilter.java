@@ -98,9 +98,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Blocked user: Access denied");
+            return;
         } catch (ExpiredJwtException e){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("토큰이 만료되었습니다.");
+            return;
         }
         catch (Exception e) {
             // JWT 토큰이 유효하지 않은 경우
@@ -109,6 +111,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 //            SecurityContextHolder.clearContext();
             response.getWriter().write("Authentication failed");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         // 7. 필터 체인 통과
         System.out.println("[JWT 필터] 인증 및 검증 완료, 다음 필터로 전달");
