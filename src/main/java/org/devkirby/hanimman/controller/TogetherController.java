@@ -129,15 +129,15 @@ public class TogetherController {
         return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
+    @GetMapping("/favorite/list/{id}")
+    public Page<TogetherDTO> listFavoriteTogethers( @PageableDefault(size = 10) Pageable pageable,
+                                                   @AuthenticationPrincipal User loginUser) {
+        return togetherService.listByUserIdFavorite(loginUser.getId(), pageable);
+    }
+
 
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
-//        TogetherImage togetherImage = togetherImageRepository.findById(id).orElse(new TogetherImage());
-//        log.error(togetherImage.toString());
-//        File file = new File("C:/upload/" + togetherImage.getServerName());
-//        log.error(togetherImage.getServerName());
-//        InputStreamResource resource =
-//                new InputStreamResource(new FileInputStream(file));
         File file = togetherService.downloadImage(id);
         InputStreamResource resource =
                 new InputStreamResource(new FileInputStream(file));

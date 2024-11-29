@@ -4,17 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.AddressDTO;
 import org.devkirby.hanimman.dto.ShareDTO;
-import org.devkirby.hanimman.entity.Address;
-import org.devkirby.hanimman.entity.Share;
-import org.devkirby.hanimman.entity.ShareImage;
-import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -187,6 +181,27 @@ public class ShareServiceImpl implements ShareService {
                 share.setIsEnd(true);
                 shareRepository.save(share);
             }
+        });
+    }
+
+    @Override
+    public Page<ShareDTO> listByUserIdFavorite(Integer userId, Pageable pageable) {
+        List<ShareFavorite> shareFavorites = shareFavoriteRepository.findByUserId(userId);
+        List<Share> shares = shareFavorites.stream()
+                .map(shareFavorite -> shareFavorite.getParent())
+                .collect(Collectors.toList());
+
+        Page<Share> sharePage = new PageImpl<>(shares, pageable, shares.size());
+        return sharePage.map(share -> {
+            ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+            shareDTO.setImageIds(getImageThumbnailUrls(share));
+            Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
+            shareDTO.setAddress(address.get()
+                    .getCityName() + " " + address.get().getDistrictName() + " " +
+                    address.get().getNeighborhoodName());
+            Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+            shareDTO.setFavoriteCount(favoriteCount);
+            return shareDTO;
         });
     }
 

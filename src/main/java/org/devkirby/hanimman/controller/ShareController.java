@@ -120,6 +120,12 @@ public class ShareController {
         return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
+    @GetMapping("favorite/list/{Id}")
+    public Page<ShareDTO> listByUserIdFavorite(@PageableDefault(size = 10) Pageable pageable,
+                                               @AuthenticationPrincipal User loginUser) {
+        return shareService.listByUserIdFavorite(loginUser.getId(), pageable);
+    }
+
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
         File file = shareService.downloadImage(id);

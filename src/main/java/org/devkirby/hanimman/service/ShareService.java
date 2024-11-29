@@ -20,5 +20,7 @@ public interface ShareService {
 
     void updateIsEnd();
 
+    Page<ShareDTO> listByUserIdFavorite(Integer userId, Pageable pageable);
+
     File downloadImage(Integer id) throws IOException;
 }

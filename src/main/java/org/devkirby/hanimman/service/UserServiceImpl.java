@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
             existingUser.setNickname(user.getNickname());
             existingUser.setPrimaryAddressId(user.getPrimaryAddressId());
             existingUser.setSecondlyAddressId(user.getSecondlyAddressId());
-            existingUser.setDeviceUnique(user.getDeviceUnique());
 
             // 업데이트된 사용자 저장
             User updatedUser = userRepository.save(existingUser);

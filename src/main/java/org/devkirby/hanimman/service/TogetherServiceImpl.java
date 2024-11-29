@@ -3,10 +3,8 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherDTO;
-import org.devkirby.hanimman.entity.Address;
-import org.devkirby.hanimman.entity.Together;
-import org.devkirby.hanimman.entity.TogetherImage;
-import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
+import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.AddressRepository;
 import org.devkirby.hanimman.repository.TogetherFavoriteRepository;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
@@ -16,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -195,6 +190,26 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
+    public Page<TogetherDTO> listByUserIdFavorite(Integer userId, Pageable pageable) {
+        List<TogetherFavorite> togetherFavorites = togetherFavoriteRepository.findByUserId(userId);
+        List<Together> togethers = togetherFavorites.stream()
+                .map(togetherFavorite -> togetherFavorite.getParent())
+                .collect(Collectors.toList());
+
+        Page<Together> togetherPage = new PageImpl<>(togethers, pageable, togethers.size());
+        return togetherPage.map(together -> {
+            TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+            togetherDTO.setImageIds(getImageUrls(together));
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
+            togetherDTO.setAddress(address.get()
+                    .getCityName() + " " + address.get().getDistrictName() + " " +
+                    address.get().getNeighborhoodName());
+            Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+            togetherDTO.setFavoriteCount(favoriteCount);
+            return togetherDTO;
+        });
+    }
+    @Override
     @Transactional
     public File downloadImage(Integer id) throws IOException {
         TogetherImage togetherImage = togetherImageRepository.findById(id)
@@ -213,17 +228,6 @@ public class TogetherServiceImpl implements TogetherService {
         return imageUrls;
     }
 
-//    private List<String> getImageThumbnailUrls(Together together){
-//        List<String> imageUrls = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
-//                .stream()
-//                .map(togetherimage -> "http://localhost:8080/uploads/t_" + togetherimage.getServerName())
-//                .findFirst()
-//                .map(List::of)
-//                .orElseGet(() -> List.of("http://localhost:8080/"+defaultImageUrl));
-//
-//
-//        return imageUrls;
-//    }
 
     private List<Integer> getImageThumbnailUrls(Together together){
         List<Integer> imageIds = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
