@@ -7,10 +7,13 @@ import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -133,16 +136,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public CustomUserDetails loadUserByCodeNum(String codenum) {
         Optional<User> opt = userRepository.findByCodenum(codenum);
+        System.out.println("----------------------------------serviceimpl");
+        System.out.println(opt);
+
         if (opt.isPresent()) {
             User user = opt.get();
-            return (CustomUserDetails) org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getCodenum())
-                    .authorities("ROLE_USER")
-                    .build();
+
+            System.out.println(user);
+
+            // 사용자 권한 설정
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            System.out.println(authorities);
+
+            // CustomUserDetails 객체 생성 후 반환
+            return new CustomUserDetails(user.getId(), user.getNickname(), user.getCodenum(), user.getPrimaryAddressId(), authorities);
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException("User not found with codenum: " + codenum);
         }
     }
+
 
     @Override
     public UserDTO selectUser(Integer id) {
