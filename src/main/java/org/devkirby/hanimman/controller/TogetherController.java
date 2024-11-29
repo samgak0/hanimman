@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.entity.User;
@@ -40,7 +41,7 @@ public class TogetherController {
     @PostMapping("/create")
     public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,
                                               @RequestPart(name ="files", required = false) List<MultipartFile> files,
-                                              @AuthenticationPrincipal User loginUser) throws IOException {
+                                              @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 
         log.info("성공적으로 작성 완료" + togetherDTO.getTitle());
         Map<String, Object> map = new HashMap<>();
@@ -71,7 +72,8 @@ public class TogetherController {
     }
 
     @GetMapping("/{id}")
-    public TogetherDTO readTogether(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+    public TogetherDTO readTogether(@PathVariable Integer id,
+                                    @AuthenticationPrincipal User loginUser) {
         return togetherService.read(id, loginUser);
     }
 
