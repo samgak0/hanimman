@@ -17,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
     private Instant createdAt;
     private Instant deletedAt;
     private Collection<? extends GrantedAuthority> authorities;
-    private long id;
+    private Integer id;
     private Address primaryAddressId;
 
 
@@ -43,7 +43,7 @@ public class CustomUserDetails implements UserDetails {
         return null;
     }
 
-    public Long getId(){
+    public Integer getId(){
         return id;
     }
 
