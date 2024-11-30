@@ -29,10 +29,8 @@ class UserRepositoryTests {
                 .phonenum("010-3682-2901")
                 .nickname("Dragon01")
                 .codenum("dieRlq")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device02")
                 .build();
         userRepository.save(user);
     }
@@ -46,10 +44,8 @@ class UserRepositoryTests {
                 .phonenum("010-1234-5671")
                 .nickname("철수")
                 .codenum("aBcD12")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device01")
                 .build();
 
         User user2 = User.builder()
@@ -59,10 +55,8 @@ class UserRepositoryTests {
                 .phonenum("010-2345-6782")
                 .nickname("영희")
                 .codenum("XyZpQw")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device02")
                 .build();
 
         User user3 = User.builder()
@@ -72,10 +66,8 @@ class UserRepositoryTests {
                 .phonenum("010-3456-7893")
                 .nickname("준호")
                 .codenum("FgHiJk")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device03")
                 .build();
 
         User user4 = User.builder()
@@ -85,10 +77,8 @@ class UserRepositoryTests {
                 .phonenum("010-4567-8904")
                 .nickname("민지")
                 .codenum("LmNoPq")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device04")
                 .build();
 
         User user5 = User.builder()
@@ -98,10 +88,8 @@ class UserRepositoryTests {
                 .phonenum("010-5678-9015")
                 .nickname("다솜")
                 .codenum("ZyXwVu")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device05")
                 .build();
 
         User user6 = User.builder()
@@ -111,10 +99,8 @@ class UserRepositoryTests {
                 .phonenum("010-6789-0126")
                 .nickname("호석")
                 .codenum("RstUvW")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device06")
                 .build();
 
         User user7 = User.builder()
@@ -124,10 +110,8 @@ class UserRepositoryTests {
                 .phonenum("010-7890-1237")
                 .nickname("지혜")
                 .codenum("MnoPQr")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device07")
                 .build();
 
         User user8 = User.builder()
@@ -137,10 +121,8 @@ class UserRepositoryTests {
                 .phonenum("010-8901-2348")
                 .nickname("민준")
                 .codenum("GhIjKl")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device08")
                 .build();
 
         User user9 = User.builder()
@@ -150,10 +132,8 @@ class UserRepositoryTests {
                 .phonenum("010-9012-3459")
                 .nickname("보라")
                 .codenum("WxYzAb")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device09")
                 .build();
 
         User user10 = User.builder()
@@ -163,10 +143,8 @@ class UserRepositoryTests {
                 .phonenum("010-0123-4560")
                 .nickname("도현")
                 .codenum("CdEfGh")
-                .privilege(false)
                 .primaryAddressId(null)
                 .secondlyAddressId(null)
-                .deviceUnique("device10")
                 .build();
 
         userRepository.save(user1);
