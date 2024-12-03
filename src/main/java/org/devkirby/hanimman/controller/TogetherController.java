@@ -3,10 +3,12 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
+import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.service.TogetherService;
+import org.devkirby.hanimman.service.UserAddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/together")
@@ -37,6 +40,7 @@ import java.util.Map;
 public class TogetherController {
     private final TogetherService togetherService;
     private final Logger log = LoggerFactory.getLogger(TogetherController.class);
+    private final UserAddressService userAddressService;
 
     @PostMapping("/create")
     public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,
@@ -46,6 +50,12 @@ public class TogetherController {
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
+
+        Optional<UserAddressDTO> userAddress = userAddressService.getUserAddress(loginUser.getId());
+        UserAddressDTO userAddressDTO = userAddress.orElseThrow();
+        String primaryAddressId = userAddressDTO.getPrimaryAddressId();
+
+
         if (togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
@@ -62,7 +72,7 @@ public class TogetherController {
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
             }
-            togetherService.create(togetherDTO);
+            togetherService.create(togetherDTO, primaryAddressId );
             map.put("code", 200);
             map.put("msg", "같이가요 게시글 작성에 성공했습니다.");
             return map;

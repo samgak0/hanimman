@@ -3,7 +3,6 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
-import org.devkirby.hanimman.dto.AddressDTO;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
@@ -36,9 +35,9 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void create(ShareDTO shareDTO) throws IOException {
+    public void create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(shareDTO.getUserId());
-        shareDTO.setAddressId(user.get().getPrimaryAddressId().getId());
+        shareDTO.setAddressId(primaryAddressId);
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){

@@ -61,8 +61,7 @@ public class UserServiceImpl implements UserService {
             // 기존 사용자 정보 업데이트
             existingUser.setName(user.getName());
             existingUser.setNickname(user.getNickname());
-            existingUser.setPrimaryAddressId(user.getPrimaryAddressId());
-            existingUser.setSecondlyAddressId(user.getSecondlyAddressId());
+
 
             // 업데이트된 사용자 저장
             User updatedUser = userRepository.save(existingUser);
@@ -143,7 +142,7 @@ public class UserServiceImpl implements UserService {
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
             // CustomUserDetails 객체 생성 후 반환
-            return new CustomUserDetails(user.getId(), user.getNickname(), user.getCodenum(), user.getPrimaryAddressId(), authorities);
+            return new CustomUserDetails(user.getId(), user.getNickname(), user.getCodenum(), authorities);
         } else {
             throw new RuntimeException("User not found with codenum: " + codenum);
         }

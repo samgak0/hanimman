@@ -23,12 +23,11 @@ public class CustomUserDetails implements UserDetails {
 
 
     // 생성자
-    public CustomUserDetails(Integer id, String nickname, String codenum, Address primaryAddressId, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Integer id, String nickname, String codenum, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.nickname = nickname;
         this.codenum = codenum;
         this.authorities = authorities;
-        this.primaryAddressId = primaryAddressId;
     }
 
     // UserDetails 인터페이스 메서드 구현
@@ -83,7 +82,4 @@ public class CustomUserDetails implements UserDetails {
         return createdAt;
     }
 
-    public Address getPrimaryAddressId() {
-        return primaryAddressId;
-    }
 }

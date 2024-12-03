@@ -1,14 +1,14 @@
 package org.devkirby.hanimman.controller;
 
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
-import org.devkirby.hanimman.controller.ShareController;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.dto.UserAddressDTO;
+import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.User;
-import org.devkirby.hanimman.repository.AddressRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
+import org.devkirby.hanimman.repository.UserAddressRepository;
 import org.devkirby.hanimman.service.ShareService;
+import org.devkirby.hanimman.service.UserAddressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,26 +18,18 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -56,6 +48,10 @@ public class ShareControllerTests {
     @Autowired
     private ShareRepository shareRepository;
 
+    @Autowired
+    private UserAddressRepository userAddressRepository;
+
+
     private static final Logger log = LoggerFactory.getLogger(ShareControllerTests.class);
 
     @BeforeEach
@@ -72,12 +68,13 @@ public class ShareControllerTests {
 
         User user = new User();
         user.setId(1);
+        Optional<UserAddressDTO> userAddressDTO = userAddressRepository.findById(1);
 
         Map<String, Object> response = new HashMap<>();
         response.put("code", 200);
         response.put("msg", "나눠요 게시글 작성에 성공했습니다.");
 
-        doNothing().when(shareService).create(any(ShareDTO.class));
+        doNothing().when(shareService).create(any(ShareDTO.class), userAddressDTO.get().getPrimaryAddressId());
 
         mockMvc.perform(post("/api/v1/share")
                         .contentType(MediaType.APPLICATION_JSON)

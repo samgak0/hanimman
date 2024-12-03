@@ -3,8 +3,11 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.User;
+import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.service.ShareService;
+import org.devkirby.hanimman.service.UserAddressService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -25,12 +28,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/share")
 @RequiredArgsConstructor
 public class ShareController {
     private final ShareService shareService;
+    private final UserAddressService userAddressService;
 
     @PostMapping("/create")
     public Map<String, Object> createShare(@RequestPart("shareDTO") ShareDTO shareDTO,
@@ -40,6 +45,11 @@ public class ShareController {
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
+
+        Optional<UserAddressDTO> userAddress = userAddressService.getUserAddress(loginUser.getId());
+        UserAddressDTO userAddressDTO = userAddress.orElseThrow();
+        String primaryAddressId = userAddressDTO.getPrimaryAddressId();
+
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
@@ -56,7 +66,7 @@ public class ShareController {
             if(files != null && !files.isEmpty()){
                 shareDTO.setFiles(files);
             }
-            shareService.create(shareDTO);
+            shareService.create(shareDTO, primaryAddressId);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
         }

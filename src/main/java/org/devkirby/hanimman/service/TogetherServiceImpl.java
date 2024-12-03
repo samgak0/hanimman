@@ -42,9 +42,9 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     @Transactional
-    public void create(TogetherDTO togetherDTO) throws IOException {
+    public void create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(togetherDTO.getUserId());
-        togetherDTO.setAddressId(user.get().getPrimaryAddressId().getId());
+        togetherDTO.setAddressId(primaryAddressId);
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherDTO.setId(togetherRepository.save(together).getId());
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
