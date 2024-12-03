@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.User;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,7 @@ import java.io.IOException;
 
 public interface ShareService {
     void create(ShareDTO shareDTO) throws IOException;
-    ShareDTO read(Integer id, User loginUser);
+    ShareDTO read(Integer id, CustomUserDetails loginUser);
     void update(ShareDTO shareDTO) throws IOException;
     void delete(Integer id);
 
