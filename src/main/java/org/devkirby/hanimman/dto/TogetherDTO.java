@@ -35,6 +35,9 @@ public class TogetherDTO {
     @Builder.Default
     private boolean favorite = false;
 
+    // 자신이 작성자인지
+    private boolean writer;
+
     // 찜 수
     @Builder.Default
     private Integer favoriteCount = 0;

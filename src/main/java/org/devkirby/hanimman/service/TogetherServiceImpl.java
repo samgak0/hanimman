@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,13 @@ public class TogetherServiceImpl implements TogetherService {
         togetherRepository.save(together);
         User user = modelMapper.map(loginUser, User.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+        if(Objects.equals(together.getUser().getId(), loginUser.getId())){
+            togetherDTO.setWriter(true);
+            log.info("작성자입니다.");
+        }else{
+            togetherDTO.setWriter(false);
+            log.info("작성자가 아닙니다.");
+        }
         togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
@@ -107,7 +115,7 @@ public class TogetherServiceImpl implements TogetherService {
         }
         if(isEnd){
             log.info("isEnd is true");
-            return togetherRepository.findByIsEndIsFalse(pageable)
+            return togetherRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
@@ -121,7 +129,7 @@ public class TogetherServiceImpl implements TogetherService {
                     });
         }
         else{
-            return togetherRepository.findAll(pageable)
+            return togetherRepository.findByDeletedAtIsNull(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
@@ -160,7 +168,7 @@ public class TogetherServiceImpl implements TogetherService {
                         return togetherDTO;
                     });
         }else{
-            return togetherRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+            return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));

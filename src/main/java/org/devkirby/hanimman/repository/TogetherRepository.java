@@ -31,7 +31,9 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     Page<Together> findByTitleContainingOrContentContaining(String titleKeyword,
                                                           String contentKeyword, Pageable pageable);
 
-    Page<Together> findByIsEndIsFalse(Pageable pageable);
+    Page<Together> findByIsEndIsFalseAndDeletedAtIsNull(Pageable pageable);
 
     List<Together> findByIsEndIsFalse();
+
+    Page<Together> findByDeletedAtIsNull(Pageable pageable);
 }

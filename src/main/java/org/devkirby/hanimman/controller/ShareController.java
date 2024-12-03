@@ -124,7 +124,7 @@ public class ShareController {
 
     @GetMapping("favorite/list/{Id}")
     public Page<ShareDTO> listByUserIdFavorite(@PageableDefault(size = 10) Pageable pageable,
-                                               @AuthenticationPrincipal User loginUser) {
+                                               @AuthenticationPrincipal CustomUserDetails loginUser) {
         return shareService.listByUserIdFavorite(loginUser.getId(), pageable);
     }
 

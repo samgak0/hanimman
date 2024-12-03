@@ -28,7 +28,9 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
     Page<Share> findByTitleContainingOrContentContaining(String titleKeyword,
                                                          String contentKeyword, Pageable pageable);
 
-    Page<Share> findByIsEndIsFalse(Pageable pageable);
+    Page<Share> findByIsEndIsFalseAndDeletedAtIsNull(Pageable pageable);
 
     List<Share> findByIsEndIsFalse();
+
+    Page<Share> findByDeletedAtIsNull(Pageable pageable);
 }

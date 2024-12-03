@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,11 @@ public class ShareServiceImpl implements ShareService {
         shareRepository.save(share);
         User user = modelMapper.map(loginUser, User.class);
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+        if(Objects.equals(share.getUser().getId(), loginUser.getId())){
+            shareDTO.setWriter(true);
+        }else {
+            shareDTO.setWriter(false);
+        }
         shareDTO.setImageIds(getImageUrls(share));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
@@ -103,7 +109,7 @@ public class ShareServiceImpl implements ShareService {
 
 
         if(isEnd){
-            return shareRepository.findByIsEndIsFalse(pageable)
+            return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
@@ -155,7 +161,7 @@ public class ShareServiceImpl implements ShareService {
                         return shareDTO;
                     });
         }else{
-            return shareRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));

@@ -132,9 +132,9 @@ public class TogetherController {
         return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
-    @GetMapping("/favorite/list/{id}")
+    @GetMapping("/favorite/list")
     public Page<TogetherDTO> listFavoriteTogethers( @PageableDefault(size = 10) Pageable pageable,
-                                                   @AuthenticationPrincipal User loginUser) {
+                                                   @AuthenticationPrincipal CustomUserDetails loginUser) {
         return togetherService.listByUserIdFavorite(loginUser.getId(), pageable);
     }
 
