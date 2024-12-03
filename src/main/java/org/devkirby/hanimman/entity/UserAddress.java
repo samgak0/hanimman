@@ -36,12 +36,12 @@ public class UserAddress {
     private Address secondlyAddress;
 
     @Column(name = "validated_at")
-    private Instant validatedAt = Instant.now();
+    private Instant validatedAt;
 
     @Column(name = "modified_at")
-    private Instant modifiedAt = Instant.now();
+    private Instant modifiedAt;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
 }

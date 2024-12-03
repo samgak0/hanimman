@@ -59,8 +59,6 @@ public class UserController {
 
             // 유저가 존재하는지 확인
             UserDTO existingUser = userService.selectUser(userDTO);
-            System.out.println("UserController---------------------------------");
-            System.out.println(existingUser);
 
             if (existingUser == null || existingUser.getId() == null) {
                 // 유저가 없으면 회원가입 진행
@@ -73,18 +71,6 @@ public class UserController {
 
                 // 유저 생성
                 UserDTO savedUserDTO = userService.createUser(userDTO);
-//                log.info("New user created: " + savedUserDTO);
-//
-//                UserAddressDTO userAddressDTO = UserAddressDTO.builder()
-//                        .userId(savedUserDTO.getId())
-//                        .primaryAddressId(legalCode)
-//                        .validatedAt(Instant.now())
-//                        .createdAt(Instant.now())
-//                        .build();
-//
-//                System.out.println(userAddressDTO);
-//
-//                userAddressService.firstSaveUserAddressRepository(userAddressDTO);
 
                 // JWT 토큰 발행 및 응답
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
@@ -258,18 +244,18 @@ public class UserController {
     }
 
 
-    @GetMapping("/myprofile")
+    @GetMapping({"/myprofile","/editprofile"})
     public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
 
         // 프로필 리스트 가져오기
-        List<Profile> profileDTOList = profileService.selectByUser(userDTO);
-        System.out.println(profileDTOList);
+        Profile profile = profileService.selectByUser(userDTO);
 
         // Map으로 묶어서 반환
         Map<String, Object> response = new HashMap<>();
-        response.put("userDTO", userDTO);
-        response.put("profileDTOList", profileDTOList);
+        response.put("nickname", userDTO.getNickname());
+        response.put("brix", userDTO.getBrix());
+        response.put("profileDTOList", profile);
 
         // ResponseEntity로 반환, Spring이 자동으로 JSON으로 변환
         return ResponseEntity.ok(response);
@@ -277,12 +263,8 @@ public class UserController {
 
     @PostMapping("/updateprofile")
     public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-
-        System.out.println("여기로 오나요?");
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         profileService.selectByUser(userDTO);
-
-
         return null;
     }
 

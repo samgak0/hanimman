@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Integer> {
-    List<Profile> findByParent(User parent);
-
+    Profile findByParent(User parent);
 }

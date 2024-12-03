@@ -5,15 +5,19 @@ import org.devkirby.hanimman.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class ProfileRepositoryTests {
 
     @Autowired
-    private ProfileRepository repository;
+    private ProfileRepository profileRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,19 +39,24 @@ public class ProfileRepositoryTests {
                 .build();
 
         // profile 객체 저장
-        repository.save(profile);
+        profileRepository.save(profile);
 
     }
     @Test
-    void findbyUser() {
-        // User 객체 생성
-        Optional<User> opt = userRepository.findById(1);
+    @Transactional
+    void findByUser() {
+        // User 객체 조회
+        Optional<User> opt = userRepository.findById(1); // Long 타입 맞춤
         User user = opt.orElseThrow(() -> new RuntimeException("User not found"));
 
-        // profile 객체 저장
-        repository.findByParent(user);
+        // Profile 조회
+        Profile profile = profileRepository.findByParent(user);
 
+        // 결과 검증
+        assertNotNull(profile, "Profile should not be null");
+        assertEquals(user.getId(), profile.getParent().getId(), "Profile's parent ID should match User ID");
     }
+
 
     @Test
     void updateProfileTest() {
@@ -67,8 +76,15 @@ public class ProfileRepositoryTests {
                 .build();
 
         // profile 객체 저장
-        repository.save(profile);
+        profileRepository.save(profile);
 
+    }
+
+    @Test
+    void selectByUser(){
+        Optional<User> opt = userRepository.findById(2);
+        User user = opt.orElseThrow(() -> new RuntimeException("User not found"));
+        profileRepository.findByParent(user);
     }
 
 

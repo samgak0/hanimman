@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -59,9 +60,15 @@ public class ProfileService {
         return profileRepository.save(profile);
     }
 
-    public List<Profile> selectByUser(UserDTO userDTO){
+    @Transactional
+    public Profile selectByUser(UserDTO userDTO){
         User user  = mapper.map(userDTO, User.class);
-       List<Profile> list = profileRepository.findByParent(user);
-       return list;
+        Profile profile = profileRepository.findByParent(user);
+       return profile;
+    }
+
+    @Transactional
+    public Profile saveProfile(User user, String nickname){
+        return null;
     }
 }

@@ -32,6 +32,7 @@ public class Profile {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User parent;
 }

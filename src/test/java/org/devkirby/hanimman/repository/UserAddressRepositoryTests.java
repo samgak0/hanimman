@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -47,9 +48,10 @@ class UserAddressRepositoryTests {
                 .secondlyAddress(null)
                 .validatedAt(null)
                 .modifiedAt(null)
-                .createdAt(LocalDateTime.now())
+                .createdAt(Instant.now())
                 .build();
 
         userAddressRepository.save(userAddress);
     }
+
 }
