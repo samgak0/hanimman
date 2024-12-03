@@ -40,12 +40,6 @@ public class User {
     @Column
     private Instant blockedAt; // 블록처리 여부
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Address primaryAddressId; // 주소1
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Address secondlyAddressId; // 주소2
-
     @Column
     private Instant modifiedAt; // 회원 수정 일자
 
