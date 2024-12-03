@@ -73,18 +73,18 @@ public class UserController {
 
                 // 유저 생성
                 UserDTO savedUserDTO = userService.createUser(userDTO);
-                log.info("New user created: " + savedUserDTO);
-
-                UserAddressDTO userAddressDTO = UserAddressDTO.builder()
-                        .userId(savedUserDTO.getId())
-                        .primaryAddressId(legalCode)
-                        .validatedAt(LocalDateTime.now())
-                        .createdAt(LocalDateTime.now())
-                        .build();
-
-                System.out.println(userAddressDTO);
-
-                userAddressService.firstSaveUserAddressRepository(userAddressDTO);
+//                log.info("New user created: " + savedUserDTO);
+//
+//                UserAddressDTO userAddressDTO = UserAddressDTO.builder()
+//                        .userId(savedUserDTO.getId())
+//                        .primaryAddressId(legalCode)
+//                        .validatedAt(Instant.now())
+//                        .createdAt(Instant.now())
+//                        .build();
+//
+//                System.out.println(userAddressDTO);
+//
+//                userAddressService.firstSaveUserAddressRepository(userAddressDTO);
 
                 // JWT 토큰 발행 및 응답
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
@@ -105,6 +105,7 @@ public class UserController {
                     .body(new ErrorResponse("Invalid input data."));
         } catch (Exception e) {
             log.error("Error during verification, signup, or login", e);
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("An error occurred during the process"));
         }

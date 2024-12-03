@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,68 +36,12 @@ public class UserAddress {
     private Address secondlyAddress;
 
     @Column(name = "validated_at")
-    private LocalDateTime validatedAt;
+    private Instant validatedAt = Instant.now();
 
     @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt = Instant.now();
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    private Instant createdAt = Instant.now();
 
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Address getPrimaryAddress() {
-        return primaryAddress;
-    }
-
-    public void setPrimaryAddress(Address primaryAddress) {
-        this.primaryAddress = primaryAddress;
-    }
-
-    public Address getSecondlyAddress() {
-        return secondlyAddress;
-    }
-
-    public void setSecondlyAddress(Address secondlyAddress) {
-        this.secondlyAddress = secondlyAddress;
-    }
-
-    public LocalDateTime getValidatedAt() {
-        return validatedAt;
-    }
-
-    public void setValidatedAt(LocalDateTime validatedAt) {
-        this.validatedAt = validatedAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
