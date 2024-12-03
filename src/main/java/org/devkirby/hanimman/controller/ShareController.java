@@ -122,7 +122,7 @@ public class ShareController {
         return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
-    @GetMapping("favorite/list/{Id}")
+    @GetMapping("favorite/list")
     public Page<ShareDTO> listByUserIdFavorite(@PageableDefault(size = 10) Pageable pageable,
                                                @AuthenticationPrincipal CustomUserDetails loginUser) {
         return shareService.listByUserIdFavorite(loginUser.getId(), pageable);
