@@ -42,8 +42,6 @@ public class TogetherController {
     public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,
                                               @RequestPart(name ="files", required = false) List<MultipartFile> files,
                                               @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
-
-        log.info("성공적으로 작성 완료" + togetherDTO.getTitle());
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
@@ -60,7 +58,6 @@ public class TogetherController {
         } else if (togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
-            log.info("같이가요 작성 ID : " + loginUser.getId());
             togetherDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
@@ -120,7 +117,8 @@ public class TogetherController {
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "true") Boolean isEnd,
                                               @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        log.info("together list 출력 " + sortBy);
+        log.info("together list 출력 : " + sortBy);
+        log.info("together list 출력 : " + isEnd);
         return togetherService.listAll(pageable, isEnd, sortBy);
     }
 

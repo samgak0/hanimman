@@ -113,7 +113,7 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(isEnd){
+        if(!isEnd){
             log.info("isEnd is true");
             return togetherRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(together -> {

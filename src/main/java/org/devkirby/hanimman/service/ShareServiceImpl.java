@@ -108,7 +108,7 @@ public class ShareServiceImpl implements ShareService {
         }
 
 
-        if(isEnd){
+        if(!isEnd){
             return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
