@@ -33,7 +33,7 @@ public class ShareController {
     private final ShareService shareService;
 
     @PostMapping("/create")
-    public Map<String, Object> createShare(@RequestPart("togetherDTO") ShareDTO shareDTO,
+    public Map<String, Object> createShare(@RequestPart("shareDTO") ShareDTO shareDTO,
                                            @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                            @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();

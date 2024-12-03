@@ -27,6 +27,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
     private final ShareImageService shareImageService;
+    private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
 
@@ -36,6 +37,8 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional
     public void create(ShareDTO shareDTO) throws IOException {
+        Optional<User> user = userRepository.findById(shareDTO.getUserId());
+        shareDTO.setAddressId(user.get().getPrimaryAddressId().getId());
         Share share = modelMapper.map(shareDTO, Share.class);
         shareRepository.save(share);
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){

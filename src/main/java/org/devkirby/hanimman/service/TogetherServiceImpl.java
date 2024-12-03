@@ -6,10 +6,7 @@ import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.entity.*;
-import org.devkirby.hanimman.repository.AddressRepository;
-import org.devkirby.hanimman.repository.TogetherFavoriteRepository;
-import org.devkirby.hanimman.repository.TogetherImageRepository;
-import org.devkirby.hanimman.repository.TogetherRepository;
+import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +32,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final TogetherImageService togetherImageService;
+    private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
 
@@ -45,6 +43,8 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     @Transactional
     public void create(TogetherDTO togetherDTO) throws IOException {
+        Optional<User> user = userRepository.findById(togetherDTO.getUserId());
+        togetherDTO.setAddressId(user.get().getPrimaryAddressId().getId());
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherDTO.setId(togetherRepository.save(together).getId());
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){

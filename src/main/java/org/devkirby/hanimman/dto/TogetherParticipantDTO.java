@@ -1,13 +1,10 @@
 package org.devkirby.hanimman.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -19,6 +16,6 @@ public class TogetherParticipantDTO {
     private Instant accepted;
     private Instant complete;
     private Integer userId;  // User의 ID
-    private Integer togetherId;  // Together의 ID
+    private Integer parentId;  // Together의 ID
     private Instant deletedAt;
 }

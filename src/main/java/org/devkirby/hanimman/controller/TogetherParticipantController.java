@@ -1,20 +1,29 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherParticipantDTO;
 import org.devkirby.hanimman.service.TogetherParticipantService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/together-participant")
+@RequestMapping("/api/v1/together-participant")
 @RequiredArgsConstructor
 public class TogetherParticipantController {
     private final TogetherParticipantService togetherParticipantService;
+    private final Logger log = LoggerFactory.getLogger(TogetherParticipantController.class);
 
     @PostMapping("/create")
-    public void createParticipant(TogetherParticipantDTO togetherParticipantDTO) {
+    public void createParticipant(@RequestBody
+                                      TogetherParticipantDTO togetherParticipantDTO,
+                                  @AuthenticationPrincipal CustomUserDetails loginUser) {
+        log.info("같이가요 참여 : " + loginUser.getId());
+        togetherParticipantDTO.setUserId(loginUser.getId());
         togetherParticipantService.create(togetherParticipantDTO);
     }
 

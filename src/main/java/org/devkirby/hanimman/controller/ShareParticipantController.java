@@ -1,20 +1,24 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareParticipantDTO;
 import org.devkirby.hanimman.service.ShareParticipantService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/share-participant")
+@RequestMapping("/api/v1/share-participant")
 @RequiredArgsConstructor
 public class ShareParticipantController {
     private final ShareParticipantService shareParticipantService;
 
     @PostMapping("/create")
-    public void createParticipant(ShareParticipantDTO shareParticipantDTO) {
+    public void createParticipant(@RequestBody ShareParticipantDTO shareParticipantDTO,
+                                  @AuthenticationPrincipal CustomUserDetails loginUser) {
+        shareParticipantDTO.setUserId(loginUser.getId());
         shareParticipantService.create(shareParticipantDTO);
     }
 

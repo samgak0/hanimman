@@ -16,6 +16,6 @@ public class ShareParticipantDTO {
     private Instant accepted;
     private Instant complete;
     private Integer userId;   // User의 ID만 전달
-    private Integer shareId;  // Share의 ID만 전달
+    private Integer parentId;  // Share의 ID만 전달
     private Instant deletedAt;
 }
