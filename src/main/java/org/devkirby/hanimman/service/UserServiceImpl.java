@@ -151,8 +151,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDTO selectUser(Integer id) {
-        return null;
+    public UserDTO getCurrentUserDetails(CustomUserDetails customUserDetails) {
+        Integer id = customUserDetails.getId();
+        Optional<User> opt = userRepository.findById(id);
+        User user = opt.orElseThrow();
+        return modelMapper.map(user, UserDTO.class);
     }
 
 }

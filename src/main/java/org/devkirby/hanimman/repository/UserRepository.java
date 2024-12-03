@@ -15,5 +15,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByNameAndPhonenumAndGenderAndBirth(String name, String phonenum, Gender gender, LocalDate birth);
     boolean existsByCodenum(String codenum);
     Optional<User> findByCodenum(String codenum);
-    Optional<User> findById(Long id);
+    Optional<User> findById(Integer id);
 }
