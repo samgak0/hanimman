@@ -1,8 +1,11 @@
 package org.devkirby.hanimman.service;
 
 import lombok.Setter;
+import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Profile;
+import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.ProfileRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,10 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ProfileService {
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Autowired
     private ProfileRepository profileRepository; // 프로필 저장소
@@ -50,5 +57,11 @@ public class ProfileService {
 
         // 프로필 저장
         return profileRepository.save(profile);
+    }
+
+    public List<Profile> selectByUser(UserDTO userDTO){
+        User user  = mapper.map(userDTO, User.class);
+       List<Profile> list = profileRepository.findByParent(user);
+       return list;
     }
 }
