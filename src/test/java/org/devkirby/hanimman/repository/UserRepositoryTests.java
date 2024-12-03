@@ -8,9 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.time.LocalDate;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -18,6 +19,8 @@ class UserRepositoryTests {
     private static final Logger log = LoggerFactory.getLogger(UserRepositoryTests.class);
     @Autowired
     private UserRepository userRepository;
+
+    private User user;
 
     @Test
     @DisplayName("유저 정보 입력 테스트")
@@ -29,10 +32,6 @@ class UserRepositoryTests {
                 .phonenum("010-3682-2901")
                 .nickname("Dragon01")
                 .codenum("dieRlq")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device02")
                 .build();
         userRepository.save(user);
     }
@@ -46,10 +45,6 @@ class UserRepositoryTests {
                 .phonenum("010-1234-5671")
                 .nickname("철수")
                 .codenum("aBcD12")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device01")
                 .build();
 
         User user2 = User.builder()
@@ -59,10 +54,6 @@ class UserRepositoryTests {
                 .phonenum("010-2345-6782")
                 .nickname("영희")
                 .codenum("XyZpQw")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device02")
                 .build();
 
         User user3 = User.builder()
@@ -72,10 +63,6 @@ class UserRepositoryTests {
                 .phonenum("010-3456-7893")
                 .nickname("준호")
                 .codenum("FgHiJk")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device03")
                 .build();
 
         User user4 = User.builder()
@@ -85,10 +72,6 @@ class UserRepositoryTests {
                 .phonenum("010-4567-8904")
                 .nickname("민지")
                 .codenum("LmNoPq")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device04")
                 .build();
 
         User user5 = User.builder()
@@ -98,10 +81,6 @@ class UserRepositoryTests {
                 .phonenum("010-5678-9015")
                 .nickname("다솜")
                 .codenum("ZyXwVu")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device05")
                 .build();
 
         User user6 = User.builder()
@@ -111,10 +90,6 @@ class UserRepositoryTests {
                 .phonenum("010-6789-0126")
                 .nickname("호석")
                 .codenum("RstUvW")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device06")
                 .build();
 
         User user7 = User.builder()
@@ -124,10 +99,6 @@ class UserRepositoryTests {
                 .phonenum("010-7890-1237")
                 .nickname("지혜")
                 .codenum("MnoPQr")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device07")
                 .build();
 
         User user8 = User.builder()
@@ -137,10 +108,6 @@ class UserRepositoryTests {
                 .phonenum("010-8901-2348")
                 .nickname("민준")
                 .codenum("GhIjKl")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device08")
                 .build();
 
         User user9 = User.builder()
@@ -150,10 +117,6 @@ class UserRepositoryTests {
                 .phonenum("010-9012-3459")
                 .nickname("보라")
                 .codenum("WxYzAb")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device09")
                 .build();
 
         User user10 = User.builder()
@@ -163,10 +126,6 @@ class UserRepositoryTests {
                 .phonenum("010-0123-4560")
                 .nickname("도현")
                 .codenum("CdEfGh")
-                .privilege(false)
-                .primaryAddressId(null)
-                .secondlyAddressId(null)
-                .deviceUnique("device10")
                 .build();
 
         userRepository.save(user1);
@@ -179,5 +138,46 @@ class UserRepositoryTests {
         userRepository.save(user8);
         userRepository.save(user9);
         userRepository.save(user10);
+    }
+
+    @Test
+    public void testFindByNameAndPhonenumAndGenderAndBirth() {
+        // 주어진 조건으로 사용자 찾기
+        Optional<User> foundUser = userRepository.findByNameAndPhonenumAndGenderAndBirth(
+                "이용준", "010-3682-2901", Gender.M, LocalDate.of(1990, 1, 1)
+        );
+
+        // 결과 검증
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getName()).isEqualTo("dieRlq");
+    }
+
+    @Test
+    public void testExistsByCodenum() {
+        // codenum으로 존재 여부 확인
+        boolean exists = userRepository.existsByCodenum("dieRlq");
+
+        // 결과 검증
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    public void testFindByCodenum() {
+        // codenum으로 사용자 찾기
+        Optional<User> foundUser = userRepository.findByCodenum("dieRlq");
+
+        // 결과 검증
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getCodenum()).isEqualTo("dieRlq");
+    }
+
+    @Test
+    public void testFindById() {
+        // id로 사용자 찾기
+        Optional<User> foundUser = userRepository.findById(user.getId());
+
+        // 결과 검증
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getId()).isEqualTo(user.getId());
     }
 }

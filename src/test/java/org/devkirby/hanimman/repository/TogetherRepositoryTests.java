@@ -29,7 +29,7 @@ public class TogetherRepositoryTests {
     @Test
     @DisplayName("임의의 Together 데이터 30개 생성 테스트")
     public void createRandomTogetherData() {
-        User user = userRepository.findById(2).orElseThrow();
+        User user = userRepository.findById(3).orElseThrow();
         Address address = addressRepository.findById("1111010200").orElseThrow();
 
         List<Together> togethers = IntStream.range(0, 30)

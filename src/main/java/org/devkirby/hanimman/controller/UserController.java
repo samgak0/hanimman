@@ -1,22 +1,30 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.extern.log4j.Log4j2;
+import org.devkirby.hanimman.config.CustomUserDetails;
+import org.devkirby.hanimman.dto.ProfileDTO;
+import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Gender;
 import org.devkirby.hanimman.entity.Nickname;
+import org.devkirby.hanimman.entity.Profile;
+import org.devkirby.hanimman.service.ProfileService;
+import org.devkirby.hanimman.service.UserAddressService;
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @CrossOrigin
@@ -27,13 +35,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserAddressService userAddressService;
+
+    @Autowired
+    private ProfileService profileService;
+
     @PostMapping("/verify")
     public ResponseEntity<?> verifyAndSignupOrLogin(
-            @RequestBody ResultRequest resultData,
+            @RequestBody ResultRequest resultData, String legalCode,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-
-        System.out.println("----------------------------resultData");
-        System.out.println(resultData);
 
         // 필수 필드 검증
         if (resultData.getName() == null || resultData.getPhoneNumber() == null ||
@@ -64,6 +75,17 @@ public class UserController {
                 UserDTO savedUserDTO = userService.createUser(userDTO);
                 log.info("New user created: " + savedUserDTO);
 
+                UserAddressDTO userAddressDTO = UserAddressDTO.builder()
+                        .userId(savedUserDTO.getId())
+                        .primaryAddressId(legalCode)
+                        .validatedAt(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now())
+                        .build();
+
+                System.out.println(userAddressDTO);
+
+                userAddressService.firstSaveUserAddressRepository(userAddressDTO);
+
                 // JWT 토큰 발행 및 응답
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
             }
@@ -89,7 +111,7 @@ public class UserController {
     }
 
     private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status,
-            String message) {
+                                                                      String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
         claims.put("nickName", userDTO.getNickname());
@@ -199,6 +221,7 @@ public class UserController {
         private String birthDate;
         private String gender;
 
+
         // Getters and setters
         public String getName() {
             return name;
@@ -232,4 +255,34 @@ public class UserController {
             this.gender = gender;
         }
     }
+
+
+    @GetMapping("/myprofile")
+    public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
+
+        // 프로필 리스트 가져오기
+        List<Profile> profileDTOList = profileService.selectByUser(userDTO);
+        System.out.println(profileDTOList);
+
+        // Map으로 묶어서 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("userDTO", userDTO);
+        response.put("profileDTOList", profileDTOList);
+
+        // ResponseEntity로 반환, Spring이 자동으로 JSON으로 변환
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/updateprofile")
+    public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+
+        System.out.println("여기로 오나요?");
+        UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
+        profileService.selectByUser(userDTO);
+
+
+        return null;
+    }
+
 }

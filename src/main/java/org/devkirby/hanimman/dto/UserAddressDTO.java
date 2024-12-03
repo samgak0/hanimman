@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.devkirby.hanimman.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +14,8 @@ import java.time.LocalDateTime;
 public class UserAddressDTO {
     Integer id;
     Integer userId;
-    Integer primaryAddressId;
-    Integer secondlyAddressId;
+    String primaryAddressId;
+    String secondlyAddressId;
     LocalDateTime validatedAt;
     LocalDateTime modifiedAt;
     LocalDateTime createdAt;

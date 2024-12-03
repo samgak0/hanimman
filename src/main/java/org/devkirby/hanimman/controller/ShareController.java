@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.ShareService;
@@ -34,7 +35,7 @@ public class ShareController {
     @PostMapping("/create")
     public Map<String, Object> createShare(@RequestPart("togetherDTO") ShareDTO shareDTO,
                                            @RequestPart(name = "files", required = false) List<MultipartFile> files,
-                                           @AuthenticationPrincipal User loginUser) throws IOException {
+                                           @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
@@ -63,7 +64,8 @@ public class ShareController {
     }
 
     @GetMapping("/{id}")
-    public ShareDTO readShare(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+    public ShareDTO readShare(@PathVariable Integer id,
+                              @AuthenticationPrincipal CustomUserDetails loginUser) {
         return shareService.read(id, loginUser);
     }
 
@@ -93,7 +95,7 @@ public class ShareController {
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, Object> deleteShare(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+    public Map<String, Object> deleteShare(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
         Map<String, Object> map = new HashMap<>();
         if(!loginUser.getId().equals(shareService.read(id, loginUser).getUserId())){
             throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할 수 있습니다.");
@@ -122,7 +124,7 @@ public class ShareController {
 
     @GetMapping("favorite/list/{Id}")
     public Page<ShareDTO> listByUserIdFavorite(@PageableDefault(size = 10) Pageable pageable,
-                                               @AuthenticationPrincipal User loginUser) {
+                                               @AuthenticationPrincipal CustomUserDetails loginUser) {
         return shareService.listByUserIdFavorite(loginUser.getId(), pageable);
     }
 

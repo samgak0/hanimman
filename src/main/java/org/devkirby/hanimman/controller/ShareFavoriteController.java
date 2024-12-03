@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.ShareFavoriteDTO;
 import org.devkirby.hanimman.dto.UserDTO;
@@ -17,13 +18,15 @@ public class ShareFavoriteController {
     private final ShareFavoriteService shareFavoriteService;;
 
     @PostMapping("/create")
-    public void createShareFavorite(@RequestBody ShareDTO shareDTO, @AuthenticationPrincipal UserDTO loginUser) {
-        shareFavoriteService.create(shareDTO.getId(), loginUser.getId());
+    public void createShareFavorite(@RequestBody ShareDTO shareDTO,
+                                    @AuthenticationPrincipal CustomUserDetails loginUser) {
+        shareFavoriteService.create(loginUser.getId(), shareDTO.getId());
     }
 
     @DeleteMapping("/{id}")
-    public void deleteShareFavorite(@PathVariable Integer id) {
-        shareFavoriteService.delete(id);
+    public void deleteShareFavorite(@PathVariable Integer id,
+                                    @AuthenticationPrincipal CustomUserDetails loginUser) {
+        shareFavoriteService.delete(id, loginUser.getId());
     }
 
     @GetMapping("/count/{parentId}")

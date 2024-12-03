@@ -13,6 +13,6 @@ public interface ShareFavoriteRepository extends JpaRepository<ShareFavorite, In
     List<ShareFavorite> findByUserId(Integer userId);
     List<ShareFavorite> findByParent(Share parent);
     int countByParent(Share parent);
-
+    ShareFavorite findByUserAndParent(User user, Share parent);
     boolean existsByUserAndParent(User user, Share parent);
 }

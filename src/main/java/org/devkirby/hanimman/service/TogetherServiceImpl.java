@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.entity.*;
@@ -23,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,7 +53,7 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public TogetherDTO read(Integer id, User loginUser) {
+    public TogetherDTO read(Integer id, CustomUserDetails loginUser) {
         Together together = togetherRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + id));
 
@@ -59,14 +61,21 @@ public class TogetherServiceImpl implements TogetherService {
         Integer view = together.getViews() + 1;
         together.setViews(view);
         togetherRepository.save(together);
-
+        User user = modelMapper.map(loginUser, User.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+        if(Objects.equals(together.getUser().getId(), loginUser.getId())){
+            togetherDTO.setWriter(true);
+            log.info("작성자입니다.");
+        }else{
+            togetherDTO.setWriter(false);
+            log.info("작성자가 아닙니다.");
+        }
         togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
                 address.get().getNeighborhoodName());
-        boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(loginUser, together);
+        boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(user, together);
         togetherDTO.setFavorite(isFavorite);
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
@@ -104,9 +113,9 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(isEnd){
+        if(!isEnd){
             log.info("isEnd is true");
-            return togetherRepository.findByIsEndIsFalse(pageable)
+            return togetherRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
@@ -120,7 +129,7 @@ public class TogetherServiceImpl implements TogetherService {
                     });
         }
         else{
-            return togetherRepository.findAll(pageable)
+            return togetherRepository.findByDeletedAtIsNull(pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
@@ -159,7 +168,7 @@ public class TogetherServiceImpl implements TogetherService {
                         return togetherDTO;
                     });
         }else{
-            return togetherRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+            return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(together -> {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));

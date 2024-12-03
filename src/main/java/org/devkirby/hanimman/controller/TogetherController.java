@@ -42,8 +42,6 @@ public class TogetherController {
     public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,
                                               @RequestPart(name ="files", required = false) List<MultipartFile> files,
                                               @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
-
-        log.info("성공적으로 작성 완료" + togetherDTO.getTitle());
         Map<String, Object> map = new HashMap<>();
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
@@ -60,7 +58,7 @@ public class TogetherController {
         } else if (togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         } else {
-//            togetherDTO.setUserId(loginUser.getId());
+            togetherDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
             }
@@ -73,7 +71,7 @@ public class TogetherController {
 
     @GetMapping("/{id}")
     public TogetherDTO readTogether(@PathVariable Integer id,
-                                    @AuthenticationPrincipal User loginUser) {
+                                    @AuthenticationPrincipal CustomUserDetails loginUser) {
         return togetherService.read(id, loginUser);
     }
 
@@ -103,7 +101,7 @@ public class TogetherController {
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, Object> deleteTogether(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
+    public Map<String, Object> deleteTogether(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
         Map<String, Object> map = new HashMap<>();
         if(!loginUser.getId().equals(togetherService.read(id, loginUser).getUserId())) {
             throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할 수 있습니다.");
@@ -119,7 +117,8 @@ public class TogetherController {
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "true") Boolean isEnd,
                                               @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        log.info("together list 출력 " + sortBy);
+        log.info("together list 출력 : " + sortBy);
+        log.info("together list 출력 : " + isEnd);
         return togetherService.listAll(pageable, isEnd, sortBy);
     }
 
@@ -131,9 +130,9 @@ public class TogetherController {
         return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
     }
 
-    @GetMapping("/favorite/list/{id}")
+    @GetMapping("/favorite/list")
     public Page<TogetherDTO> listFavoriteTogethers( @PageableDefault(size = 10) Pageable pageable,
-                                                   @AuthenticationPrincipal User loginUser) {
+                                                   @AuthenticationPrincipal CustomUserDetails loginUser) {
         return togetherService.listByUserIdFavorite(loginUser.getId(), pageable);
     }
 

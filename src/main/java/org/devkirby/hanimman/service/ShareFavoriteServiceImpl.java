@@ -37,7 +37,8 @@ public class ShareFavoriteServiceImpl implements ShareFavoriteService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Integer parentId, Integer userId) {
+        Integer id = shareFavoriteRepository.findByUserAndParent(userRepository.findById(userId).orElseThrow(), shareRepository.findById(parentId).orElseThrow()).getId();
         shareFavoriteRepository.deleteById(id);
     }
 

@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.AddressDTO;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.entity.*;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,7 +46,7 @@ public class ShareServiceImpl implements ShareService {
     }
 
     @Override
-    public ShareDTO read(Integer id, User loginUser) {
+    public ShareDTO read(Integer id, CustomUserDetails loginUser) {
         Share share = shareRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + id));
 
@@ -52,14 +54,19 @@ public class ShareServiceImpl implements ShareService {
         Integer view = share.getViews() + 1;
         share.setViews(view);
         shareRepository.save(share);
-
+        User user = modelMapper.map(loginUser, User.class);
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+        if(Objects.equals(share.getUser().getId(), loginUser.getId())){
+            shareDTO.setWriter(true);
+        }else {
+            shareDTO.setWriter(false);
+        }
         shareDTO.setImageIds(getImageUrls(share));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
                 address.get().getNeighborhoodName());
-        boolean isFavorite = shareFavoriteRepository.existsByUserAndParent(loginUser, share);
+        boolean isFavorite = shareFavoriteRepository.existsByUserAndParent(user, share);
         shareDTO.setFavorite(isFavorite);
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
         shareDTO.setFavoriteCount(favoriteCount);
@@ -101,8 +108,8 @@ public class ShareServiceImpl implements ShareService {
         }
 
 
-        if(isEnd){
-            return shareRepository.findByIsEndIsFalse(pageable)
+        if(!isEnd){
+            return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
@@ -154,7 +161,7 @@ public class ShareServiceImpl implements ShareService {
                         return shareDTO;
                     });
         }else{
-            return shareRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
