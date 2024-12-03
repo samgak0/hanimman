@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.repository;
 
+import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherFavorite;
 import org.devkirby.hanimman.entity.User;
@@ -13,6 +14,6 @@ public interface TogetherFavoriteRepository extends JpaRepository<TogetherFavori
     List<TogetherFavorite> findByUserId(Integer userId);
     List<TogetherFavorite> findByParent(Together parent);
     int countByParent(Together parent);
-
+    TogetherFavorite findByUserAndParent(User user, Together parent);
     boolean existsByUserAndParent(User user, Together parent);
 }

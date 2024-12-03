@@ -17,8 +17,8 @@ public class TogetherFavoriteServiceImpl implements TogetherFavoriteService {
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final ModelMapper modelMapper;
 
-    private TogetherRepository togetherRepository;
-    private UserRepository userRepository;
+    private final TogetherRepository togetherRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -37,7 +37,8 @@ public class TogetherFavoriteServiceImpl implements TogetherFavoriteService {
 
     @Override
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Integer parentId, Integer userId) {
+        Integer id = togetherFavoriteRepository.findByUserAndParent(userRepository.findById(userId).orElseThrow(), togetherRepository.findById(parentId).orElseThrow()).getId();
         togetherFavoriteRepository.deleteById(id);
     }
 

@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.entity.*;
@@ -51,7 +52,7 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public TogetherDTO read(Integer id, User loginUser) {
+    public TogetherDTO read(Integer id, CustomUserDetails loginUser) {
         Together together = togetherRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + id));
 
@@ -59,14 +60,14 @@ public class TogetherServiceImpl implements TogetherService {
         Integer view = together.getViews() + 1;
         together.setViews(view);
         togetherRepository.save(together);
-
+        User user = modelMapper.map(loginUser, User.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
         togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
                 address.get().getNeighborhoodName());
-        boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(loginUser, together);
+        boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(user, together);
         togetherDTO.setFavorite(isFavorite);
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
