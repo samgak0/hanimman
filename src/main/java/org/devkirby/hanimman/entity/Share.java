@@ -39,9 +39,6 @@ public class Share {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Address address;
 
-    @Column(length = 255)
-    private String location;
-
     @Column(nullable = false, columnDefinition = "TIMESTAMP(6)")
     private Instant locationDate;
 
