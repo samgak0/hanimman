@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -43,7 +44,7 @@ public class UserController {
 
     @PostMapping("/verify")
     public ResponseEntity<?> verifyAndSignupOrLogin(
-            @RequestBody ResultRequest resultData, String legalCode,
+            @RequestBody ResultRequest resultData,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
 
         // 필수 필드 검증
@@ -55,9 +56,8 @@ public class UserController {
         try {
             // ResultRequest -> UserDTO 변환
             UserDTO userDTO = JsonToDTO(resultData);
-            log.info("UserDTO created from ResultRequest: " + userDTO);
 
-            // 유저가 존재하는지 확인
+            // 유저가 존재 확인
             UserDTO existingUser = userService.selectUser(userDTO);
 
             if (existingUser == null || existingUser.getId() == null) {
@@ -67,10 +67,9 @@ public class UserController {
 
                 userDTO.setCodenum(codeNum);
                 userDTO.setNickname(nickname);
-                log.info("Generated nickname and codeNum for new user");
 
                 // 유저 생성
-                UserDTO savedUserDTO = userService.createUser(userDTO);
+                UserDTO savedUserDTO = createUserWithProfile(userDTO);
 
                 // JWT 토큰 발행 및 응답
                 return generateResponseWithToken(savedUserDTO, HttpStatus.CREATED, "Sign-up successful.");
@@ -80,11 +79,10 @@ public class UserController {
             log.info("Existing user found: " + existingUser);
             if (existingUser.getBlockedAt() != null) {
                 return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
+            } else {
+                // 로그인 성공 -> JWT 생성 및 응답
+                return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
             }
-
-            // 로그인 성공 -> JWT 생성 및 응답
-            return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
-
         } catch (IllegalArgumentException e) {
             log.error("Invalid input data", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -95,6 +93,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("An error occurred during the process"));
         }
+    }
+
+    @Transactional
+    public UserDTO createUserWithProfile(UserDTO savedUserDTO) {
+        System.out.println("savedUserDTO" + savedUserDTO);
+        UserDTO signedUserDTO = userService.createUser(savedUserDTO);
+        System.out.println("signedUser" + signedUserDTO);
+        profileService.createProfile(signedUserDTO);
+        return signedUserDTO;
     }
 
     private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status,
@@ -243,7 +250,7 @@ public class UserController {
     }
 
 
-    @GetMapping({"/myprofile","/editprofile"})
+    @GetMapping({"/myprofile", "/editprofile"})
     public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
 
@@ -261,7 +268,7 @@ public class UserController {
     }
 
     @PostMapping("/updateprofile")
-    public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         profileService.selectByUser(userDTO);
         return null;

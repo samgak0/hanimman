@@ -5,6 +5,7 @@ import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Profile;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.ProfileRepository;
+import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,10 +25,13 @@ import java.util.UUID;
 public class ProfileService {
 
     @Autowired
-    private ModelMapper mapper;
+    private ModelMapper modelMapper;
 
     @Autowired
     private ProfileRepository profileRepository; // 프로필 저장소
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Setter 메서드 추가
     @Value("${com.devkirby.hanimman.upload}")
@@ -62,7 +67,7 @@ public class ProfileService {
 
     @Transactional
     public Profile selectByUser(UserDTO userDTO){
-        User user  = mapper.map(userDTO, User.class);
+        User user  = modelMapper.map(userDTO, User.class);
         Profile profile = profileRepository.findByParent(user);
        return profile;
     }
@@ -70,5 +75,24 @@ public class ProfileService {
     @Transactional
     public Profile saveProfile(User user, String nickname){
         return null;
+    }
+
+
+    public void createProfile(UserDTO savedUserDTO) {
+        User user = modelMapper.map(savedUserDTO, User.class);
+        // User가 DB에 저장된 상태인지 확인
+
+        User persistentUser = userRepository.findById(user.getId())
+                .orElseGet(() -> userRepository.save(user)); // 없으면 저장
+
+        Profile profile = Profile.builder()
+                        .realName("default-profile")
+                        .serverName("default-profile")
+                        .mineType("png")
+                        .fileSize(1)
+                        .parent(persistentUser)
+                        .createdAt(Instant.now())
+                        .build();
+        profileRepository.save(profile);
     }
 }
