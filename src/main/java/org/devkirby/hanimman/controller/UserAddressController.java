@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user-address")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class UserAddressController {
 
     @Autowired
@@ -21,8 +22,9 @@ public class UserAddressController {
     @PostMapping
     public ResponseEntity<UserAddressDTO> createUserAddress(@RequestBody UserAddressDTO userAddressDTO, @AuthenticationPrincipal CustomUserDetails loginUser) {
         userAddressDTO.setUserId(loginUser.getId());
+
         UserAddressDTO savedAddress = userAddressService.saveUserAddress(userAddressDTO);
-        System.out.println(savedAddress + "뭐가찍힘?");
+        System.out.println(savedAddress + "무슨값이 있나요??");
         return ResponseEntity.ok(savedAddress);
     }
 
