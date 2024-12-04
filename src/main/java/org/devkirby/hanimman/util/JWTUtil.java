@@ -21,8 +21,7 @@ public class JWTUtil {
     }
 
     public static String generateToken(Map<String, Object> valueMap, String addKey) {
-        long expirationTime = 1000 * 10; // 15분 (밀리초 단위)
-
+        long expirationTime = 1000 * 60 * 15;
 
         // JWT 토큰 생성
         String jwtStr = Jwts.builder()

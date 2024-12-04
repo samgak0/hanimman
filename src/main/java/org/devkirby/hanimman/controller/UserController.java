@@ -115,7 +115,6 @@ public class UserController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
-            headers.set("Refresh-Token", refreshToken);
             log.info("Response Headers: " + headers.toString()); // 헤더 로그
 
             return ResponseEntity.status(status)

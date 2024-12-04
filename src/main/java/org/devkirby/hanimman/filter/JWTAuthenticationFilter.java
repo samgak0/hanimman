@@ -45,13 +45,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String refreshHeader = request.getHeader("Refresh-Token");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            if (refreshHeader != null) {
-                handleRefreshToken(request, response, refreshHeader);
-                return;
-            }
             filterChain.doFilter(request, response);
             return;
         }
