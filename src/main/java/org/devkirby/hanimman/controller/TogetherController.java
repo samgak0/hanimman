@@ -52,7 +52,8 @@ public class TogetherController {
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
 
         Optional<UserAddressDTO> userAddress = userAddressService.getUserAddress(loginUser.getId());
-        UserAddressDTO userAddressDTO = userAddress.orElseThrow();
+        UserAddressDTO userAddressDTO = userAddress.orElseThrow(()->
+                new IllegalArgumentException("주소를 찾을 수 없습니다."));
         String primaryAddressId = userAddressDTO.getPrimaryAddressId();
 
 

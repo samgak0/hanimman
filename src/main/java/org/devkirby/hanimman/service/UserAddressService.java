@@ -1,5 +1,6 @@
 package org.devkirby.hanimman.service;
 
+import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
@@ -7,6 +8,7 @@ import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.UserAddressRepository;
 import org.devkirby.hanimman.repository.UserRepository; // UserRepository 추가
 import org.devkirby.hanimman.repository.AddressRepository; // AddressRepository 추가
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserAddressService {
 
     @Autowired
@@ -25,6 +28,8 @@ public class UserAddressService {
 
     @Autowired
     private AddressRepository addressRepository; // AddressRepository 주입
+
+    private final ModelMapper modelMapper;
 
     // 주소 저장
     public UserAddressDTO saveUserAddress(UserAddressDTO userAddressDTO) {
@@ -61,8 +66,8 @@ public class UserAddressService {
 
     // 주소 조회
     public Optional<UserAddressDTO> getUserAddress(Integer id) {
-        return userAddressRepository.findById(id)
-                .map(this::convertToDTO);
+        return userAddressRepository.findByUserId(id)
+                .map(userAddress -> modelMapper.map(userAddress, UserAddressDTO.class));
     }
 
     // 모든 주소 조회
