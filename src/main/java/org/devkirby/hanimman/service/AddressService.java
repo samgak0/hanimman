@@ -1,12 +1,18 @@
 package org.devkirby.hanimman.service;
 
 import org.devkirby.hanimman.dto.AddressDTO;
+import org.devkirby.hanimman.entity.Address;
+import org.devkirby.hanimman.repository.AddressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,6 +20,9 @@ import org.json.JSONObject;
 public class AddressService {
 
     private static final String API_KEY = "d3f9d15a27f865ac85590c91e07a00a7"; // 발급받은 API 키
+
+    @Autowired
+    private AddressRepository addressRepository; // 주소 정보를 가져오기 위한 레포지토리
 
     public AddressDTO getAdministrative(double lat, double lng) {
         String url = String.format("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=%f&y=%f", lng, lat);
@@ -72,5 +81,23 @@ public class AddressService {
         }
 
         throw new RuntimeException("법정동 정보가 없습니다."); // 법정동 정보가 없는 경우 예외 처리
+    }
+
+    public List<AddressDTO> searchAddresses(String district, String neighborhood) {
+        List<Address> addresses = addressRepository.findByDistrictNameAndNeighborhoodName(district, neighborhood);
+
+        return addresses.stream()
+                .map(address -> AddressDTO.builder()
+                        .id(address.getId())
+                        .cityName(address.getCityName())
+                        .districtName(address.getDistrictName())
+                        .neighborhoodName(address.getNeighborhoodName())
+                        .villageName(address.getVillageName())
+                        .cityCode(address.getCityCode())
+                        .districtCode(address.getDistrictCode())
+                        .neighborhoodCode(address.getNeighborhoodCode())
+                        .villageCode(address.getVillageCode())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

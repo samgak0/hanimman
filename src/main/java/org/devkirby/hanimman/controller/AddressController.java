@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/location")
 public class AddressController {
@@ -21,6 +23,14 @@ public class AddressController {
         System.out.println("Received request with latitude: " + latitude + " and longitude: " + longitude);
         AddressDTO addressDTO = addressService.getAdministrative(latitude, longitude);
         return ResponseEntity.ok(addressDTO);
+    }
+
+    //주소 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<AddressDTO>> searchAddresses(@RequestParam String district, @RequestParam String neighborhood) {
+        List<AddressDTO> addresses = addressService.searchAddresses(district, neighborhood);
+        System.out.println(addresses);
+        return ResponseEntity.ok(addresses);
     }
 
 }
