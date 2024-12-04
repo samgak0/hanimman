@@ -1,14 +1,14 @@
 package org.devkirby.hanimman.service;
 
+import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.UserAddressRepository;
-import org.devkirby.hanimman.repository.UserRepository;
-import org.devkirby.hanimman.repository.AddressRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.devkirby.hanimman.repository.UserRepository; // UserRepository 추가
+import org.devkirby.hanimman.repository.AddressRepository; // AddressRepository 추가
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserAddressService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserAddressService.class);
 
     @Autowired
     private UserAddressRepository userAddressRepository;
@@ -29,6 +28,8 @@ public class UserAddressService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    private final ModelMapper modelMapper;
 
     // 주소 저장
     public UserAddressDTO saveUserAddress(UserAddressDTO userAddressDTO) {
@@ -40,7 +41,7 @@ public class UserAddressService {
             throw new IllegalArgumentException("기본 주소 ID는 필수입니다.");
         }
 
-        logger.info("주소 저장 요청: {}", userAddressDTO);
+        System.out.println("주소 저장 요청:" + userAddressDTO);
         UserAddress userAddress = new UserAddress();
 
         // User 객체 설정
@@ -72,14 +73,12 @@ public class UserAddressService {
 
     // 주소 조회
     public Optional<UserAddressDTO> getUserAddress(Integer id) {
-        logger.info("주소 조회 요청: ID = {}", id);
-        return userAddressRepository.findById(id)
-                .map(this::convertToDTO);
+        return userAddressRepository.findByUserId(id)
+                .map(userAddress -> modelMapper.map(userAddress, UserAddressDTO.class));
     }
 
     // 모든 주소 조회
     public List<UserAddressDTO> getAllUserAddresses(long userId) {
-        logger.info("모든 주소 조회 요청: 사용자 ID = {}", userId);
         return userAddressRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
@@ -88,7 +87,6 @@ public class UserAddressService {
 
     // 주소 삭제
     public void deleteUserAddress(Integer id) {
-        logger.info("주소 삭제 요청: ID = {}", id);
         userAddressRepository.deleteById(id);
     }
 
@@ -98,6 +96,7 @@ public class UserAddressService {
                 .id(userAddress.getId())
                 .userId(userAddress.getUser().getId())
                 .primaryAddressId(userAddress.getPrimaryAddress().getNeighborhoodName())
+                .secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodCode())
                 .validatedAt(userAddress.getValidatedAt())
                 .modifiedAt(userAddress.getModifiedAt())
                 .createdAt(userAddress.getCreatedAt());
