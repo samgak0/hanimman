@@ -5,8 +5,10 @@ import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.UserAddressRepository;
-import org.devkirby.hanimman.repository.UserRepository; // UserRepository 추가
-import org.devkirby.hanimman.repository.AddressRepository; // AddressRepository 추가
+import org.devkirby.hanimman.repository.UserRepository;
+import org.devkirby.hanimman.repository.AddressRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +19,28 @@ import java.util.stream.Collectors;
 @Service
 public class UserAddressService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserAddressService.class);
+
     @Autowired
     private UserAddressRepository userAddressRepository;
 
     @Autowired
-    private UserRepository userRepository; // UserRepository 주입
+    private UserRepository userRepository;
 
     @Autowired
-    private AddressRepository addressRepository; // AddressRepository 주입
+    private AddressRepository addressRepository;
 
     // 주소 저장
     public UserAddressDTO saveUserAddress(UserAddressDTO userAddressDTO) {
+        // 유효성 검사
+        if (userAddressDTO.getUserId() == null) {
+            throw new IllegalArgumentException("사용자 ID는 필수입니다.");
+        }
+        if (userAddressDTO.getPrimaryAddressId() == null) {
+            throw new IllegalArgumentException("기본 주소 ID는 필수입니다.");
+        }
+
+        logger.info("주소 저장 요청: {}", userAddressDTO);
         UserAddress userAddress = new UserAddress();
 
         // User 객체 설정
@@ -54,19 +67,19 @@ public class UserAddressService {
 
         // 엔티티 저장
         UserAddress savedAddress = userAddressRepository.save(userAddress);
-
-        // 엔티티를 DTO로 변환하여 반환
         return convertToDTO(savedAddress);
     }
 
     // 주소 조회
     public Optional<UserAddressDTO> getUserAddress(Integer id) {
+        logger.info("주소 조회 요청: ID = {}", id);
         return userAddressRepository.findById(id)
                 .map(this::convertToDTO);
     }
 
     // 모든 주소 조회
     public List<UserAddressDTO> getAllUserAddresses(long userId) {
+        logger.info("모든 주소 조회 요청: 사용자 ID = {}", userId);
         return userAddressRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
@@ -75,19 +88,27 @@ public class UserAddressService {
 
     // 주소 삭제
     public void deleteUserAddress(Integer id) {
+        logger.info("주소 삭제 요청: ID = {}", id);
         userAddressRepository.deleteById(id);
     }
 
     // 엔티티를 DTO로 변환하는 메서드
     private UserAddressDTO convertToDTO(UserAddress userAddress) {
-        return UserAddressDTO.builder()
+        UserAddressDTO.UserAddressDTOBuilder builder = UserAddressDTO.builder()
                 .id(userAddress.getId())
                 .userId(userAddress.getUser().getId())
                 .primaryAddressId(userAddress.getPrimaryAddress().getNeighborhoodName())
-                .secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodCode())
                 .validatedAt(userAddress.getValidatedAt())
                 .modifiedAt(userAddress.getModifiedAt())
-                .createdAt(userAddress.getCreatedAt())
-                .build();
+                .createdAt(userAddress.getCreatedAt());
+
+        // SecondlyAddress null 체크
+        if (userAddress.getSecondlyAddress() != null) {
+            builder.secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodCode());
+        } else {
+            builder.secondlyAddressId(null); // 또는 기본값 설정
+        }
+
+        return builder.build();
     }
 }
