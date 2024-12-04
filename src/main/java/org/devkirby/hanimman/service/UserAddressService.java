@@ -59,6 +59,8 @@ public class UserAddressService {
             Address secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
                     .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다"));
             userAddress.setSecondlyAddress(secondlyAddress);
+        } else {
+            userAddress.setSecondlyAddress(null); // 명시적으로 null 설정
         }
 
         // 기타 필드 설정
@@ -96,18 +98,18 @@ public class UserAddressService {
                 .id(userAddress.getId())
                 .userId(userAddress.getUser().getId())
                 .primaryAddressId(userAddress.getPrimaryAddress().getNeighborhoodName())
-                .secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodCode())
                 .validatedAt(userAddress.getValidatedAt())
                 .modifiedAt(userAddress.getModifiedAt())
                 .createdAt(userAddress.getCreatedAt());
 
         // SecondlyAddress null 체크
         if (userAddress.getSecondlyAddress() != null) {
-            builder.secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodCode());
+            builder.secondlyAddressId(userAddress.getSecondlyAddress().getNeighborhoodName()); // getNeighborhoodName() 호출
         } else {
             builder.secondlyAddressId(null); // 또는 기본값 설정
         }
 
         return builder.build();
     }
+
 }
