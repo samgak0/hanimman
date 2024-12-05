@@ -15,4 +15,6 @@ public interface TogetherParticipantRepository extends JpaRepository<TogetherPar
     List<TogetherParticipant> findByParentIdAndRejectedIsNull(Integer parentId);
 
     TogetherParticipant findByUserIdAndParentId(Integer userId, Integer parentId);
+
+    Boolean existsByUserIdAndParentId(Integer userId, Integer parentId);
 }

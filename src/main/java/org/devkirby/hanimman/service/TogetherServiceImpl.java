@@ -32,6 +32,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final TogetherImageService togetherImageService;
+    private final TogetherParticipantRepository togetherParticipantRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -63,13 +64,21 @@ public class TogetherServiceImpl implements TogetherService {
         togetherRepository.save(together);
         User user = modelMapper.map(loginUser, User.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+
+        //작성자 판별
         if(Objects.equals(together.getUser().getId(), loginUser.getId())){
             togetherDTO.setWriter(true);
-            log.info("작성자입니다.");
         }else{
             togetherDTO.setWriter(false);
-            log.info("작성자가 아닙니다.");
         }
+
+        //참여 신청 여부 판별'
+        if(togetherParticipantRepository.existsByUserIdAndParentId(user.getId(), together.getId())) {
+            togetherDTO.setParticipant(true);
+        }else {
+            togetherDTO.setParticipant(false);
+        }
+
         togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()

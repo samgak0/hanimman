@@ -26,6 +26,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
     private final ShareImageService shareImageService;
+    private final ShareParticipantRepository shareParticipantRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -63,6 +64,13 @@ public class ShareServiceImpl implements ShareService {
         }else {
             shareDTO.setWriter(false);
         }
+
+        if(shareParticipantRepository.existsByUserIdAndParentId(user.getId(), share.getId())) {
+            shareDTO.setParticipant(true);
+        }else{
+            shareDTO.setParticipant(false);
+        }
+
         shareDTO.setImageIds(getImageUrls(share));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()

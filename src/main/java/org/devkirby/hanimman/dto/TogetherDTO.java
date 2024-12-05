@@ -38,6 +38,9 @@ public class TogetherDTO {
     // 자신이 작성자인지
     private boolean writer;
 
+    // 게시글을 보는 유저가 이미 참여 신청을 했는지?
+    private boolean participant;
+
     // 찜 수
     @Builder.Default
     private Integer favoriteCount = 0;
