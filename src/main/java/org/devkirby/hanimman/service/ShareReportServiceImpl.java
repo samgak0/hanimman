@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ShareReportDTO;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareReport;
@@ -12,6 +13,8 @@ import org.devkirby.hanimman.repository.ShareRepository;
 import org.devkirby.hanimman.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +27,19 @@ public class ShareReportServiceImpl implements ShareReportService {
 
     @Override
     @Transactional
-    public void create(Integer reporterId, Integer categoryId, Integer parentId) {
-        Share share = shareRepository.findById(parentId).orElseThrow();
+    public void create(ShareReportDTO shareReportDTO) {
+        Share share = shareRepository.findById(shareReportDTO.getShareId()).orElseThrow(()
+                -> new RuntimeException("Share not found"));
+        if(share.getDeletedAt() != null) {
+            throw new RuntimeException("삭제된 게시글입니다.");
+        }
+
         User reportedUser = share.getUser();
-        User reporterUser = userRepository.findById(reporterId).orElseThrow();
-        ReportCategory category = reportCategoryRepository.findById(categoryId).orElseThrow();
+        User reporterUser = userRepository.findById(shareReportDTO.getReportedId()).orElseThrow(()
+                -> new RuntimeException("Reporter not found"));
+        ReportCategory category = reportCategoryRepository.findById(shareReportDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
         shareReportRepository.save(ShareReport.builder()
                 .reporter(reporterUser)
                 .reported(reportedUser)

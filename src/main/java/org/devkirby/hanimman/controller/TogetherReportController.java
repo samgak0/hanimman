@@ -18,9 +18,9 @@ public class TogetherReportController {
     private TogetherReportService togetherReportService;
 
     //생성
-    @PostMapping
-    public ResponseEntity<Void> report(@Valid @RequestBody TogetherReportDTO reportDTO) {
-        togetherReportService.create(reportDTO); // 서비스 메서드 호출
+    @PostMapping("/report")
+    public ResponseEntity<Void> report(@Valid @RequestBody TogetherReportDTO togetherReportDTO) {
+        togetherReportService.create(togetherReportDTO); // 서비스 메서드 호출
         return ResponseEntity.ok().build(); // 200 OK 응답 반환
     }
 
