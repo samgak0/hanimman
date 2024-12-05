@@ -3,6 +3,8 @@ package org.devkirby.hanimman.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -25,4 +27,8 @@ public class ShareReport {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Share parent;
+
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)")
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 }

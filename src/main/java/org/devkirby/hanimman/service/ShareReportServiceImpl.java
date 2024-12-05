@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ReportCategoryDTO;
 import org.devkirby.hanimman.dto.ShareReportDTO;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Share;
@@ -15,6 +16,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +55,12 @@ public class ShareReportServiceImpl implements ShareReportService {
     @Transactional
     public void delete(Integer id) {
         shareReportRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ReportCategoryDTO> findAllCategories() {
+        return reportCategoryRepository.findAll().stream()
+                .map(category -> modelMapper.map(category, ReportCategoryDTO.class))
+                .collect(Collectors.toList());
     }
 }

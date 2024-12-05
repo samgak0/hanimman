@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ReportCategoryDTO;
 import org.devkirby.hanimman.dto.TogetherReportDTO;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Together;
@@ -78,6 +79,13 @@ public class TogetherReportServiceImpl implements TogetherReportService {
         System.out.println("Select Reports: " + reports.size());
 
         return reports;
+    }
+
+    @Override
+    public List<ReportCategoryDTO> findAllCategories() {
+        return reportCategoryRepository.findAll().stream()
+                .map(category -> modelMapper.map(category, ReportCategoryDTO.class))
+                .collect(Collectors.toList());
     }
 
 }
