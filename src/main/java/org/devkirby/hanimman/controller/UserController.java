@@ -96,7 +96,7 @@ public class UserController {
     }
 
     @Transactional
-    public UserDTO createUserWithProfile(UserDTO savedUserDTO) {
+    private UserDTO createUserWithProfile(UserDTO savedUserDTO) {
         System.out.println("savedUserDTO" + savedUserDTO);
         UserDTO signedUserDTO = userService.createUser(savedUserDTO);
         System.out.println("signedUser" + signedUserDTO);
@@ -187,7 +187,6 @@ public class UserController {
         public ErrorResponse(String message) {
             this.message = message;
         }
-
         // Getter
         public String getMessage() {
             return message;
@@ -219,31 +218,24 @@ public class UserController {
         public String getName() {
             return name;
         }
-
         public void setName(String name) {
             this.name = name;
         }
-
         public String getPhoneNumber() {
             return phoneNumber;
         }
-
         public void setPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
         }
-
         public String getBirthDate() {
             return birthDate;
         }
-
         public void setBirthDate(String birthDate) {
             this.birthDate = birthDate;
         }
-
         public String getGender() {
             return gender;
         }
-
         public void setGender(String gender) {
             this.gender = gender;
         }
@@ -257,17 +249,15 @@ public class UserController {
         // 프로필 리스트 가져오기
         Profile profile = profileService.selectByUser(userDTO);
 
-        // Map으로 묶어서 반환
         Map<String, Object> response = new HashMap<>();
         response.put("nickname", userDTO.getNickname());
         response.put("brix", userDTO.getBrix());
         response.put("profileDTOList", profile);
 
-        // ResponseEntity로 반환, Spring이 자동으로 JSON으로 변환
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/updateprofile")
+    @PostMapping("/editprofile")
     public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         profileService.selectByUser(userDTO);

@@ -59,6 +59,9 @@ public class User {
         if (this.createdAt == null) {
             this.createdAt = Instant.now();  // 엔티티가 저장될 때 현재 시간으로 설정
         }
+        if (this.brix == null){
+            this.brix = 15;
+        }
     }
 
 }
