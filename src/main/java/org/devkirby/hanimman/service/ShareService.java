@@ -4,6 +4,7 @@ import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,4 +24,6 @@ public interface ShareService {
     Page<ShareDTO> listByUserIdFavorite(Integer userId, Pageable pageable);
 
     File downloadImage(Integer id) throws IOException;
+
+    Page<ShareDTO> listByUserId(Integer userId, Pageable pageable);
 }

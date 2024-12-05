@@ -213,6 +213,8 @@ public class TogetherServiceImpl implements TogetherService {
         List<Together> togethers = togetherFavorites.stream()
                 .map(togetherFavorite -> togetherFavorite.getParent())
                 .collect(Collectors.toList());
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Together> togetherPage = new PageImpl<>(togethers, pageable, togethers.size());
         return togetherPage.map(together -> {
@@ -235,6 +237,24 @@ public class TogetherServiceImpl implements TogetherService {
         File file = new File("C:/upload/" + togetherImage.getServerName());
 
         return file;
+    }
+
+    @Override
+    public Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        Page<Together> togetherPage = togetherRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
+        return togetherPage.map(together -> {
+            TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+            togetherDTO.setImageIds(getImageUrls(together));
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
+            togetherDTO.setAddress(address.get()
+                    .getCityName() + " " + address.get().getDistrictName() + " " +
+                    address.get().getNeighborhoodName());
+            Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+            togetherDTO.setFavoriteCount(favoriteCount);
+            return togetherDTO;
+        });
     }
 
     private List<Integer> getImageUrls(Together together) {

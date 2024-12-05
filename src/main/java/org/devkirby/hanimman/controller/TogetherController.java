@@ -147,6 +147,17 @@ public class TogetherController {
         return togetherService.listByUserIdFavorite(loginUser.getId(), pageable);
     }
 
+    @GetMapping("/list/user")
+    public Page<TogetherDTO> listByUserId(@PageableDefault(size = 10) Pageable pageable,
+                                          @AuthenticationPrincipal CustomUserDetails loginUser,
+                                          @RequestParam(required = false) Integer userId) {
+        if(userId != null) {
+            return togetherService.listByUserId(userId, pageable);
+        } else{
+            return togetherService.listByUserId(loginUser.getId(), pageable);
+        }
+    }
+
 
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
