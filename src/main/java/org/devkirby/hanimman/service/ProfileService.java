@@ -6,6 +6,7 @@ import org.devkirby.hanimman.entity.Profile;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.ProfileRepository;
 import org.devkirby.hanimman.repository.UserRepository;
+import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,6 +32,9 @@ public class ProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ImageUploadUtil imageUploadUtil;
 
     // Setter 메서드 추가
     @Value("${com.devkirby.hanimman.upload}")
@@ -50,7 +53,7 @@ public class ProfileService {
         profile.setServerName(fileNameWithUUID);
 
         // 파일 경로 설정
-        Path filePath = Paths.get(uploadDir + fileNameWithUUID);
+        Path filePath = Paths.get(uploadDir + "/" + fileNameWithUUID);
         Path fileDir = Paths.get(uploadDir);
 
         // 파일 저장
@@ -66,17 +69,11 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile selectByUser(UserDTO userDTO){
-        User user  = modelMapper.map(userDTO, User.class);
+    public Profile selectByUser(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
         Profile profile = profileRepository.findByParent(user);
-       return profile;
+        return profile;
     }
-
-    @Transactional
-    public Profile saveProfile(User user, String nickname){
-        return null;
-    }
-
 
     public void createProfile(UserDTO savedUserDTO) {
         User user = modelMapper.map(savedUserDTO, User.class);
@@ -86,13 +83,59 @@ public class ProfileService {
                 .orElseGet(() -> userRepository.save(user)); // 없으면 저장
 
         Profile profile = Profile.builder()
-                        .realName("default-profile")
-                        .serverName("default-profile")
-                        .mineType("png")
-                        .fileSize(1)
-                        .parent(persistentUser)
-                        .createdAt(Instant.now())
-                        .build();
+                .realName("default-profile")
+                .serverName("default-profile")
+                .mineType("png")
+                .fileSize(1)
+                .parent(persistentUser)
+                .createdAt(Instant.now())
+                .build();
         profileRepository.save(profile);
+    }
+
+    public void updateProfile(UserDTO userDTO, MultipartFile profileImage) throws IOException {
+        User user = modelMapper.map(userDTO, User.class);
+        String mineType = profileImage.getContentType();
+        try {
+            String serverName = imageUploadUtil.uploadImage(profileImage);
+            Profile profile = selectByUser(userDTO);
+            profile.setRealName(profileImage.getOriginalFilename());
+            profile.setServerName(serverName);
+            profile.setFileSize((int) profileImage.getSize());
+            profile.setMineType(mineType);
+            profileRepository.save(profile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        uploadProfilePicture(profileImage, profile);
+
+
+    }
+
+    public File getProfile(UserDTO userDTO) {
+        File file = null; // 파일 객체를 초기화
+        User user = modelMapper.map(userDTO, User.class);
+        Profile profile = profileRepository.findByParent(user);
+        String serverName = profile.getServerName();
+
+        if (serverName != null && !serverName.isEmpty()) {
+            Path filePath = Paths.get("C:/upload", serverName);
+            file = new File(filePath.toString());
+            if (file.exists()) {
+            } else {
+                System.out.println("File does not exist.");
+            }
+        } else {
+            System.out.println("Server name is invalid.");
+        }
+
+        return file;
+    }
+
+    public String getProfileImageUrl(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        Profile profile = profileRepository.findByParent(user);
+        String serverName = "t_" + profile.getServerName();
+        return serverName;
     }
 }
