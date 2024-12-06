@@ -2,14 +2,10 @@ package org.devkirby.hanimman.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.devkirby.hanimman.config.CustomUserDetails;
-import org.devkirby.hanimman.dto.ProfileDTO;
-import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Gender;
 import org.devkirby.hanimman.entity.Nickname;
-import org.devkirby.hanimman.entity.Profile;
 import org.devkirby.hanimman.service.ProfileService;
-import org.devkirby.hanimman.service.UserAddressService;
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j2
 @CrossOrigin
@@ -35,9 +30,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserAddressService userAddressService;
 
     @Autowired
     private ProfileService profileService;
@@ -99,7 +91,6 @@ public class UserController {
     private UserDTO createUserWithProfile(UserDTO savedUserDTO) {
         System.out.println("savedUserDTO" + savedUserDTO);
         UserDTO signedUserDTO = userService.createUser(savedUserDTO);
-        System.out.println("signedUser" + signedUserDTO);
         profileService.createProfile(signedUserDTO);
         return signedUserDTO;
     }
@@ -187,6 +178,7 @@ public class UserController {
         public ErrorResponse(String message) {
             this.message = message;
         }
+
         // Getter
         public String getMessage() {
             return message;
@@ -218,24 +210,31 @@ public class UserController {
         public String getName() {
             return name;
         }
+
         public void setName(String name) {
             this.name = name;
         }
+
         public String getPhoneNumber() {
             return phoneNumber;
         }
+
         public void setPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
         }
+
         public String getBirthDate() {
             return birthDate;
         }
+
         public void setBirthDate(String birthDate) {
             this.birthDate = birthDate;
         }
+
         public String getGender() {
             return gender;
         }
+
         public void setGender(String gender) {
             this.gender = gender;
         }
@@ -246,22 +245,30 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
 
-        // 프로필 리스트 가져오기
-        Profile profile = profileService.selectByUser(userDTO);
+        // 프로필 가져오기
+        String profileImageFileName = profileService.getProfileImageUrl(userDTO);
 
         Map<String, Object> response = new HashMap<>();
         response.put("nickname", userDTO.getNickname());
         response.put("brix", userDTO.getBrix());
-        response.put("profileDTOList", profile);
+        response.put("profileImage", profileImageFileName);
 
         return ResponseEntity.ok(response);
     }
 
+
+    @Transactional
     @PostMapping("/editprofile")
-    public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Map<String, Object>> updateUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                 @RequestParam("nickname") String nickname,
+                                                                 @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
-        profileService.selectByUser(userDTO);
+        userDTO.setNickname(nickname);
+        userService.updateUser(userDTO);
+        profileService.updateProfile(userDTO, profileImage);
+
         return null;
     }
+
 
 }
