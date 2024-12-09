@@ -71,6 +71,9 @@ public class UserController {
             log.info("Existing user found: " + existingUser);
             if (existingUser.getBlockedAt() != null) {
                 return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
+           // 탈퇴된 회원일 경우
+            } else if (existingUser.getDeletedAt() != null) {
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "탈퇴된 회원입니다.");
             } else {
                 // 로그인 성공 -> JWT 생성 및 응답
                 return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
@@ -169,6 +172,19 @@ public class UserController {
         String generatedCode = code.toString();
         log.info("Generated codeNum: " + generatedCode);
         return generatedCode;
+    }
+
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails){
+        UserDTO userDTO = userService.getCurrentUserDetails(userDetails);
+        try {
+            userService.deleteUser(userDTO);
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("탈퇴 처리 중 오류가 발생했습니다.");
+        }
+
     }
 
     // Error response DTO
