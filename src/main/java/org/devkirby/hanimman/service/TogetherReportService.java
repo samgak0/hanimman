@@ -1,6 +1,8 @@
 package org.devkirby.hanimman.service;
 
+import org.devkirby.hanimman.dto.ReportCategoryDTO;
 import org.devkirby.hanimman.dto.TogetherReportDTO;
+import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.TogetherReport;
 
 import java.util.List;
@@ -16,5 +18,5 @@ public interface TogetherReportService {
 
 //    List<TogetherReportDTO> findAllReports();
 
-
+    List<ReportCategoryDTO> findAllCategories();
 }

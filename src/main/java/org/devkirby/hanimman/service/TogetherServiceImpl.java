@@ -32,6 +32,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final TogetherImageService togetherImageService;
+    private final TogetherParticipantRepository togetherParticipantRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -63,13 +64,21 @@ public class TogetherServiceImpl implements TogetherService {
         togetherRepository.save(together);
         User user = modelMapper.map(loginUser, User.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+
+        //작성자 판별
         if(Objects.equals(together.getUser().getId(), loginUser.getId())){
             togetherDTO.setWriter(true);
-            log.info("작성자입니다.");
         }else{
             togetherDTO.setWriter(false);
-            log.info("작성자가 아닙니다.");
         }
+
+        //참여 신청 여부 판별'
+        if(togetherParticipantRepository.existsByUserIdAndParentId(user.getId(), together.getId())) {
+            togetherDTO.setParticipant(true);
+        }else {
+            togetherDTO.setParticipant(false);
+        }
+
         togetherDTO.setImageIds(getImageUrls(together));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
@@ -120,9 +129,10 @@ public class TogetherServiceImpl implements TogetherService {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-                        togetherDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        togetherDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        togetherDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -134,9 +144,10 @@ public class TogetherServiceImpl implements TogetherService {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-                        togetherDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        togetherDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        togetherDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -160,9 +171,10 @@ public class TogetherServiceImpl implements TogetherService {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-                        togetherDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        togetherDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        togetherDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -173,9 +185,10 @@ public class TogetherServiceImpl implements TogetherService {
                         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
                         togetherDTO.setImageIds(getImageThumbnailUrls(together));
                         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-                        togetherDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        togetherDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        togetherDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -204,15 +217,18 @@ public class TogetherServiceImpl implements TogetherService {
         List<Together> togethers = togetherFavorites.stream()
                 .map(togetherFavorite -> togetherFavorite.getParent())
                 .collect(Collectors.toList());
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Together> togetherPage = new PageImpl<>(togethers, pageable, togethers.size());
         return togetherPage.map(together -> {
             TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
             togetherDTO.setImageIds(getImageUrls(together));
             Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-            togetherDTO.setAddress(address.get()
-                    .getCityName() + " " + address.get().getDistrictName() + " " +
-                    address.get().getNeighborhoodName());
+//            togetherDTO.setAddress(address.get()
+//                    .getCityName() + " " + address.get().getDistrictName() + " " +
+//                    address.get().getNeighborhoodName());
+            togetherDTO.setAddress(address.get().getNeighborhoodName());
             Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
             togetherDTO.setFavoriteCount(favoriteCount);
             return togetherDTO;
@@ -226,6 +242,24 @@ public class TogetherServiceImpl implements TogetherService {
         File file = new File("C:/upload/" + togetherImage.getServerName());
 
         return file;
+    }
+
+    @Override
+    public Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        Page<Together> togetherPage = togetherRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
+        return togetherPage.map(together -> {
+            TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+            togetherDTO.setImageIds(getImageUrls(together));
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
+            togetherDTO.setAddress(address.get()
+                    .getCityName() + " " + address.get().getDistrictName() + " " +
+                    address.get().getNeighborhoodName());
+            Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+            togetherDTO.setFavoriteCount(favoriteCount);
+            return togetherDTO;
+        });
     }
 
     private List<Integer> getImageUrls(Together together) {

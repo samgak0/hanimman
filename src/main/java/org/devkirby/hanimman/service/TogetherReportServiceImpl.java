@@ -2,6 +2,7 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ReportCategoryDTO;
 import org.devkirby.hanimman.dto.TogetherReportDTO;
 import org.devkirby.hanimman.entity.ReportCategory;
 import org.devkirby.hanimman.entity.Together;
@@ -32,7 +33,8 @@ public class TogetherReportServiceImpl implements TogetherReportService {
     @Override
     @Transactional
     public void create(TogetherReportDTO togetherReportDTO) {
-        Together together = togetherRepository.findById(togetherReportDTO.getTogetherId()).orElseThrow(() -> new RuntimeException("Together not found"));
+        Together together = togetherRepository.findById(togetherReportDTO.getTogetherId()).orElseThrow(()
+                -> new RuntimeException("Together not found"));
 
         // Together의 deletedAt 컬럼이 null인지 확인
         if (together.getDeletedAt() != null) {
@@ -40,8 +42,10 @@ public class TogetherReportServiceImpl implements TogetherReportService {
         }
 
         User reportedUser = together.getUser(); // 신고당한 사람
-        User reporterUser = userRepository.findById(togetherReportDTO.getReporterId()).orElseThrow(() -> new RuntimeException("Reporter not found"));
-        ReportCategory category = reportCategoryRepository.findById(togetherReportDTO.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
+        User reporterUser = userRepository.findById(togetherReportDTO.getReporterId()).orElseThrow(()
+                -> new RuntimeException("Reporter not found"));
+        ReportCategory category = reportCategoryRepository.findById(togetherReportDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
 
 //        ZonedDateTime nowKST = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 //        Instant createdAt = nowKST.toInstant();
@@ -53,9 +57,6 @@ public class TogetherReportServiceImpl implements TogetherReportService {
                 .parent(together)
                 .createdAt(Instant.now())
                 .build());
-
-        together.setDeletedAt(Instant.now());
-        togetherRepository.save(together);
     }
 
     //삭제
@@ -78,6 +79,13 @@ public class TogetherReportServiceImpl implements TogetherReportService {
         System.out.println("Select Reports: " + reports.size());
 
         return reports;
+    }
+
+    @Override
+    public List<ReportCategoryDTO> findAllCategories() {
+        return reportCategoryRepository.findAll().stream()
+                .map(category -> modelMapper.map(category, ReportCategoryDTO.class))
+                .collect(Collectors.toList());
     }
 
 }

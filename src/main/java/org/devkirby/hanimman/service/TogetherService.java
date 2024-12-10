@@ -25,4 +25,6 @@ public interface TogetherService {
     Page<TogetherDTO> listByUserIdFavorite(Integer userId, Pageable pageable);
 
     File downloadImage(Integer id) throws IOException;
+
+    Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable);
 }

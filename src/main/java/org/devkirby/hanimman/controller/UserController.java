@@ -2,14 +2,10 @@ package org.devkirby.hanimman.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.devkirby.hanimman.config.CustomUserDetails;
-import org.devkirby.hanimman.dto.ProfileDTO;
-import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.Gender;
 import org.devkirby.hanimman.entity.Nickname;
-import org.devkirby.hanimman.entity.Profile;
 import org.devkirby.hanimman.service.ProfileService;
-import org.devkirby.hanimman.service.UserAddressService;
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j2
 @CrossOrigin
@@ -35,9 +30,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserAddressService userAddressService;
 
     @Autowired
     private ProfileService profileService;
@@ -79,6 +71,9 @@ public class UserController {
             log.info("Existing user found: " + existingUser);
             if (existingUser.getBlockedAt() != null) {
                 return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
+           // 탈퇴된 회원일 경우
+            } else if (existingUser.getDeletedAt() != null) {
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "탈퇴된 회원입니다.");
             } else {
                 // 로그인 성공 -> JWT 생성 및 응답
                 return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
@@ -96,10 +91,9 @@ public class UserController {
     }
 
     @Transactional
-    public UserDTO createUserWithProfile(UserDTO savedUserDTO) {
+    private UserDTO createUserWithProfile(UserDTO savedUserDTO) {
         System.out.println("savedUserDTO" + savedUserDTO);
         UserDTO signedUserDTO = userService.createUser(savedUserDTO);
-        System.out.println("signedUser" + signedUserDTO);
         profileService.createProfile(signedUserDTO);
         return signedUserDTO;
     }
@@ -180,6 +174,19 @@ public class UserController {
         return generatedCode;
     }
 
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails){
+        UserDTO userDTO = userService.getCurrentUserDetails(userDetails);
+        try {
+            userService.deleteUser(userDTO);
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("탈퇴 처리 중 오류가 발생했습니다.");
+        }
+
+    }
+
     // Error response DTO
     public static class ErrorResponse {
         private String message;
@@ -254,24 +261,30 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
 
-        // 프로필 리스트 가져오기
-        Profile profile = profileService.selectByUser(userDTO);
+        // 프로필 가져오기
+        String profileImageFileName = profileService.getProfileImageUrl(userDTO);
 
-        // Map으로 묶어서 반환
         Map<String, Object> response = new HashMap<>();
         response.put("nickname", userDTO.getNickname());
         response.put("brix", userDTO.getBrix());
-        response.put("profileDTOList", profile);
+        response.put("profileImage", profileImageFileName);
 
-        // ResponseEntity로 반환, Spring이 자동으로 JSON으로 변환
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/updateprofile")
-    public ResponseEntity<Map<String, Object>> getEditProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+    @Transactional
+    @PostMapping("/editprofile")
+    public ResponseEntity<Map<String, Object>> updateUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                 @RequestParam("nickname") String nickname,
+                                                                 @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
-        profileService.selectByUser(userDTO);
+        userDTO.setNickname(nickname);
+        userService.updateUser(userDTO);
+        profileService.updateProfile(userDTO, profileImage);
+
         return null;
     }
+
 
 }

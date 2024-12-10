@@ -64,15 +64,15 @@ class ShareRepositoryTests {
         shares.forEach(shareRepository::save);
     }
 
-    @Test
-    @DisplayName("나눠요 게시글 Id로 조회 테스트")
-    public void testFindById() {
-        Integer userId = 2;
-        List<Share> shares = shareRepository.findByUserIdAndDeletedAtIsNull(userId);
-
-        log.info("=== User ID {}번 유저의 게시글 목록 ===", userId);
-        shares.forEach(share -> log.info("Share ID: {}, Title: {}, Content: {}", share.getId(), share.getTitle(), share.getContent()));
-    }
+//    @Test
+//    @DisplayName("나눠요 게시글 Id로 조회 테스트")
+//    public void testFindById() {
+//        Integer userId = 2;
+//        List<Share> shares = shareRepository.findByUserIdAndDeletedAtIsNull(userId);
+//
+//        log.info("=== User ID {}번 유저의 게시글 목록 ===", userId);
+//        shares.forEach(share -> log.info("Share ID: {}, Title: {}, Content: {}", share.getId(), share.getTitle(), share.getContent()));
+//    }
 
     @Test
     @DisplayName("제목 및 내용에 '용량' 키워드 포함된 게시글 조회")

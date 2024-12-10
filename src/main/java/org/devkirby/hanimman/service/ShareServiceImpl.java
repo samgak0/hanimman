@@ -26,6 +26,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
     private final ShareImageService shareImageService;
+    private final ShareParticipantRepository shareParticipantRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -63,6 +64,13 @@ public class ShareServiceImpl implements ShareService {
         }else {
             shareDTO.setWriter(false);
         }
+
+        if(shareParticipantRepository.existsByUserIdAndParentId(user.getId(), share.getId())) {
+            shareDTO.setParticipant(true);
+        }else{
+            shareDTO.setParticipant(false);
+        }
+
         shareDTO.setImageIds(getImageUrls(share));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
@@ -199,6 +207,8 @@ public class ShareServiceImpl implements ShareService {
         List<Share> shares = shareFavorites.stream()
                 .map(shareFavorite -> shareFavorite.getParent())
                 .collect(Collectors.toList());
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Share> sharePage = new PageImpl<>(shares, pageable, shares.size());
         return sharePage.map(share -> {
@@ -220,6 +230,24 @@ public class ShareServiceImpl implements ShareService {
         ShareImage shareImage = shareImageRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 이미지가 없습니다 : " + id));
         return new File("C:/upload/" + shareImage.getServerName());
+    }
+
+    @Override
+    public Page<ShareDTO> listByUserId(Integer userId, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
+        Page<Share> sharePage = shareRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
+        return sharePage.map(share -> {
+            ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+            shareDTO.setImageIds(getImageThumbnailUrls(share));
+            Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
+            shareDTO.setAddress(address.get()
+                    .getCityName() + " " + address.get().getDistrictName() + " " +
+                    address.get().getNeighborhoodName());
+            Integer favoriteCount = shareFavoriteRepository.countByParent(share);
+            shareDTO.setFavoriteCount(favoriteCount);
+            return shareDTO;
+        });
     }
 
     private List<Integer> getImageUrls(Share share) {

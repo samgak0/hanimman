@@ -13,7 +13,7 @@ import java.util.List;
 public interface TogetherRepository extends JpaRepository<Together, Integer> {
 
     // 특정 사용자 ID에 해당하는 Together 리스트 조회
-    List<Together> findByUserIdAndDeletedAtIsNull(Integer userId);
+    Page<Together> findByUserIdAndDeletedAtIsNull(Integer userId, Pageable pageable);
 
     // 제목에서 키워드 포함
     List<Together> findByTitleContainingAndDeletedAtIsNull(String keyword);

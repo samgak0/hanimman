@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShareRepository extends JpaRepository<Share, Integer> {
     // 작성자 ID로 검색
-    List<Share> findByUserIdAndDeletedAtIsNull(Integer userId);
+    Page<Share> findByUserIdAndDeletedAtIsNull(Integer userId, Pageable pageable);
 
     // 제목에서 키워드 포함
     List<Share> findByTitleContainingAndDeletedAtIsNull(String keyword);

@@ -18,7 +18,6 @@ public class CustomUserDetails implements UserDetails {
     private Instant deletedAt;
     private Collection<? extends GrantedAuthority> authorities;
     private Integer id;
-    private Address primaryAddressId;
 
 
 
