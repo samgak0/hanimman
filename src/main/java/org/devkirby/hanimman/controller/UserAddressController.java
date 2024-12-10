@@ -49,20 +49,29 @@ public class UserAddressController {
     //주소 조회
     @GetMapping("/select")
     public ResponseEntity<ResponseUserAddressDTO> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
-        System.out.println("-----------------------유저 address select" + loginUser);
+        String secondAddressName = null;
+        String secondlyAddressId = null;
+
         Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
         UserAddressDTO userAddressDTO = addresses.orElseThrow();
-        //주소명 불러오기
-       String primaryAddressName = userAddressService.selectUserAddressName(userAddressDTO.getPrimaryAddressId());
-       String secondAddressName = userAddressService.selectUserAddressName(userAddressDTO.getSecondlyAddressId());
 
-        ResponseUserAddressDTO responseUserAddressDTO = ResponseUserAddressDTO.builder()
+        String primaryAddressName = userAddressService.selectUserAddressName(userAddressDTO.getPrimaryAddressId());
+        if(userAddressDTO.getSecondlyAddressId() != null){
+            secondlyAddressId = userAddressDTO.getSecondlyAddressId();
+            secondAddressName = userAddressService.selectUserAddressName(secondlyAddressId);
+        }
+        ResponseUserAddressDTO.ResponseUserAddressDTOBuilder builder = ResponseUserAddressDTO.builder()
                 .primaryAddressId(userAddressDTO.getPrimaryAddressId())
-                .secondlyAddressId(userAddressDTO.getSecondlyAddressId())
-                .primaryAddressName(primaryAddressName)
-                .secondAddressName(secondAddressName)
-                .build();
+                .primaryAddressName(primaryAddressName);
 
+        // secondAddressId가 null이 아닐 경우에만 추가
+        if (secondlyAddressId != null) {
+            builder.secondlyAddressId(secondlyAddressId);
+            builder.secondAddressName(secondAddressName);
+        }
+
+        // 빌더로 DTO 생성
+        ResponseUserAddressDTO responseUserAddressDTO = builder.build();
         return ResponseEntity.ok(responseUserAddressDTO);
     }
 
