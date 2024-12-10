@@ -9,45 +9,49 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user-address")
-//@CrossOrigin(origins = "http://localhost:3000")
 public class UserAddressController {
 
     @Autowired
     private UserAddressService userAddressService;
+    private CustomUserDetails customUserDetails;
 
-    // 주소 생성
-    @PostMapping
-    public ResponseEntity<UserAddressDTO> createUserAddress(@RequestBody UserAddressDTO userAddressDTO, @AuthenticationPrincipal CustomUserDetails loginUser) {
+    // 첫번째 주소 생성
+    @PostMapping("/save")
+    public ResponseEntity<UserAddressDTO> saveUserAddress(@RequestBody UserAddressDTO userAddressDTO, @AuthenticationPrincipal CustomUserDetails loginUser) {
+        System.out.println(loginUser);
         userAddressDTO.setUserId(loginUser.getId());
-
         UserAddressDTO savedAddress = userAddressService.saveUserAddress(userAddressDTO);
-        System.out.println(savedAddress + "무슨값이 있나요??");
+
+//        System.out.println(savedAddress + "무슨값이 있나요??");
         return ResponseEntity.ok(savedAddress);
     }
 
-    // 주소 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<UserAddressDTO> getUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
-        return userAddressService.getUserAddress(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // 두 번째 주소 저장
+    @PostMapping("/save/secondary")
+    public ResponseEntity<UserAddressDTO> saveSecondaryUserAddress(@RequestBody UserAddressDTO userAddressDTO, @AuthenticationPrincipal CustomUserDetails loginUser) {
+        System.out.println(loginUser + "???????????????");
+        userAddressDTO.setUserId(loginUser.getId());
+        UserAddressDTO savedAddress = userAddressService.saveSecondaryUserAddress(userAddressDTO);
+        System.out.println(savedAddress + "무슨값이 있음?");
+        return ResponseEntity.ok(savedAddress);
     }
 
     // 모든 주소 조회
     @GetMapping("/select")
-    public ResponseEntity<List<UserAddressDTO>> getAllUserAddresses(@AuthenticationPrincipal CustomUserDetails loginUser) {
+    public ResponseEntity<List<UserAddressDTO>> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
         System.out.println("-----------------------유저 address select");
-        List<UserAddressDTO> addresses = userAddressService.getAllUserAddresses(loginUser.getId());
-        return ResponseEntity.ok(addresses);
+        Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
+        return ResponseEntity.noContent().build();
     }
 
     // 주소 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
-        userAddressService.deleteUserAddress(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
+//        userAddressService.deleteUserAddress(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }
