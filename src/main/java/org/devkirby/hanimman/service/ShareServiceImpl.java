@@ -124,9 +124,10 @@ public class ShareServiceImpl implements ShareService {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-                        shareDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        shareDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        shareDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -137,9 +138,10 @@ public class ShareServiceImpl implements ShareService {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-                        shareDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        shareDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        shareDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -163,9 +165,10 @@ public class ShareServiceImpl implements ShareService {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-                        shareDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        shareDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        shareDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -176,9 +179,10 @@ public class ShareServiceImpl implements ShareService {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
                         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-                        shareDTO.setAddress(address.get()
-                                .getCityName() + " " + address.get().getDistrictName() + " " +
-                                address.get().getNeighborhoodName());
+//                        shareDTO.setAddress(address.get()
+//                                .getCityName() + " " + address.get().getDistrictName() + " " +
+//                                address.get().getNeighborhoodName());
+                        shareDTO.setAddress(address.get().getNeighborhoodName());
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -215,9 +219,10 @@ public class ShareServiceImpl implements ShareService {
             ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
             shareDTO.setImageIds(getImageThumbnailUrls(share));
             Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-            shareDTO.setAddress(address.get()
-                    .getCityName() + " " + address.get().getDistrictName() + " " +
-                    address.get().getNeighborhoodName());
+//            shareDTO.setAddress(address.get()
+//                    .getCityName() + " " + address.get().getDistrictName() + " " +
+//                    address.get().getNeighborhoodName());
+            shareDTO.setAddress(address.get().getNeighborhoodName());
             Integer favoriteCount = shareFavoriteRepository.countByParent(share);
             shareDTO.setFavoriteCount(favoriteCount);
             return shareDTO;
@@ -241,9 +246,10 @@ public class ShareServiceImpl implements ShareService {
             ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
             shareDTO.setImageIds(getImageThumbnailUrls(share));
             Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-            shareDTO.setAddress(address.get()
-                    .getCityName() + " " + address.get().getDistrictName() + " " +
-                    address.get().getNeighborhoodName());
+//            shareDTO.setAddress(address.get()
+//                    .getCityName() + " " + address.get().getDistrictName() + " " +
+//                    address.get().getNeighborhoodName());
+            shareDTO.setAddress(address.get().getNeighborhoodName());
             Integer favoriteCount = shareFavoriteRepository.countByParent(share);
             shareDTO.setFavoriteCount(favoriteCount);
             return shareDTO;

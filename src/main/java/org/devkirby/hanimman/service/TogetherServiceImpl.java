@@ -253,9 +253,10 @@ public class TogetherServiceImpl implements TogetherService {
             TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
             togetherDTO.setImageIds(getImageUrls(together));
             Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-            togetherDTO.setAddress(address.get()
-                    .getCityName() + " " + address.get().getDistrictName() + " " +
-                    address.get().getNeighborhoodName());
+//            togetherDTO.setAddress(address.get()
+//                    .getCityName() + " " + address.get().getDistrictName() + " " +
+//                    address.get().getNeighborhoodName());
+            togetherDTO.setAddress(address.get().getNeighborhoodName());
             Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
             togetherDTO.setFavoriteCount(favoriteCount);
             return togetherDTO;
