@@ -1,13 +1,11 @@
 package org.devkirby.hanimman.controller;
 
 import org.devkirby.hanimman.dto.AddressDTO;
+import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,12 +23,11 @@ public class AddressController {
         return ResponseEntity.ok(addressDTO);
     }
 
-    //주소 검색
+    // 주소 검색
     @GetMapping("/search")
-    public ResponseEntity<List<AddressDTO>> searchAddresses(@RequestParam String district, @RequestParam String neighborhood) {
-        List<AddressDTO> addresses = addressService.searchAddresses(district, neighborhood);
+    public ResponseEntity<List<AddressDTO>> searchAddresses(@RequestParam String query) {
+        List<AddressDTO> addresses = addressService.searchByNeighborhood(query);
         System.out.println(addresses);
         return ResponseEntity.ok(addresses);
     }
-
 }

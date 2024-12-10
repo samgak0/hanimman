@@ -83,8 +83,9 @@ public class AddressService {
         throw new RuntimeException("법정동 정보가 없습니다."); // 법정동 정보가 없는 경우 예외 처리
     }
 
-    public List<AddressDTO> searchAddresses(String district, String neighborhood) {
-        List<Address> addresses = addressRepository.findByDistrictNameAndNeighborhoodName(district, neighborhood);
+    // 동 이름으로 주소 검색
+    public List<AddressDTO> searchByNeighborhood(String neighborhood) {
+        List<Address> addresses = addressRepository.findByNeighborhoodName(neighborhood); // neighborhood로 검색
 
         return addresses.stream()
                 .map(address -> AddressDTO.builder()
@@ -100,4 +101,5 @@ public class AddressService {
                         .build())
                 .collect(Collectors.toList());
     }
+
 }
