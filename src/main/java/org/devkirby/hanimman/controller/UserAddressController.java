@@ -37,8 +37,9 @@ public class UserAddressController {
     }
 
     // 모든 주소 조회
-    @GetMapping
+    @GetMapping("/select")
     public ResponseEntity<List<UserAddressDTO>> getAllUserAddresses(@AuthenticationPrincipal CustomUserDetails loginUser) {
+        System.out.println("-----------------------유저 address select");
         List<UserAddressDTO> addresses = userAddressService.getAllUserAddresses(loginUser.getId());
         return ResponseEntity.ok(addresses);
     }
