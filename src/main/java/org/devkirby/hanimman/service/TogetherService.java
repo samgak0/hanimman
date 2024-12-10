@@ -26,5 +26,7 @@ public interface TogetherService {
 
     File downloadImage(Integer id) throws IOException;
 
+    File downloadProfileImage(Integer id) throws IOException;
+
     Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable);
 }

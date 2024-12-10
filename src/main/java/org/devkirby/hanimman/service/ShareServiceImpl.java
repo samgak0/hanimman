@@ -27,6 +27,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
     private final ShareImageService shareImageService;
+    private final ProfileRepository profileRepository;
     private final ShareParticipantRepository shareParticipantRepository;
     private final ProfileService profileService;
     private final UserRepository userRepository;
@@ -59,7 +60,8 @@ public class ShareServiceImpl implements ShareService {
         Integer view = share.getViews() + 1;
         share.setViews(view);
         shareRepository.save(share);
-        User user = modelMapper.map(loginUser, User.class);
+        User user = userRepository.findById(loginUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + loginUser.getId()));
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         if(Objects.equals(share.getUser().getId(), loginUser.getId())){
@@ -77,6 +79,7 @@ public class ShareServiceImpl implements ShareService {
         shareDTO.setImageIds(getImageUrls(share));
         shareDTO.setUserNickname(share.getUser().getNickname());
         shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        shareDTO.setBrix(userDTO.getBrix());
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -240,6 +243,16 @@ public class ShareServiceImpl implements ShareService {
         ShareImage shareImage = shareImageRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 이미지가 없습니다 : " + id));
         return new File("C:/upload/" + shareImage.getServerName());
+    }
+
+    @Override
+    @Transactional
+    public File downloadProfileImage(Integer id) throws IOException {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 프로필 이미지가 없습니다. : " + id));
+        File file = new File("C:/upload/" + profile.getServerName());
+
+        return file;
     }
 
     @Override

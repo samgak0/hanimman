@@ -25,5 +25,7 @@ public interface ShareService {
 
     File downloadImage(Integer id) throws IOException;
 
+    File downloadProfileImage(Integer id) throws IOException;
+
     Page<ShareDTO> listByUserId(Integer userId, Pageable pageable);
 }

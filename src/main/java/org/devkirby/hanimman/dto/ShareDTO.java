@@ -54,4 +54,6 @@ public class ShareDTO {
     private String userNickname;
 
     private Integer userProfileImage;
+
+    private Integer brix;
 }

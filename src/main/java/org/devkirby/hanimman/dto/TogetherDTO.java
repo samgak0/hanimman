@@ -53,4 +53,6 @@ public class TogetherDTO {
     private String userNickname;
 
     private Integer userProfileImage;
+
+    private Integer brix;
 }

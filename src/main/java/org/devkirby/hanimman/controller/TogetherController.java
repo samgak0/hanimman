@@ -171,4 +171,17 @@ public class TogetherController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(resource);
     }
+
+    @GetMapping("/downloadprofile")
+    public ResponseEntity<Resource> downloadProfile(@RequestParam Integer id) throws Exception {
+        File file = togetherService.downloadProfileImage(id);
+        InputStreamResource resource =
+                new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .header("content-disposition",
+                        "filename=" + URLEncoder.encode(file.getName(), "utf-8"))
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    }
 }

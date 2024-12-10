@@ -33,6 +33,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherImageRepository togetherImageRepository;
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final TogetherImageService togetherImageService;
+    private final ProfileRepository profileRepository;
     private final TogetherParticipantRepository togetherParticipantRepository;
     private final ProfileService profileService;
     private final UserRepository userRepository;
@@ -64,7 +65,8 @@ public class TogetherServiceImpl implements TogetherService {
         Integer view = together.getViews() + 1;
         together.setViews(view);
         togetherRepository.save(together);
-        User user = modelMapper.map(loginUser, User.class);
+        User user = userRepository.findById(loginUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + loginUser.getId()));
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
 
@@ -85,6 +87,7 @@ public class TogetherServiceImpl implements TogetherService {
         togetherDTO.setImageIds(getImageUrls(together));
         togetherDTO.setUserNickname(together.getUser().getNickname());
         togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        togetherDTO.setBrix(userDTO.getBrix());
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
@@ -245,6 +248,16 @@ public class TogetherServiceImpl implements TogetherService {
         TogetherImage togetherImage = togetherImageRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 이미지가 없습니다. : " + id));
         File file = new File("C:/upload/" + togetherImage.getServerName());
+
+        return file;
+    }
+
+    @Override
+    @Transactional
+    public File downloadProfileImage(Integer id) throws IOException {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 ID의 프로필 이미지가 없습니다. : " + id));
+        File file = new File("C:/upload/" + profile.getServerName());
 
         return file;
     }
