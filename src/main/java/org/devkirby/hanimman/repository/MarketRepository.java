@@ -12,4 +12,6 @@ public interface MarketRepository extends JpaRepository<Market, Integer> {
     List<Market> findByCategoryId(int categoryId);
 
     List<Market> findByAddress_CityCodeAndCategory_Id(String cityCode, Integer categoryId);
+
+    Market findByCategoryIdAndName(Integer categoryId, String name);
 }

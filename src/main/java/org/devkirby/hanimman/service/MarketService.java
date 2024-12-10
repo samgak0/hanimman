@@ -1,9 +1,11 @@
 package org.devkirby.hanimman.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.MarketDTO;
 import org.devkirby.hanimman.entity.Market;
 import org.devkirby.hanimman.repository.MarketRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MarketService {
-
     // MarketRepository를 주입받아 데이터베이스 상의 마켓 정보를 조회합니다.
     @Autowired
     private MarketRepository marketRepository;
+
+    private final ModelMapper modelMapper;
 
     /**
      * 주어진 ID로 마켓을 조회합니다.
@@ -50,6 +54,12 @@ public class MarketService {
         return markets.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public MarketDTO getMarketByCategoryIdAndName(Integer categoryId, String name){
+        Market market =  marketRepository.findByCategoryIdAndName(categoryId, name);
+        MarketDTO marketDTO = convertToDTO(market);
+        return marketDTO;
     }
 
 

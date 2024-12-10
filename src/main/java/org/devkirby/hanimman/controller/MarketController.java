@@ -41,6 +41,10 @@ public class MarketController {
         return ResponseEntity.ok(markets);
     }
 
-
-
+    @GetMapping("/category/{categoryId}/{name}")
+    public ResponseEntity<MarketDTO> getMarketByCategoryIdAndName(@PathVariable Integer categoryId, @PathVariable String name){
+        MarketDTO marketDTO = marketService.getMarketByCategoryIdAndName(categoryId, name);
+        System.out.println(marketDTO.getName());
+        return ResponseEntity.ok(marketDTO);
+    }
 }
