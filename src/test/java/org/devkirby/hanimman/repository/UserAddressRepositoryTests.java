@@ -22,22 +22,25 @@ class UserAddressRepositoryTests {
     @Autowired
     private UserAddressRepository userAddressRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void init(){
 
     }
     @Test
-    @Transactional
     void insertAddressTest(){
-        User user = User.builder()
-                .id(2)
-                .name("이용준")
-                .birth(LocalDate.parse("1994-03-09"))
-                .gender(Gender.M)
-                .phonenum("010-3682-2901")
-                .nickname("Dragon01")
-                .codenum("dieRlq")
-                .build();
+//        User user = User.builder()
+//                .id(2)
+//                .name("이용준")
+//                .birth(LocalDate.parse("1994-03-09"))
+//                .gender(Gender.M)
+//                .phonenum("010-3682-2901")
+//                .nickname("Dragon01")
+//                .codenum("dieRlq")
+//                .build();
+        User user = userRepository.findById(12).orElseThrow();
 
         Optional<Address> opt = addressRepository.findById("2635010400");
         Address address = opt.orElseThrow();

@@ -24,6 +24,7 @@ public class ShareDTO {
     private Instant locationDate;
     private String item;
     private Integer quantity;
+    private Integer price;
     private Boolean isEnd;
     private Integer userId; // User의 ID만 전달
 

@@ -48,6 +48,8 @@ public class Share {
     @Column(nullable = false)
     private Integer quantity;
 
+    private Integer price;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean isEnd = false;
