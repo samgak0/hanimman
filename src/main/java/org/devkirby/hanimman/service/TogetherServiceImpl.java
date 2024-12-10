@@ -68,6 +68,7 @@ public class TogetherServiceImpl implements TogetherService {
         User user = userRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + loginUser.getId()));
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        Optional<User> parent = userRepository.findById(together.getUser().getId());
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
 
         //작성자 판별
@@ -87,7 +88,7 @@ public class TogetherServiceImpl implements TogetherService {
         togetherDTO.setImageIds(getImageUrls(together));
         togetherDTO.setUserNickname(together.getUser().getNickname());
         togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
-        togetherDTO.setBrix(userDTO.getBrix());
+        togetherDTO.setBrix(parent.get().getBrix());
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +

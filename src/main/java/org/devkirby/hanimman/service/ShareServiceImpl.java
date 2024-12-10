@@ -63,6 +63,7 @@ public class ShareServiceImpl implements ShareService {
         User user = userRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + loginUser.getId()));
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        Optional<User> parent = userRepository.findById(share.getUser().getId());
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         if(Objects.equals(share.getUser().getId(), loginUser.getId())){
             shareDTO.setWriter(true);
@@ -79,7 +80,7 @@ public class ShareServiceImpl implements ShareService {
         shareDTO.setImageIds(getImageUrls(share));
         shareDTO.setUserNickname(share.getUser().getNickname());
         shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
-        shareDTO.setBrix(userDTO.getBrix());
+        shareDTO.setBrix(parent.get().getBrix());
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +

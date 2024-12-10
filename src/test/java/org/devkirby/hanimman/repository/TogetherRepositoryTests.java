@@ -32,7 +32,7 @@ public class TogetherRepositoryTests {
         User user = userRepository.findById(4).orElseThrow();
         Address address = addressRepository.findById("1111010200").orElseThrow();
 
-        List<Together> togethers = IntStream.range(0, 30)
+        List<Together> togethers = IntStream.range(0, 20)
                 .mapToObj(i -> Together.builder()
                         .title("같이가요 제목 " + i * 3)
                         .content("같이가요 내용 " + i * 3)
