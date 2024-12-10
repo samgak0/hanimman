@@ -40,14 +40,29 @@ public class UserAddressController {
         return ResponseEntity.ok(savedAddress);
     }
 
-    // 모든 주소 조회
+    //주소 조회
     @GetMapping("/select")
     public ResponseEntity<List<UserAddressDTO>> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
-        System.out.println("-----------------------유저 address select");
+        System.out.println("-----------------------유저 address select" + loginUser);
         Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
+        System.out.println("--------------------주소" + addresses);
         return ResponseEntity.noContent().build();
     }
 
+    // 주소 수정
+    @PutMapping("/update")
+    public ResponseEntity<UserAddressDTO> updateUserAddress(@RequestBody UserAddressDTO userAddressDTO) {
+        try {
+            UserAddressDTO updatedAddress = userAddressService.updateUserAddress(userAddressDTO);
+            return ResponseEntity.ok(updatedAddress); // 성공적으로 업데이트된 주소 반환
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build(); // 주소 정보를 찾을 수 없는 경우
+        }
+    }
+    
+    
     // 주소 삭제
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> deleteUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {

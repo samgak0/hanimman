@@ -81,9 +81,11 @@ public class UserAddressService {
     }
 
     // 단일 주소 조회 메서드
-    public Optional<UserAddressDTO> getUserAddress(Integer id) {
-        return userAddressRepository.findById(id)
-                .map(userAddress -> modelMapper.map(userAddress, UserAddressDTO.class)); // UserAddress를 DTO로 변환하여 반환
+    public Optional<UserAddressDTO> getUserAddress(Integer userId) {
+        UserAddress userAddress = userAddressRepository.findByUserId(userId);
+        // UserAddress가 null인 경우 Optional.empty() 반환
+        return Optional.ofNullable(userAddress)
+                .map(address -> modelMapper.map(address, UserAddressDTO.class));
     }
 
     // 모든 주소 조회
