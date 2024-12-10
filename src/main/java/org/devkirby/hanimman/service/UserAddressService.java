@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -120,7 +121,7 @@ public class UserAddressService {
         return builder.build();
     }
 
-    // 수정된 부분: Secondary 주소 저장 메서드
+    //두번째 주소 저장
     public UserAddressDTO saveSecondaryUserAddress(UserAddressDTO userAddressDTO) {
         // 유효성 검사
         if (userAddressDTO.getUserId() == null) {
@@ -130,30 +131,50 @@ public class UserAddressService {
             throw new IllegalArgumentException("기본 주소 ID는 필수입니다.");
         }
 
-        // 이미 주소가 등록되어 있는지 확인
+        // 기존 주소 조회
         UserAddress existingAddress = userAddressRepository.findByUserId(userAddressDTO.getUserId());
+
         if (existingAddress != null) {
-            throw new RuntimeException("이미 주소가 등록되어 있습니다."); // 예외 발생
+            // 주소가 이미 존재하면 업데이트 로직으로 전환
+
+            // Primary Address 객체 설정
+            Address primaryAddress = addressRepository.findById(userAddressDTO.getPrimaryAddressId())
+                    .orElseThrow(() -> new RuntimeException("첫번째 주소를 찾을 수 없습니다."));
+            existingAddress.setPrimaryAddress(primaryAddress); // Address 객체로 설정
+
+            // Secondary Address 객체 설정 (null 체크)
+            if (userAddressDTO.getSecondlyAddressId() != null) {
+                Address secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
+                        .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다."));
+                existingAddress.setSecondlyAddress(secondlyAddress); // Address 객체로 설정
+            } else {
+                existingAddress.setSecondlyAddress(null); // 명시적으로 null 설정
+            }
+
+            // 날짜 필드 업데이트
+            existingAddress.setValidatedAt(userAddressDTO.getValidatedAt());
+            existingAddress.setModifiedAt(Instant.now()); // 수정 시간 업데이트
+
+            // 엔티티 저장
+            UserAddress updatedAddress = userAddressRepository.save(existingAddress);
+            return convertToDTO(updatedAddress);
         }
 
-        System.out.println("주소 저장 요청:" + userAddressDTO);
+        // 새로운 주소를 생성하는 경우
         UserAddress userAddress = new UserAddress();
-
-        // User 객체 설정
         User user = userRepository.findById(userAddressDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다"));
+                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
         userAddress.setUser(user);
-        System.out.println("유저정보" + user);
 
         // Primary Address 객체 설정
         Address primaryAddress = addressRepository.findById(userAddressDTO.getPrimaryAddressId())
-                .orElseThrow(() -> new RuntimeException("첫번째 주소를 찾을 수 없습니다"));
+                .orElseThrow(() -> new RuntimeException("첫번째 주소를 찾을 수 없습니다."));
         userAddress.setPrimaryAddress(primaryAddress);
 
-        // Secondary Address 객체 설정 (null 체크)
+        // Secondary Address 설정
         if (userAddressDTO.getSecondlyAddressId() != null) {
             Address secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
-                    .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다"));
+                    .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다."));
             userAddress.setSecondlyAddress(secondlyAddress);
         } else {
             userAddress.setSecondlyAddress(null); // 명시적으로 null 설정
@@ -161,36 +182,27 @@ public class UserAddressService {
 
         // 기타 필드 설정
         userAddress.setValidatedAt(userAddressDTO.getValidatedAt());
-        userAddress.setModifiedAt(userAddressDTO.getModifiedAt());
-        userAddress.setCreatedAt(userAddressDTO.getCreatedAt());
+        userAddress.setCreatedAt(Instant.now());
+        userAddress.setModifiedAt(Instant.now());
 
         // 엔티티 저장
         UserAddress savedAddress = userAddressRepository.save(userAddress);
-
-        // DTO로 변환하여 반환
         return convertToDTO(savedAddress);
     }
 
+
+
     // 주소 업데이트 메서드
     public UserAddressDTO updateUserAddress(UserAddressDTO userAddressDTO) {
-        // 유효성 검사
-        if (userAddressDTO.getId() == null) {
-            throw new IllegalArgumentException("주소 ID는 필수입니다.");
-        }
-        if (userAddressDTO.getUserId() == null) {
-            throw new IllegalArgumentException("사용자 ID는 필수입니다.");
-        }
-        if (userAddressDTO.getPrimaryAddressId() == null) {
-            throw new IllegalArgumentException("기본 주소 ID는 필수입니다.");
-        }
 
         // 주소 엔티티 조회
         UserAddress userAddress = userAddressRepository.findById(userAddressDTO.getId())
                 .orElseThrow(() -> new RuntimeException("주소 정보를 찾을 수 없습니다."));
+        System.out.println("업데이트 요청:" + userAddressDTO);
 
         // User 객체 설정
         User user = userRepository.findById(userAddressDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         userAddress.setUser(user);
 
         // Primary Address 객체 설정
@@ -207,9 +219,11 @@ public class UserAddressService {
             userAddress.setSecondlyAddress(null); // 명시적으로 null 설정
         }
 
-        userAddress.setValidatedAt(userAddressDTO.getValidatedAt());
-        userAddress.setModifiedAt(userAddressDTO.getModifiedAt());
-        userAddress.setCreatedAt(userAddressDTO.getCreatedAt());
+        // 날짜 필드 설정
+        userAddress.setValidatedAt(userAddressDTO.getValidatedAt() != null ? userAddressDTO.getValidatedAt() : Instant.now());
+        userAddress.setModifiedAt(Instant.now()); // 수정 시간은 현재 시간으로 설정
+        // createdAt은 업데이트 시 변경하지 않음
+        // userAddress.setCreatedAt(userAddressDTO.getCreatedAt());
 
         // 엔티티 저장
         UserAddress updatedAddress = userAddressRepository.save(userAddress);
@@ -217,6 +231,5 @@ public class UserAddressService {
         // DTO로 변환하여 반환
         return convertToDTO(updatedAddress);
     }
-
 
 }

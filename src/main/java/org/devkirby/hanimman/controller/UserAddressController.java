@@ -51,22 +51,33 @@ public class UserAddressController {
 
     // 주소 수정
     @PutMapping("/update")
-    public ResponseEntity<UserAddressDTO> updateUserAddress(@RequestBody UserAddressDTO userAddressDTO) {
-        try {
-            UserAddressDTO updatedAddress = userAddressService.updateUserAddress(userAddressDTO);
-            return ResponseEntity.ok(updatedAddress); // 성공적으로 업데이트된 주소 반환
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build(); // 주소 정보를 찾을 수 없는 경우
+    public ResponseEntity<UserAddressDTO> updateUserAddress(
+            @RequestBody UserAddressDTO userAddressDTO,
+            @AuthenticationPrincipal CustomUserDetails loginUser) {
+
+        // 유효성 검사: ID가 null인지 확인
+        if (userAddressDTO.getId() == null) {
+            return ResponseEntity.badRequest().body(null); // ID가 없으면 400 Bad Request
         }
+
+        // userAddressService를 사용하여 주소를 가져옴
+        UserAddressDTO existingAddress = userAddressService.getUserAddress(userAddressDTO.getId())
+                .orElseThrow(() -> new RuntimeException("주소를 찾을 수 없습니다."));
+
+        // 주소 업데이트 서비스 호출
+        UserAddressDTO updatedAddress = userAddressService.updateUserAddress(userAddressDTO);
+
+        // 업데이트된 주소 반환
+        return ResponseEntity.ok(updatedAddress);
     }
-    
-    
+}
+
+
+
     // 주소 삭제
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> deleteUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
 //        userAddressService.deleteUserAddress(id);
 //        return ResponseEntity.noContent().build();
 //    }
-}
+//}
