@@ -135,6 +135,9 @@ public class ProfileService {
     public String getProfileImageUrl(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         Profile profile = profileRepository.findByParent(user);
+        if (profile == null) {
+            return null;
+        }
         String serverName = "t_" + profile.getServerName();
         return serverName;
     }

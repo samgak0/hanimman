@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
+import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
@@ -33,6 +34,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final TogetherFavoriteRepository togetherFavoriteRepository;
     private final TogetherImageService togetherImageService;
     private final TogetherParticipantRepository togetherParticipantRepository;
+    private final ProfileService profileService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -63,6 +65,7 @@ public class TogetherServiceImpl implements TogetherService {
         together.setViews(view);
         togetherRepository.save(together);
         User user = modelMapper.map(loginUser, User.class);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
 
         //작성자 판별
@@ -80,6 +83,8 @@ public class TogetherServiceImpl implements TogetherService {
         }
 
         togetherDTO.setImageIds(getImageUrls(together));
+        togetherDTO.setUserNickname(together.getUser().getNickname());
+        togetherDTO.setUserProfileImage(profileService.getProfileImageUrl(userDTO));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +

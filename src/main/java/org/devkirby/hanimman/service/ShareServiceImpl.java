@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareFavoriteRepository shareFavoriteRepository;
     private final ShareImageService shareImageService;
     private final ShareParticipantRepository shareParticipantRepository;
+    private final ProfileService profileService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -58,6 +60,7 @@ public class ShareServiceImpl implements ShareService {
         share.setViews(view);
         shareRepository.save(share);
         User user = modelMapper.map(loginUser, User.class);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
         if(Objects.equals(share.getUser().getId(), loginUser.getId())){
             shareDTO.setWriter(true);
@@ -72,6 +75,8 @@ public class ShareServiceImpl implements ShareService {
         }
 
         shareDTO.setImageIds(getImageUrls(share));
+        shareDTO.setUserNickname(share.getUser().getNickname());
+        shareDTO.setUserProfileImage(profileService.getProfileImageUrl(userDTO));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +

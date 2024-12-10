@@ -50,4 +50,8 @@ public class ShareDTO {
     private List<MultipartFile> files;
 
     private String address;
+
+    private String userNickname;
+
+    private String userProfileImage;
 }
