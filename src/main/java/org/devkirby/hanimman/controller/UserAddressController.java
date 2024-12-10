@@ -1,7 +1,11 @@
 package org.devkirby.hanimman.controller;
 
 import org.devkirby.hanimman.config.CustomUserDetails;
+import org.devkirby.hanimman.dto.ResponseUserAddressDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
+import org.devkirby.hanimman.entity.Address;
+import org.devkirby.hanimman.entity.UserAddress;
+import org.devkirby.hanimman.service.AddressService;
 import org.devkirby.hanimman.service.UserAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,8 @@ public class UserAddressController {
     @Autowired
     private UserAddressService userAddressService;
     private CustomUserDetails customUserDetails;
+    @Autowired
+    private AddressService addressService;
 
     // 첫번째 주소 생성
     @PostMapping("/save")
@@ -42,11 +48,22 @@ public class UserAddressController {
 
     //주소 조회
     @GetMapping("/select")
-    public ResponseEntity<List<UserAddressDTO>> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
+    public ResponseEntity<ResponseUserAddressDTO> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
         System.out.println("-----------------------유저 address select" + loginUser);
         Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
-        System.out.println("--------------------주소" + addresses);
-        return ResponseEntity.noContent().build();
+        UserAddressDTO userAddressDTO = addresses.orElseThrow();
+        //주소명 불러오기
+       String primaryAddressName = userAddressService.selectUserAddressName(userAddressDTO.getPrimaryAddressId());
+       String secondAddressName = userAddressService.selectUserAddressName(userAddressDTO.getSecondlyAddressId());
+
+        ResponseUserAddressDTO responseUserAddressDTO = ResponseUserAddressDTO.builder()
+                .primaryAddressId(userAddressDTO.getPrimaryAddressId())
+                .secondlyAddressId(userAddressDTO.getSecondlyAddressId())
+                .primaryAddressName(primaryAddressName)
+                .secondAddressName(secondAddressName)
+                .build();
+
+        return ResponseEntity.ok(responseUserAddressDTO);
     }
 
     // 주소 수정

@@ -1,6 +1,7 @@
 package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.dto.ResponseUserAddressDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
@@ -232,4 +233,13 @@ public class UserAddressService {
         return convertToDTO(updatedAddress);
     }
 
+
+    // 주소 조회
+    public String selectUserAddressName(String userAddressId){
+        Optional<Address> opt = addressRepository.findById(userAddressId);
+        Address address = opt.orElseThrow();
+        String addressName = address.getCityName() + address.getDistrictName() + address.getNeighborhoodName();
+        return addressName;
+
+    }
 }
