@@ -84,7 +84,7 @@ public class TogetherServiceImpl implements TogetherService {
 
         togetherDTO.setImageIds(getImageUrls(together));
         togetherDTO.setUserNickname(together.getUser().getNickname());
-        togetherDTO.setUserProfileImage(profileService.getProfileImageUrl(userDTO));
+        togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
         Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
         togetherDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +

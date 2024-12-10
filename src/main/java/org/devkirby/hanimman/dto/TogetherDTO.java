@@ -52,5 +52,5 @@ public class TogetherDTO {
 
     private String userNickname;
 
-    private String userProfileImage;
+    private Integer userProfileImage;
 }

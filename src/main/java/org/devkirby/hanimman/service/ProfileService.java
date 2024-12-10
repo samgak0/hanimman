@@ -99,6 +99,10 @@ public class ProfileService {
         try {
             String serverName = imageUploadUtil.uploadImage(profileImage);
             Profile profile = selectByUser(userDTO);
+            if (profile == null) {
+                profile = new Profile();
+                profile.setParent(user); // parent 필드 설정
+            }
             profile.setRealName(profileImage.getOriginalFilename());
             profile.setServerName(serverName);
             profile.setFileSize((int) profileImage.getSize());
@@ -107,9 +111,6 @@ public class ProfileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        uploadProfilePicture(profileImage, profile);
-
-
     }
 
     public File getProfile(UserDTO userDTO) {
@@ -140,5 +141,14 @@ public class ProfileService {
         }
         String serverName = "t_" + profile.getServerName();
         return serverName;
+    }
+
+    public Integer getProfileImageUrlId(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        Profile profile = profileRepository.findByParent(user);
+        if (profile == null) {
+            return null;
+        }
+        return profile.getId();
     }
 }

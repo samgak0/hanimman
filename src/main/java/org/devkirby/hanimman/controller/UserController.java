@@ -277,11 +277,13 @@ public class UserController {
     @PostMapping("/editprofile")
     public ResponseEntity<Map<String, Object>> updateUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                  @RequestParam("nickname") String nickname,
-                                                                 @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+                                                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         userDTO.setNickname(nickname);
         userService.updateUser(userDTO);
-        profileService.updateProfile(userDTO, profileImage);
+        if(profileImage != null) {
+            profileService.updateProfile(userDTO, profileImage);
+        }
 
         return null;
     }

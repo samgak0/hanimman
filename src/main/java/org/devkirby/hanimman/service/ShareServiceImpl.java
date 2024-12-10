@@ -76,7 +76,7 @@ public class ShareServiceImpl implements ShareService {
 
         shareDTO.setImageIds(getImageUrls(share));
         shareDTO.setUserNickname(share.getUser().getNickname());
-        shareDTO.setUserProfileImage(profileService.getProfileImageUrl(userDTO));
+        shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
         Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
         shareDTO.setAddress(address.get()
                 .getCityName() + " " + address.get().getDistrictName() + " " +
