@@ -55,4 +55,12 @@ public class TogetherDTO {
     private Integer userProfileImage;
 
     private Integer brix;
+
+    private Integer marketCategory;
+
+    private String marketName;
+
+    private TogetherLocationDTO togetherLocationDTO;
+
+    private String marketDetail;
 }

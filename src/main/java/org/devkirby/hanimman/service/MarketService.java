@@ -58,6 +58,9 @@ public class MarketService {
 
     public MarketDTO getMarketByCategoryIdAndName(Integer categoryId, String name){
         Market market =  marketRepository.findByCategoryIdAndName(categoryId, name);
+        if (market == null) {
+            throw new EntityNotFoundException("해당 카테고리 ID와 이름을 가진 마켓을 찾을 수 없습니다: 카테고리 ID " + categoryId + ", 이름 " + name);
+        }
         MarketDTO marketDTO = convertToDTO(market);
         return marketDTO;
     }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TogetherLocationRepository extends JpaRepository<TogetherLocation, Integer> {
+    TogetherLocation findByTogetherId(Integer togetherId);
 }

@@ -13,6 +13,7 @@ public class TogetherLocationDTO {
     private Integer id;
     private String latitude;
     private String longitude;
+    private String address;
     private String detail;
     private Integer togetherId;
     private String createdAt;

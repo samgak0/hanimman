@@ -16,6 +16,7 @@ import java.time.Instant;
 @Table(name = "together_locations")
 public class TogetherLocation {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false, length = 50)
@@ -23,6 +24,9 @@ public class TogetherLocation {
 
     @Column(nullable = false, length = 50)
     private String longitude;
+
+    @Column(nullable = false, length = 50)
+    private String address;
 
     @Column(nullable = false, length = 50)
     private String detail;

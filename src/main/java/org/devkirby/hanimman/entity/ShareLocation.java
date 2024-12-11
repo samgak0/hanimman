@@ -16,6 +16,7 @@ import java.time.Instant;
 @Table(name = "share_locations")
 public class ShareLocation {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false, length = 50)
@@ -23,6 +24,9 @@ public class ShareLocation {
 
     @Column(nullable = false, length = 50)
     private String longitude;
+
+    @Column(nullable = false, length = 50)
+    private String address;
 
     @Column(nullable = false, length = 50)
     private String detail;
