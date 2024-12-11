@@ -52,7 +52,7 @@ public class ShareServiceImpl implements ShareService {
                 .latitude(shareDTO.getLatitude())
                 .longitude(shareDTO.getLongitude())
                 .address(address.get())
-                .detail(shareDTO.getLocation())
+                .detail(shareDTO.getAddress())
                 .share(shareRepository.findById(shareDTO.getId()).get())
                 .build();
         shareLocationRepository.save(shareLocation);
