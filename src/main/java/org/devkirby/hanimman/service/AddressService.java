@@ -5,6 +5,7 @@ import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
