@@ -57,19 +57,37 @@ public class TogetherServiceImpl implements TogetherService {
         Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
                         togetherDTO.getMarketName());
         String marketCategoryName;
-        if(togetherDTO.getMarketCategory() == 1){
+        if(togetherDTO.getMarketCategory() == null){
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressDTO().getId());
+            TogetherLocation togetherLocation = TogetherLocation.builder()
+                    .together(togetherRepository.findById(togetherDTO.getId()).get())
+                    .latitude(togetherDTO.getLatitude())
+                    .longitude(togetherDTO.getLongitude())
+                    .address(address.get())
+                    .detail(togetherDTO.getAddress())
+                    .build();
+            togetherLocationRepository.save(togetherLocation);
+        }else if(togetherDTO.getMarketCategory() == 1){
             marketCategoryName = "코스트코 ";
-        }else{
+            TogetherLocation togetherLocation = TogetherLocation.builder()
+                    .together(togetherRepository.findById(togetherDTO.getId()).get())
+                    .latitude(market.getLatitude())
+                    .longitude(market.getLongitude())
+                    .address(market.getAddress())
+                    .detail(marketCategoryName+market.getName())
+                    .build();
+            togetherLocationRepository.save(togetherLocation);
+        }else if(togetherDTO.getMarketCategory() == 2) {
             marketCategoryName = "트레이더스 ";
+            TogetherLocation togetherLocation = TogetherLocation.builder()
+                    .together(togetherRepository.findById(togetherDTO.getId()).get())
+                    .latitude(market.getLatitude())
+                    .longitude(market.getLongitude())
+                    .address(market.getAddress())
+                    .detail(marketCategoryName + market.getName())
+                    .build();
+            togetherLocationRepository.save(togetherLocation);
         }
-        TogetherLocation togetherLocation = TogetherLocation.builder()
-                .together(togetherRepository.findById(togetherDTO.getId()).get())
-                .latitude(market.getLatitude())
-                .longitude(market.getLongitude())
-                .address(market.getAddress())
-                .detail(marketCategoryName+market.getName())
-                .build();
-        togetherLocationRepository.save(togetherLocation);
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
             togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
         }

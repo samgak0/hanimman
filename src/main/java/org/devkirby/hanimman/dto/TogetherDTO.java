@@ -63,4 +63,9 @@ public class TogetherDTO {
     private TogetherLocationDTO togetherLocationDTO;
 
     private String marketDetail;
+
+    private AddressDTO addressDTO;
+
+    private String latitude;
+    private String longitude;;
 }

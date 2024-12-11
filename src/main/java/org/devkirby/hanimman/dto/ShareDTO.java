@@ -56,4 +56,17 @@ public class ShareDTO {
     private Integer userProfileImage;
 
     private Integer brix;
+
+    private Integer marketCategory;
+
+    private String marketName;
+
+    private ShareLocationDTO shareLocationDTO;
+
+    private String marketDetail;
+
+    private AddressDTO addressDTO;
+
+    private String latitude;
+    private String longitude;;
 }

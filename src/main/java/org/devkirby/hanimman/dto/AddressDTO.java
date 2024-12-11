@@ -22,4 +22,5 @@ public class AddressDTO {
     private String neighborhoodCode; // 동 코드 (10100)
     private String villageCode; // 리 코드 (null)
 
+
 }
