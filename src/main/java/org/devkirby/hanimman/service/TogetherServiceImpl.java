@@ -66,7 +66,7 @@ public class TogetherServiceImpl implements TogetherService {
                 .together(togetherRepository.findById(togetherDTO.getId()).get())
                 .latitude(market.getLatitude())
                 .longitude(market.getLongitude())
-                .address(market.getAddressDetail())
+                .address(market.getAddress())
                 .detail(marketCategoryName+market.getName())
                 .build();
         togetherLocationRepository.save(togetherLocation);
@@ -114,11 +114,14 @@ public class TogetherServiceImpl implements TogetherService {
                     .latitude("0")
                     .longitude("0")
                     .detail("위치 정보 없음")
+                    .address(addressRepository.findById("1111010700").get())
                     .build();
         }
         togetherDTO.setTogetherLocationDTO(modelMapper.map(togetherLocation, TogetherLocationDTO.class));
-        Optional<Address> address = addressRepository.findById(togetherDTO.getAddressId());
-        togetherDTO.setAddress(togetherLocation.getAddress());
+        String cityName = togetherLocation.getAddress().getCityName() + " " +
+                togetherLocation.getAddress().getDistrictName() + " " +
+                togetherLocation.getAddress().getNeighborhoodName();
+        togetherDTO.setAddress(cityName);
         boolean isFavorite = togetherFavoriteRepository.existsByUserAndParent(user, together);
         togetherDTO.setFavorite(isFavorite);
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
@@ -169,9 +172,14 @@ public class TogetherServiceImpl implements TogetherService {
                                     .latitude("0")
                                     .longitude("0")
                                     .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
                                     .build();
                         }
-                        togetherDTO.setAddress(togetherLocation.getDetail());
+                        if(togetherLocation.getAddress().getNeighborhoodName() == null){
+                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+                        }else{
+                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+                        }
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -188,9 +196,14 @@ public class TogetherServiceImpl implements TogetherService {
                                     .latitude("0")
                                     .longitude("0")
                                     .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
                                     .build();
                         }
-                        togetherDTO.setAddress(togetherLocation.getDetail());
+                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
+                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+                        }else{
+                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+                        }
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -219,9 +232,14 @@ public class TogetherServiceImpl implements TogetherService {
                                     .latitude("0")
                                     .longitude("0")
                                     .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
                                     .build();
                         }
-                        togetherDTO.setAddress(togetherLocation.getDetail());
+                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
+                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+                        }else{
+                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+                        }
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -237,9 +255,14 @@ public class TogetherServiceImpl implements TogetherService {
                                     .latitude("0")
                                     .longitude("0")
                                     .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
                                     .build();
                         }
-                        togetherDTO.setAddress(togetherLocation.getDetail());
+                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
+                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+                        }else{
+                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+                        }
                         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
                         togetherDTO.setFavoriteCount(favoriteCount);
                         return togetherDTO;
@@ -281,9 +304,14 @@ public class TogetherServiceImpl implements TogetherService {
                         .latitude("0")
                         .longitude("0")
                         .detail("위치 정보 없음")
+                        .address(addressRepository.findById("1111010700").get())
                         .build();
             }
-            togetherDTO.setAddress(togetherLocation.getDetail());
+            if(togetherLocation.getAddress().getNeighborhoodName() != null){
+                togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+            }else{
+                togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+            }
             Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
             togetherDTO.setFavoriteCount(favoriteCount);
             return togetherDTO;
@@ -323,9 +351,14 @@ public class TogetherServiceImpl implements TogetherService {
                         .latitude("0")
                         .longitude("0")
                         .detail("위치 정보 없음")
+                        .address(addressRepository.findById("1111010700").get())
                         .build();
             }
-            togetherDTO.setAddress(togetherLocation.getDetail());
+            if(togetherLocation.getAddress().getNeighborhoodName() != null){
+                togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+            }else{
+                togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+            }
             Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
             togetherDTO.setFavoriteCount(favoriteCount);
             return togetherDTO;

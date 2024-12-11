@@ -25,8 +25,8 @@ public class ShareLocation {
     @Column(nullable = false, length = 50)
     private String longitude;
 
-    @Column(nullable = false, length = 50)
-    private String address;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Address address;
 
     @Column(nullable = false, length = 50)
     private String detail;
