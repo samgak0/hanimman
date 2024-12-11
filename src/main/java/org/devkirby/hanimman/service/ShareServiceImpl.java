@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
+import org.devkirby.hanimman.dto.ShareLocationDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
@@ -32,6 +33,8 @@ public class ShareServiceImpl implements ShareService {
     private final ProfileService profileService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final MarketRepository marketRepository;
+    private final ShareLocationRepository shareLocationRepository;
     private final ModelMapper modelMapper;
 
     @Value("${com.devkirby.hanimman.upload.default_image.png}")
@@ -43,9 +46,17 @@ public class ShareServiceImpl implements ShareService {
         Optional<User> user = userRepository.findById(shareDTO.getUserId());
         shareDTO.setAddressId(primaryAddressId);
         Share share = modelMapper.map(shareDTO, Share.class);
-        shareRepository.save(share);
+        shareDTO.setId(shareRepository.save(share).getId());
+        Optional<Address> address = addressRepository.findById(shareDTO.getAddressDTO().getId());
+        ShareLocation shareLocation = ShareLocation.builder()
+                .latitude(shareDTO.getLatitude())
+                .longitude(shareDTO.getLongitude())
+                .address(address.get())
+                .detail(shareDTO.getLocation())
+                .share(shareRepository.findById(shareDTO.getId()).get())
+                .build();
+        shareLocationRepository.save(shareLocation);
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
-            shareDTO.setId(share.getId());
             shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
         }
 
@@ -65,6 +76,7 @@ public class ShareServiceImpl implements ShareService {
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         Optional<User> parent = userRepository.findById(share.getUser().getId());
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
+
         if(Objects.equals(share.getUser().getId(), loginUser.getId())){
             shareDTO.setWriter(true);
         }else {
@@ -81,10 +93,20 @@ public class ShareServiceImpl implements ShareService {
         shareDTO.setUserNickname(share.getUser().getNickname());
         shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
         shareDTO.setBrix(parent.get().getBrix());
-        Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-        shareDTO.setAddress(address.get()
-                .getCityName() + " " + address.get().getDistrictName() + " " +
-                address.get().getNeighborhoodName());
+        ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+        if(shareLocation == null){
+            shareLocation = ShareLocation.builder()
+                    .latitude("0")
+                    .longitude("0")
+                    .detail("위치 정보 없음")
+                    .address(addressRepository.findById("1111010700").get())
+                    .build();
+        }
+        shareDTO.setShareLocationDTO(modelMapper.map(shareLocation, ShareLocationDTO.class));
+        String cityName=shareLocation.getAddress().getCityName() + " "+
+                shareLocation.getAddress().getDistrictName() + " " +
+                shareLocation.getAddress().getNeighborhoodName();
+        shareDTO.setAddress(cityName);
         boolean isFavorite = shareFavoriteRepository.existsByUserAndParent(user, share);
         shareDTO.setFavorite(isFavorite);
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
@@ -125,18 +147,25 @@ public class ShareServiceImpl implements ShareService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-
-
         if(!isEnd){
             return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
-                        Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//                        shareDTO.setAddress(address.get()
-//                                .getCityName() + " " + address.get().getDistrictName() + " " +
-//                                address.get().getNeighborhoodName());
-                        shareDTO.setAddress(address.get().getNeighborhoodName());
+                        ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+                        if(shareLocation == null){
+                            shareLocation = ShareLocation.builder()
+                                    .latitude("0")
+                                    .longitude("0")
+                                    .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
+                                    .build();
+                        }
+                        if(shareLocation.getAddress().getNeighborhoodName() == null){
+                            shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+                        }else{
+                            shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+                        }
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -146,11 +175,20 @@ public class ShareServiceImpl implements ShareService {
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
-                        Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//                        shareDTO.setAddress(address.get()
-//                                .getCityName() + " " + address.get().getDistrictName() + " " +
-//                                address.get().getNeighborhoodName());
-                        shareDTO.setAddress(address.get().getNeighborhoodName());
+                        ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+                        if(shareLocation == null){
+                            shareLocation = ShareLocation.builder()
+                                    .latitude("0")
+                                    .longitude("0")
+                                    .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
+                                    .build();
+                        }
+                        if(shareLocation.getAddress().getNeighborhoodName() == null){
+                            shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+                        }else{
+                            shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+                        }
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -173,11 +211,20 @@ public class ShareServiceImpl implements ShareService {
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
-                        Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//                        shareDTO.setAddress(address.get()
-//                                .getCityName() + " " + address.get().getDistrictName() + " " +
-//                                address.get().getNeighborhoodName());
-                        shareDTO.setAddress(address.get().getNeighborhoodName());
+                        ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+                        if(shareLocation == null){
+                            shareLocation = ShareLocation.builder()
+                                    .latitude("0")
+                                    .longitude("0")
+                                    .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
+                                    .build();
+                        }
+                        if(shareLocation.getAddress().getNeighborhoodName() == null){
+                            shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+                        }else{
+                            shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+                        }
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -187,11 +234,20 @@ public class ShareServiceImpl implements ShareService {
                     .map(share -> {
                         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
                         shareDTO.setImageIds(getImageThumbnailUrls(share));
-                        Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//                        shareDTO.setAddress(address.get()
-//                                .getCityName() + " " + address.get().getDistrictName() + " " +
-//                                address.get().getNeighborhoodName());
-                        shareDTO.setAddress(address.get().getNeighborhoodName());
+                        ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+                        if(shareLocation == null){
+                            shareLocation = ShareLocation.builder()
+                                    .latitude("0")
+                                    .longitude("0")
+                                    .detail("위치 정보 없음")
+                                    .address(addressRepository.findById("1111010700").get())
+                                    .build();
+                        }
+                        if(shareLocation.getAddress().getNeighborhoodName() == null){
+                            shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+                        }else{
+                            shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+                        }
                         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
                         shareDTO.setFavoriteCount(favoriteCount);
                         return shareDTO;
@@ -227,11 +283,20 @@ public class ShareServiceImpl implements ShareService {
         return sharePage.map(share -> {
             ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
             shareDTO.setImageIds(getImageThumbnailUrls(share));
-            Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//            shareDTO.setAddress(address.get()
-//                    .getCityName() + " " + address.get().getDistrictName() + " " +
-//                    address.get().getNeighborhoodName());
-            shareDTO.setAddress(address.get().getNeighborhoodName());
+            ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+            if(shareLocation == null){
+                shareLocation = ShareLocation.builder()
+                        .latitude("0")
+                        .longitude("0")
+                        .detail("위치 정보 없음")
+                        .address(addressRepository.findById("1111010700").get())
+                        .build();
+            }
+            if(shareLocation.getAddress().getNeighborhoodName() == null){
+                shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+            }else{
+                shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+            }
             Integer favoriteCount = shareFavoriteRepository.countByParent(share);
             shareDTO.setFavoriteCount(favoriteCount);
             return shareDTO;
@@ -264,11 +329,20 @@ public class ShareServiceImpl implements ShareService {
         return sharePage.map(share -> {
             ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
             shareDTO.setImageIds(getImageThumbnailUrls(share));
-            Optional<Address> address = addressRepository.findById(shareDTO.getAddressId());
-//            shareDTO.setAddress(address.get()
-//                    .getCityName() + " " + address.get().getDistrictName() + " " +
-//                    address.get().getNeighborhoodName());
-            shareDTO.setAddress(address.get().getNeighborhoodName());
+            ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
+            if(shareLocation == null){
+                shareLocation = ShareLocation.builder()
+                        .latitude("0")
+                        .longitude("0")
+                        .detail("위치 정보 없음")
+                        .address(addressRepository.findById("1111010700").get())
+                        .build();
+            }
+            if(shareLocation.getAddress().getNeighborhoodName() == null){
+                shareDTO.setAddress(shareLocation.getAddress().getDistrictName());
+            }else{
+                shareDTO.setAddress(shareLocation.getAddress().getNeighborhoodName());
+            }
             Integer favoriteCount = shareFavoriteRepository.countByParent(share);
             shareDTO.setFavoriteCount(favoriteCount);
             return shareDTO;

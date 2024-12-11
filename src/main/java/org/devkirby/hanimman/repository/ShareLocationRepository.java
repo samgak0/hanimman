@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShareLocationRepository extends JpaRepository<ShareLocation, Integer> {
+    ShareLocation findByShareId(Integer shareId);
 }
