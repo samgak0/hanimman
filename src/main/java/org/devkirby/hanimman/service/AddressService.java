@@ -5,6 +5,7 @@ import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,7 +37,7 @@ public class AddressService {
 
             int responseCode = con.getResponseCode(); // 응답 코드 확인
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 응답인 경우
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(),StandardCharsets.UTF_8));
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     result.append(inputLine); // 응답 내용을 읽어 문자열에 추가
