@@ -59,7 +59,6 @@ public class IdentityVerificationController {
             return ResponseEntity.ok(responseEntity.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             // 예외 처리: 서버 또는 클라이언트 오류가 발생했을 때
-            System.out.println("Error response: " + e.getMessage());
             return ResponseEntity.status(e.getStatusCode()).body("Error occurred: " + e.getMessage());
         } catch (Exception e) {
             // 기타 예외 처리
@@ -84,7 +83,6 @@ public class IdentityVerificationController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("본인인증 실패");
             }
             JsonNode verifiedCustomer = jsonResponse.get("verifiedCustomer");
-            System.out.println("verifiedCustomer" + verifiedCustomer);
             session.setAttribute("verifiedCustomer", verifiedCustomer);
             return ResponseEntity.ok(verifiedCustomer);
         } catch (Exception e) {

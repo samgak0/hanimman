@@ -85,11 +85,9 @@ public class UserServiceImpl implements UserService {
         if (opt.isPresent()) {
             User user = opt.get();
             if (user.getBlockedAt() != null) {
-                System.out.println("이 사용자는 이미 블록된 회원입니다.");
             } else {
                 user.setBlockedAt(Instant.now());
                 userRepository.save(user);
-                System.out.println("사용자가 블록 처리 되었습니다.");
             }
         } else {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
@@ -109,16 +107,12 @@ public class UserServiceImpl implements UserService {
 
         if (opt.isPresent()) {
             User user = opt.get();
-
             // 탈퇴일 확인
             if (user.getDeletedAt() != null) {
                 // 이미 탈퇴한 사용자 처리
-                System.out.println("이 사용자는 이미 탈퇴한 상태입니다: " + userDTO.getId());
             } else {
-
                 user.setDeletedAt(Instant.now());
                 userRepository.save(user); // 변경된 사용자 정보를 저장
-                System.out.println("회원을 성공적으로 탈퇴하였습니다: " + userDTO.getId());
             }
         } else {
             // 사용자를 찾지 못한 경우
@@ -134,8 +128,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public CustomUserDetails loadUserByCodeNum(String codenum) {
         Optional<User> opt = userRepository.findByCodenum(codenum);
-        System.out.println("----------------------------------serviceimpl");
-
         if (opt.isPresent()) {
             User user = opt.get();
             // 사용자 권한 설정

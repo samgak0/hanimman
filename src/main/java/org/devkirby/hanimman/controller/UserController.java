@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -280,6 +281,7 @@ public class UserController {
                                                                  @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         userDTO.setNickname(nickname);
+        userDTO.setModifiedAt(Instant.now());
         userService.updateUser(userDTO);
         if(profileImage != null) {
             profileService.updateProfile(userDTO, profileImage);

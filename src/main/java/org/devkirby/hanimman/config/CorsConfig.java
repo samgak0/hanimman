@@ -14,7 +14,6 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
-        System.out.println("필터");
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // 자격 증명 허용 (쿠키, 인증 헤더 등)
         config.addAllowedOriginPattern("*"); // 모든 출처 허용 (필요에 따라 변경 가능)

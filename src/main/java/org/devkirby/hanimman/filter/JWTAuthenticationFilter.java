@@ -37,11 +37,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        System.out.println("doFilterInternal");
-
         if (request.getRequestURL().toString().startsWith("/verification")
                 || request.getRequestURL().toString().startsWith("/users/verify")) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -58,10 +57,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
-                System.out.println(customUserDetails);
 
                 if (customUserDetails == null) {
-                    System.out.println("[JWT 필터] 사용자 정보가 null입니다. codenum: " + codenum);
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Unauthorized: User not found");
                     return;
@@ -82,70 +79,32 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 // 인증 성공
-                System.out.println("인증 객체 생성 및 SecurityContext 설정 시도...");
                 var authentication = new UsernamePasswordAuthenticationToken(
                         customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("SecurityContext에 인증 정보 설정 완료!");
             }
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰 처리
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("토큰이 만료되었습니다.");
+            SecurityContextHolder.clearContext();  // 인증 정보를 초기화
+            return;
         } catch (BlockedUserException e) {
-            // 블록된 사용자일 경우, 인증 실패
+            // 블록된 사용자 처리
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Blocked user: Access denied");
             return;
-        } catch (ExpiredJwtException e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("토큰이 만료되었습니다.");
-            return;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // JWT 토큰이 유효하지 않은 경우
-            System.out.println("[JWT 필터] 예외 발생: " + e.getMessage());
             e.printStackTrace();
-//            SecurityContextHolder.clearContext();
             response.getWriter().write("Authentication failed");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        // 7. 필터 체인 통과
-        System.out.println("[JWT 필터] 인증 및 검증 완료, 다음 필터로 전달");
+
+        // 인증 완료 후 필터 체인 진행
         filterChain.doFilter(request, response);
-    }
-
-    private void handleRefreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken)
-            throws IOException {
-        try {
-            Claims refreshClaims = JWTUtil.validateToken(refreshToken);
-            String codenum = refreshClaims.getSubject();
-
-
-            if (codenum != null) {
-                var customUserDetails = userService.loadUserByCodeNum(codenum);
-
-                if (customUserDetails != null) {
-                    Map<String, Object> claims = new HashMap<>();
-                    claims.put("role", "user");
-                    claims.put("nickName", customUserDetails.getNickname());
-                    claims.put("id", customUserDetails.getId());
-
-                    String addKey = customUserDetails.getId() + customUserDetails.getCodenum()
-                            + customUserDetails.getCreatedAt();
-                    String newAccessToken = JWTUtil.generateToken(claims, addKey);
-
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("{\"accessToken\": \"" + newAccessToken + "\"}");
-                    return;
-                } else {
-                    writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token.");
-                }
-            }
-        } catch (ExpiredJwtException e) {
-            writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Refresh token has expired.");
-        } catch (Exception e) {
-            writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token.");
-        }
     }
 
     private void writeErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
@@ -154,3 +113,4 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }
+
