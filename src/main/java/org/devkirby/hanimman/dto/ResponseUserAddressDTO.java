@@ -18,4 +18,7 @@ public class ResponseUserAddressDTO {
     private String secondlyAddressId;
     private String primaryAddressName;
     private String secondAddressName;
+    private String primaryNeighborhoodName;
+    private String secondNeighborhoodName;
+
 }

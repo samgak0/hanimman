@@ -5,8 +5,13 @@ import org.devkirby.hanimman.dto.ResponseUserAddressDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.entity.UserAddress;
+import org.devkirby.hanimman.repository.AddressRepository;
+import org.devkirby.hanimman.repository.UserAddressRepository;
+import org.devkirby.hanimman.repository.UserRepository;
 import org.devkirby.hanimman.service.AddressService;
 import org.devkirby.hanimman.service.UserAddressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,12 +23,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/user-address")
 public class UserAddressController {
+    private final Logger log = LoggerFactory.getLogger(TogetherController.class);
+
+    @Autowired
+    private UserAddressRepository userAddressRepository;
 
     @Autowired
     private UserAddressService userAddressService;
     private CustomUserDetails customUserDetails;
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private AddressRepository addressRepository;
 
     // 첫번째 주소 생성
     @PostMapping("/save")
@@ -54,6 +65,7 @@ public class UserAddressController {
 
         Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
         UserAddressDTO userAddressDTO = addresses.orElseThrow();
+        System.out.println(addresses + "주소가 뭐가 있나요?");
 
         String primaryAddressName = userAddressService.selectUserAddressName(userAddressDTO.getPrimaryAddressId());
         if(userAddressDTO.getSecondlyAddressId() != null){
@@ -70,8 +82,14 @@ public class UserAddressController {
             builder.secondAddressName(secondAddressName);
         }
 
+        Address address1 = addressRepository.findById(userAddressDTO.getPrimaryAddressId()).orElseThrow();
+        Address address2 = addressRepository.findById(userAddressDTO.getSecondlyAddressId()).orElseThrow();
+
         // 빌더로 DTO 생성
         ResponseUserAddressDTO responseUserAddressDTO = builder.build();
+        responseUserAddressDTO.setPrimaryNeighborhoodName(address1.getNeighborhoodName());
+        responseUserAddressDTO.setSecondNeighborhoodName(address2.getNeighborhoodName());
+
         return ResponseEntity.ok(responseUserAddressDTO);
     }
 
@@ -81,13 +99,14 @@ public class UserAddressController {
             @RequestBody UserAddressDTO userAddressDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
 
-        // 유효성 검사: ID가 null인지 확인
-        if (userAddressDTO.getId() == null) {
-            return ResponseEntity.badRequest().body(null); // ID가 없으면 400 Bad Request
-        }
+        log.info("주소 업데이트 요청: {}", userAddressDTO);
+        userAddressDTO.setId(userAddressRepository.findByUserId(loginUser.getId()).getId());
+        userAddressDTO.setUserId(loginUser.getId());
+
+        log.info("주소 업데이트 요청2: {}", userAddressDTO);
 
         // userAddressService를 사용하여 주소를 가져옴
-        UserAddressDTO existingAddress = userAddressService.getUserAddress(userAddressDTO.getId())
+        UserAddressDTO existingAddress = userAddressService.getUserAddress(loginUser.getId())
                 .orElseThrow(() -> new RuntimeException("주소를 찾을 수 없습니다."));
 
         // 주소 업데이트 서비스 호출
@@ -97,13 +116,3 @@ public class UserAddressController {
         return ResponseEntity.ok(updatedAddress);
     }
 }
-
-
-
-    // 주소 삭제
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteUserAddress(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails loginUser) {
-//        userAddressService.deleteUserAddress(id);
-//        return ResponseEntity.noContent().build();
-//    }
-//}

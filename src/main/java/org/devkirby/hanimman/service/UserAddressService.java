@@ -1,7 +1,6 @@
 package org.devkirby.hanimman.service;
 
 import lombok.RequiredArgsConstructor;
-import org.devkirby.hanimman.dto.ResponseUserAddressDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
@@ -35,7 +34,7 @@ public class UserAddressService {
 
     // 주소 저장
     public UserAddressDTO saveUserAddress(UserAddressDTO userAddressDTO) {
-        // 유효성 검사
+
         if (userAddressDTO.getUserId() == null) {
             throw new IllegalArgumentException("사용자 ID는 필수입니다.");
         }
@@ -69,7 +68,7 @@ public class UserAddressService {
                     .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다"));
             userAddress.setSecondlyAddress(secondlyAddress);
         } else {
-            userAddress.setSecondlyAddress(null); // 명시적으로 null 설정
+            userAddress.setSecondlyAddress(null);
         }
 
         // 기타 필드 설정
@@ -124,7 +123,7 @@ public class UserAddressService {
 
     //두번째 주소 저장
     public UserAddressDTO saveSecondaryUserAddress(UserAddressDTO userAddressDTO) {
-        // 유효성 검사
+
         if (userAddressDTO.getUserId() == null) {
             throw new IllegalArgumentException("사용자 ID는 필수입니다.");
         }
@@ -138,26 +137,17 @@ public class UserAddressService {
         if (existingAddress != null) {
             // 주소가 이미 존재하면 업데이트 로직으로 전환
 
-            // Primary Address 객체 설정
-            Address primaryAddress = addressRepository.findById(userAddressDTO.getPrimaryAddressId())
-                    .orElseThrow(() -> new RuntimeException("첫번째 주소를 찾을 수 없습니다."));
-            existingAddress.setPrimaryAddress(primaryAddress); // Address 객체로 설정
-
-            // Secondary Address 객체 설정 (null 체크)
-            if (userAddressDTO.getSecondlyAddressId() != null) {
-                Address secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
-                        .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다."));
-                existingAddress.setSecondlyAddress(secondlyAddress); // Address 객체로 설정
-            } else {
-                existingAddress.setSecondlyAddress(null); // 명시적으로 null 설정
-            }
-
+            Address secondlyAddress = addressRepository.findById(userAddressDTO.getPrimaryAddressId())
+                    .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다."));
+            System.out.println(secondlyAddress);
+            existingAddress.setSecondlyAddress(secondlyAddress); // Address 객체로 설정
             // 날짜 필드 업데이트
             existingAddress.setValidatedAt(userAddressDTO.getValidatedAt());
             existingAddress.setModifiedAt(Instant.now()); // 수정 시간 업데이트
 
             // 엔티티 저장
             UserAddress updatedAddress = userAddressRepository.save(existingAddress);
+            System.out.println(updatedAddress);
             return convertToDTO(updatedAddress);
         }
 
@@ -195,36 +185,37 @@ public class UserAddressService {
 
     // 주소 업데이트 메서드
     public UserAddressDTO updateUserAddress(UserAddressDTO userAddressDTO) {
-
         // 주소 엔티티 조회
         UserAddress userAddress = userAddressRepository.findById(userAddressDTO.getId())
                 .orElseThrow(() -> new RuntimeException("주소 정보를 찾을 수 없습니다."));
-        System.out.println("업데이트 요청:" + userAddressDTO);
+        System.out.println("주소 업데이트 요청:" + userAddressDTO);
 
         // User 객체 설정
         User user = userRepository.findById(userAddressDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
-        userAddress.setUser(user);
+        System.out.println("유저 정보:" + user);
 
         // Primary Address 객체 설정
         Address primaryAddress = addressRepository.findById(userAddressDTO.getPrimaryAddressId())
                 .orElseThrow(() -> new RuntimeException("첫번째 주소를 찾을 수 없습니다."));
-        userAddress.setPrimaryAddress(primaryAddress);
+        System.out.println("첫번째 주소:" + primaryAddress);
 
         // Secondary Address 객체 설정 (null 체크)
+        Address secondlyAddress = null;
         if (userAddressDTO.getSecondlyAddressId() != null) {
-            Address secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
+            secondlyAddress = addressRepository.findById(userAddressDTO.getSecondlyAddressId())
                     .orElseThrow(() -> new RuntimeException("두번째 주소를 찾을 수 없습니다."));
-            userAddress.setSecondlyAddress(secondlyAddress);
-        } else {
-            userAddress.setSecondlyAddress(null); // 명시적으로 null 설정
         }
+
+        // 첫 번째 주소가 비어있지 않으면 기존 주소 유지
+        userAddress.setPrimaryAddress(primaryAddress); // 항상 primaryAddress를 업데이트
+
+        // 두 번째 주소 설정
+        userAddress.setSecondlyAddress(secondlyAddress);
 
         // 날짜 필드 설정
         userAddress.setValidatedAt(userAddressDTO.getValidatedAt() != null ? userAddressDTO.getValidatedAt() : Instant.now());
         userAddress.setModifiedAt(Instant.now()); // 수정 시간은 현재 시간으로 설정
-        // createdAt은 업데이트 시 변경하지 않음
-        // userAddress.setCreatedAt(userAddressDTO.getCreatedAt());
 
         // 엔티티 저장
         UserAddress updatedAddress = userAddressRepository.save(userAddress);
@@ -234,12 +225,13 @@ public class UserAddressService {
     }
 
 
+
+
     // 주소 조회
     public String selectUserAddressName(String userAddressId){
         Optional<Address> opt = addressRepository.findById(userAddressId);
         Address address = opt.orElseThrow();
         String addressName = address.getCityName() + address.getDistrictName() + address.getNeighborhoodName();
         return addressName;
-
     }
 }
