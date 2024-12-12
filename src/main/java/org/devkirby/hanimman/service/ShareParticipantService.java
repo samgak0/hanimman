@@ -17,4 +17,6 @@ public interface ShareParticipantService {
     List<ShareParticipantDTO> listAllByParentId(Integer parentId);
 
     List<ShareParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId);
+
+    List<ShareParticipantDTO> listAllByUserId(Integer userId);
 }

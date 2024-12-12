@@ -17,4 +17,6 @@ public interface TogetherParticipantService {
     List<TogetherParticipantDTO> listAllByParentId(Integer parentId);
 
     List<TogetherParticipantDTO> listAllByParentIdAndRejectedIsNull(Integer parentId);
+
+    List<TogetherParticipantDTO> listAllByUserId(Integer userId);
 }

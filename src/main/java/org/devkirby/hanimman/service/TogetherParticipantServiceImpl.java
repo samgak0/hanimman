@@ -3,7 +3,10 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherParticipantDTO;
+import org.devkirby.hanimman.entity.Together;
+import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.entity.TogetherParticipant;
+import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherParticipantRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TogetherParticipantServiceImpl implements TogetherParticipantService {
     private final TogetherParticipantRepository togetherParticipantRepository;
+    private final TogetherImageRepository togetherImageRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -90,4 +94,30 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
                 .map(togetherParticipant -> modelMapper.map(togetherParticipant, TogetherParticipantDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<TogetherParticipantDTO> listAllByUserId(Integer userId) {
+        return togetherParticipantRepository.findByUserId(userId).stream()
+                .map(togetherParticipant -> {
+                    TogetherParticipantDTO togetherParticipantDTO = modelMapper.map(togetherParticipant, TogetherParticipantDTO.class);
+                    togetherParticipantDTO.setTitle(togetherParticipant.getParent().getTitle());
+                    togetherParticipantDTO.setNickname(togetherParticipant.getParent().getUser().getNickname());
+                    togetherParticipantDTO.setImageIds( getImageThumbnailUrls(togetherParticipant.getParent()));
+                   ;
+                    return togetherParticipantDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getImageThumbnailUrls(Together together){
+        List<Integer> imageIds = togetherImageRepository.findByParentAndDeletedAtIsNull(together)
+                .stream()
+                .map(togetherimage -> togetherimage.getId())
+                .findFirst()
+                .map(List::of).orElse(List.of(0));
+
+        return imageIds;
+    }
 }
+
+

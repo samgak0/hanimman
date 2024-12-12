@@ -3,7 +3,10 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareParticipantDTO;
+import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareParticipant;
+import org.devkirby.hanimman.entity.Together;
+import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareParticipantRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ShareParticipantServiceImpl implements ShareParticipantService {
     private final ShareParticipantRepository shareParticipantRepository;
+    private final ShareImageRepository shareImageRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -91,5 +95,29 @@ public class ShareParticipantServiceImpl implements ShareParticipantService {
         return shareParticipants.stream()
                 .map(shareParticipant -> modelMapper.map(shareParticipant, ShareParticipantDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ShareParticipantDTO> listAllByUserId(Integer userId) {
+        List<ShareParticipant> shareParticipants = shareParticipantRepository.findByUserId(userId);
+        return shareParticipants.stream()
+                .map(shareParticipant -> {
+                    ShareParticipantDTO shareParticipantDTO = modelMapper.map(shareParticipant, ShareParticipantDTO.class);
+                    shareParticipantDTO.setTitle(shareParticipant.getParent().getTitle());
+                    shareParticipantDTO.setNickname(shareParticipant.getParent().getUser().getNickname());
+                    shareParticipantDTO.setImageIds( getImageThumbnailUrls(shareParticipant.getParent()));
+                    return shareParticipantDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getImageThumbnailUrls(Share share){
+        List<Integer> imageIds = shareImageRepository.findByParentAndDeletedAtIsNull(share)
+                .stream()
+                .map(shareImage -> shareImage.getId())
+                .findFirst()
+                .map(List::of).orElse(List.of(0));
+
+        return imageIds;
     }
 }

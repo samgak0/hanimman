@@ -17,4 +17,6 @@ public interface ShareParticipantRepository extends JpaRepository<ShareParticipa
     ShareParticipant findByUserIdAndParentId(Integer userId, Integer parentId);
 
     Boolean existsByUserIdAndParentId(Integer userId, Integer parentId);
+
+    List<ShareParticipant> findByUserIdAndRejectedIsNull(Integer userId);
 }
