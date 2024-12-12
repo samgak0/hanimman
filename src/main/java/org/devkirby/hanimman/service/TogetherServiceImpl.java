@@ -42,6 +42,7 @@ public class TogetherServiceImpl implements TogetherService {
     private final MarketRepository marketRepository;
     private final TogetherLocationRepository togetherLocationRepository;
     private final ModelMapper modelMapper;
+    private final UserAddressRepository userAddressRepository;
 
     private final Logger log = LoggerFactory.getLogger(TogetherServiceImpl.class);
     @Value("${com.devkirby.hanimman.upload.default_image.png}")
@@ -170,7 +171,10 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
+        UserAddress userAddress = userAddressRepository.findByUserId(userId);
+        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
+        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -179,17 +183,26 @@ public class TogetherServiceImpl implements TogetherService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            return togetherRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
+            log.info("유저ID : " + userId);
+            log.info("유저위치정보 : " + userAddress.getPrimaryAddress());
+            return togetherRepository.
+                    findByAddress_CityCodeAndAddress_DistrictCodeAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode, userDistrictCode)
                     .map(this::getTogetherDTO);
         }
         else{
-            return togetherRepository.findByDeletedAtIsNull(pageable)
+            return togetherRepository.
+                    findByAddress_CityCodeAndAddress_DistrictCodeAndDeletedAtIsNull
+                            (pageable, userCityCode, userDistrictCode)
                     .map(this::getTogetherDTO);
         }
     }
 
     @Override
-    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
+        UserAddress userAddress = userAddressRepository.findByUserId(userId);
+        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
+        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -198,11 +211,12 @@ public class TogetherServiceImpl implements TogetherService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(isEnd){
-            return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(
-                            keyword, keyword, pageable)
+            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
+                            pageable, userCityCode, userDistrictCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }else{
-            return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
+                            pageable, userCityCode, userDistrictCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }
 

@@ -16,9 +16,10 @@ public interface TogetherService {
     void update(TogetherDTO togetherDTO) throws IOException;
     void delete(Integer id);
 
-    Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy);;
+    Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, Integer userId);;
 
-    Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy);
+    Page<TogetherDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, Integer userId);
 
     void updateIsEnd();
 

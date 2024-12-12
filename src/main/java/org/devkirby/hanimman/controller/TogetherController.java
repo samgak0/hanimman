@@ -127,18 +127,21 @@ public class TogetherController {
     @GetMapping("/list")
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "true") Boolean isEnd,
-                                              @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
+                                              @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                              @AuthenticationPrincipal CustomUserDetails loginUser) {
         log.info("together list 출력 : " + sortBy);
         log.info("together list 출력 : " + isEnd);
-        return togetherService.listAll(pageable, isEnd, sortBy);
+        log.info("together list 출력 : " + loginUser.getId());
+        return togetherService.listAll(pageable, isEnd, sortBy, loginUser.getId());
     }
 
     @GetMapping("/search")
     public Page<TogetherDTO> searchTogethers(@RequestParam String keyword,
                                              @PageableDefault(size = 10) Pageable pageable,
                                              @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
-                                             @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy);
+                                             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                             @AuthenticationPrincipal CustomUserDetails loginUser) {
+        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy, loginUser.getId());
     }
 
     @GetMapping("/favorite/list")
