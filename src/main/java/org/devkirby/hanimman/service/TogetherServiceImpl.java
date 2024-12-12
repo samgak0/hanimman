@@ -179,53 +179,12 @@ public class TogetherServiceImpl implements TogetherService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            log.info("isEnd is true");
             return togetherRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
-                    .map(together -> {
-                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
-                        TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-                        if(togetherLocation == null){
-                            togetherLocation = TogetherLocation.builder()
-                                    .latitude("0")
-                                    .longitude("0")
-                                    .detail("위치 정보 없음")
-                                    .address(addressRepository.findById("1111010700").get())
-                                    .build();
-                        }
-                        if(togetherLocation.getAddress().getNeighborhoodName() == null){
-                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-                        }else{
-                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-                        }
-                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                        togetherDTO.setFavoriteCount(favoriteCount);
-                        return togetherDTO;
-                    });
+                    .map(this::getTogetherDTO);
         }
         else{
             return togetherRepository.findByDeletedAtIsNull(pageable)
-                    .map(together -> {
-                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
-                        TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-                        if(togetherLocation == null){
-                            togetherLocation = TogetherLocation.builder()
-                                    .latitude("0")
-                                    .longitude("0")
-                                    .detail("위치 정보 없음")
-                                    .address(addressRepository.findById("1111010700").get())
-                                    .build();
-                        }
-                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
-                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-                        }else{
-                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-                        }
-                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                        togetherDTO.setFavoriteCount(favoriteCount);
-                        return togetherDTO;
-                    });
+                    .map(this::getTogetherDTO);
         }
     }
 
@@ -241,50 +200,10 @@ public class TogetherServiceImpl implements TogetherService {
         if(isEnd){
             return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(
                             keyword, keyword, pageable)
-                    .map(together -> {
-                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
-                        TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-                        if(togetherLocation == null){
-                            togetherLocation = TogetherLocation.builder()
-                                    .latitude("0")
-                                    .longitude("0")
-                                    .detail("위치 정보 없음")
-                                    .address(addressRepository.findById("1111010700").get())
-                                    .build();
-                        }
-                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
-                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-                        }else{
-                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-                        }
-                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                        togetherDTO.setFavoriteCount(favoriteCount);
-                        return togetherDTO;
-                    });
+                    .map(this::getTogetherDTO);
         }else{
             return togetherRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
-                    .map(together -> {
-                        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-                        togetherDTO.setImageIds(getImageThumbnailUrls(together));
-                        TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-                        if(togetherLocation == null){
-                            togetherLocation = TogetherLocation.builder()
-                                    .latitude("0")
-                                    .longitude("0")
-                                    .detail("위치 정보 없음")
-                                    .address(addressRepository.findById("1111010700").get())
-                                    .build();
-                        }
-                        if(togetherLocation.getAddress().getNeighborhoodName() != null){
-                            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-                        }else{
-                            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-                        }
-                        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-                        togetherDTO.setFavoriteCount(favoriteCount);
-                        return togetherDTO;
-                    });
+                    .map(this::getTogetherDTO);
         }
 
     }
@@ -313,27 +232,7 @@ public class TogetherServiceImpl implements TogetherService {
                 pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Together> togetherPage = new PageImpl<>(togethers, pageable, togethers.size());
-        return togetherPage.map(together -> {
-            TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-            togetherDTO.setImageIds(getImageUrls(together));
-            TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-            if(togetherLocation == null){
-                togetherLocation = TogetherLocation.builder()
-                        .latitude("0")
-                        .longitude("0")
-                        .detail("위치 정보 없음")
-                        .address(addressRepository.findById("1111010700").get())
-                        .build();
-            }
-            if(togetherLocation.getAddress().getNeighborhoodName() != null){
-                togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-            }else{
-                togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-            }
-            Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-            togetherDTO.setFavoriteCount(favoriteCount);
-            return togetherDTO;
-        });
+        return togetherPage.map(this::getTogetherDTO);
     }
     @Override
     @Transactional
@@ -360,27 +259,7 @@ public class TogetherServiceImpl implements TogetherService {
         pageable = PageRequest.of(pageable.getPageNumber(),
                 pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         Page<Together> togetherPage = togetherRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
-        return togetherPage.map(together -> {
-            TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
-            togetherDTO.setImageIds(getImageUrls(together));
-            TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
-            if(togetherLocation == null){
-                togetherLocation = TogetherLocation.builder()
-                        .latitude("0")
-                        .longitude("0")
-                        .detail("위치 정보 없음")
-                        .address(addressRepository.findById("1111010700").get())
-                        .build();
-            }
-            if(togetherLocation.getAddress().getNeighborhoodName() != null){
-                togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
-            }else{
-                togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
-            }
-            Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
-            togetherDTO.setFavoriteCount(favoriteCount);
-            return togetherDTO;
-        });
+        return togetherPage.map(this::getTogetherDTO);
     }
 
     private List<Integer> getImageUrls(Together together) {
@@ -401,5 +280,27 @@ public class TogetherServiceImpl implements TogetherService {
                 .map(List::of).orElse(List.of(0));
 
         return imageIds;
+    }
+
+    private TogetherDTO getTogetherDTO(Together together) {
+        TogetherDTO togetherDTO = modelMapper.map(together, TogetherDTO.class);
+        togetherDTO.setImageIds(getImageThumbnailUrls(together));
+        TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
+        if(togetherLocation == null){
+            togetherLocation = TogetherLocation.builder()
+                    .latitude("0")
+                    .longitude("0")
+                    .detail("위치 정보 없음")
+                    .address(addressRepository.findById("1111010700").get())
+                    .build();
+        }
+        if(togetherLocation.getAddress().getNeighborhoodName() != null){
+            togetherDTO.setAddress(togetherLocation.getAddress().getNeighborhoodName());
+        }else{
+            togetherDTO.setAddress(togetherLocation.getAddress().getDistrictName());
+        }
+        Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
+        togetherDTO.setFavoriteCount(favoriteCount);
+        return togetherDTO;
     }
 }
