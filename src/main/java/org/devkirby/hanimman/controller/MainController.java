@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
     @GetMapping
-    public void main(@AuthenticationPrincipal CustomUserDetails loginUser){
-        System.out.println("-------------------------------메인 컨트롤러");
-        System.out.println(loginUser);
-
+    public void listAll(@AuthenticationPrincipal CustomUserDetails loginUser){
+        
     }
 }
