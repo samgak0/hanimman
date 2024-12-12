@@ -103,19 +103,25 @@ public class UserAddressController {
             @AuthenticationPrincipal CustomUserDetails loginUser) {
 
         log.info("주소 업데이트 요청: {}", userAddressDTO);
-        userAddressDTO.setId(userAddressRepository.findByUserId(loginUser.getId()).getId());
         userAddressDTO.setUserId(loginUser.getId());
 
-        log.info("주소 업데이트 요청2: {}", userAddressDTO);
+        // 기존 주소 조회
+        Optional<UserAddressDTO> existingAddressOpt = userAddressService.getUserAddress(loginUser.getId());
 
-        // userAddressService를 사용하여 주소를 가져옴
-        UserAddressDTO existingAddress = userAddressService.getUserAddress(loginUser.getId())
-                .orElseThrow(() -> new RuntimeException("주소를 찾을 수 없습니다."));
+        if (existingAddressOpt.isPresent()) {
+            // 기존 주소가 있을 경우 업데이트
+            userAddressDTO.setId(existingAddressOpt.get().getId());
+            log.info("주소 업데이트 요청2: {}", userAddressDTO);
 
-        // 주소 업데이트 서비스 호출
-        UserAddressDTO updatedAddress = userAddressService.updateUserAddress(userAddressDTO);
-
-        // 업데이트된 주소 반환
-        return ResponseEntity.ok(updatedAddress);
+            // 주소 업데이트 서비스 호출
+            UserAddressDTO updatedAddress = userAddressService.updateUserAddress(userAddressDTO);
+            return ResponseEntity.ok(updatedAddress);
+        } else {
+            // 기존 주소가 없으면 신규 주소 저장 요청
+            UserAddressDTO savedAddress = userAddressService.saveUserAddress(userAddressDTO);
+            log.info("신규 주소 저장: {}", savedAddress);
+            return ResponseEntity.ok(savedAddress);
+        }
     }
+
 }

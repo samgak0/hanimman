@@ -224,14 +224,11 @@ public class UserAddressService {
         return convertToDTO(updatedAddress);
     }
 
-
-
-
     // 주소 조회
     public String selectUserAddressName(String userAddressId){
         Optional<Address> opt = addressRepository.findById(userAddressId);
         Address address = opt.orElseThrow();
-        String addressName = address.getCityName() + address.getDistrictName() + address.getNeighborhoodName();
+        String addressName = address.getNeighborhoodName();
         return addressName;
     }
 }
