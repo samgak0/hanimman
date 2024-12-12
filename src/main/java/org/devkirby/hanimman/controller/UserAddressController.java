@@ -83,12 +83,15 @@ public class UserAddressController {
         }
 
         Address address1 = addressRepository.findById(userAddressDTO.getPrimaryAddressId()).orElseThrow();
-        Address address2 = addressRepository.findById(userAddressDTO.getSecondlyAddressId()).orElseThrow();
+        if(userAddressDTO.getSecondlyAddressId() != null){
+            Address address2 = addressRepository.findById(userAddressDTO.getSecondlyAddressId()).orElseThrow();
+            builder.secondNeighborhoodName(address2.getNeighborhoodName());
+        }
 
         // 빌더로 DTO 생성
         ResponseUserAddressDTO responseUserAddressDTO = builder.build();
         responseUserAddressDTO.setPrimaryNeighborhoodName(address1.getNeighborhoodName());
-        responseUserAddressDTO.setSecondNeighborhoodName(address2.getNeighborhoodName());
+
 
         return ResponseEntity.ok(responseUserAddressDTO);
     }
