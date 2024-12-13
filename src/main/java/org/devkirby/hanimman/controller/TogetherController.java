@@ -87,12 +87,16 @@ public class TogetherController {
     }
 
     @PutMapping("/{id}")
-    public Map<String, Object> updateTogether(@PathVariable Integer id, @RequestBody TogetherDTO togetherDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    public Map<String, Object> updateTogether(@PathVariable Integer id,
+                                              @RequestPart(name="togetherDTO") TogetherDTO togetherDTO,
+                                              @RequestPart(name ="files", required = false) List<MultipartFile> files,
+                                              @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         togetherDTO.setId(id);
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
+        log.info("수정테스트입니다. {}", togetherDTO);
         if(!loginUser.getId().equals(togetherDTO.getUserId())) {
             throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
         }else if(togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()){
@@ -104,6 +108,9 @@ public class TogetherController {
         }else if(togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         }else {
+            if(files != null && !files.isEmpty()){
+                togetherDTO.setFiles(files); // 파일 설정
+            }
             togetherService.update(togetherDTO);
             map.put("code", 200);
             map.put("msg", "같이가요 게시글 수정에 성공했습니다.");

@@ -8,6 +8,8 @@ import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.service.ShareService;
 import org.devkirby.hanimman.service.UserAddressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/share")
 @RequiredArgsConstructor
 public class ShareController {
+    private static final Logger log = LoggerFactory.getLogger(ShareController.class);
     private final ShareService shareService;
     private final UserAddressService userAddressService;
 
@@ -80,7 +83,10 @@ public class ShareController {
     }
 
     @PutMapping("/{id}")
-    public Map<String, Object> updateShare(@PathVariable Integer id, @RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    public Map<String, Object> updateShare(@PathVariable Integer id,
+                                           @RequestPart(name="shareDTO") ShareDTO shareDTO,
+                                           @RequestPart(name="files", required = false) List<MultipartFile> files,
+                                           @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         shareDTO.setId(id);
         Instant now = Instant.now();
@@ -97,6 +103,10 @@ public class ShareController {
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
         }else{
+            log.info("수정테스트입니다. {}", shareDTO);
+            if(files != null && !files.isEmpty()){
+                shareDTO.setFiles(files); // 파일 설정
+            }
             shareService.update(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 수정에 성공했습니다.");
