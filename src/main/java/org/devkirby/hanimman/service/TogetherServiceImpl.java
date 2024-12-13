@@ -52,12 +52,19 @@ public class TogetherServiceImpl implements TogetherService {
     @Transactional
     public void create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(togetherDTO.getUserId());
-        togetherDTO.setAddressId(primaryAddressId);
+        Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
+                togetherDTO.getMarketName());
+        String marketCategoryName;
+        if(togetherDTO.getMarketCategory() == null){
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressDTO().getId());
+            togetherDTO.setAddressId(address.get().getId());
+        }else{
+            togetherDTO.setAddressId(market.getAddress().getId());
+        }
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherDTO.setId(togetherRepository.save(together).getId());
-        Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
-                        togetherDTO.getMarketName());
-        String marketCategoryName;
+
+
         if(togetherDTO.getMarketCategory() == null){
             Optional<Address> address = addressRepository.findById(togetherDTO.getAddressDTO().getId());
             TogetherLocation togetherLocation = TogetherLocation.builder()
@@ -89,6 +96,7 @@ public class TogetherServiceImpl implements TogetherService {
                     .build();
             togetherLocationRepository.save(togetherLocation);
         }
+
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
             togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
         }

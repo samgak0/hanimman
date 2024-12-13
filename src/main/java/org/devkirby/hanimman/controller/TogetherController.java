@@ -54,8 +54,8 @@ public class TogetherController {
         Optional<UserAddressDTO> userAddress = userAddressService.getUserAddress(loginUser.getId());
         UserAddressDTO userAddressDTO = userAddress.orElseThrow(()->
                 new IllegalArgumentException("주소를 찾을 수 없습니다."));
-        String primaryAddressId = userAddressDTO.getPrimaryAddressId();
-
+        String primaryAddressId = null;
+        
 
         if (togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
