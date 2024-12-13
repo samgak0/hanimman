@@ -50,10 +50,10 @@ public class UserAddressController {
     // 두 번째 주소 저장
     @PostMapping("/save/secondary")
     public ResponseEntity<UserAddressDTO> saveSecondaryUserAddress(@RequestBody UserAddressDTO userAddressDTO, @AuthenticationPrincipal CustomUserDetails loginUser) {
-        System.out.println(loginUser + "???????????????");
+//        System.out.println(loginUser + "???????????????");
         userAddressDTO.setUserId(loginUser.getId());
         UserAddressDTO savedAddress = userAddressService.saveSecondaryUserAddress(userAddressDTO);
-        System.out.println(savedAddress + "무슨값이 있음?");
+//        System.out.println(savedAddress + "무슨값이 있음?");
         return ResponseEntity.ok(savedAddress);
     }
 
@@ -65,7 +65,7 @@ public class UserAddressController {
 
         Optional<UserAddressDTO> addresses = userAddressService.getUserAddress(loginUser.getId());
         UserAddressDTO userAddressDTO = addresses.orElseThrow();
-        System.out.println(addresses + "주소가 뭐가 있나요?");
+//        System.out.println(addresses + "주소가 뭐가 있나요?");
 
         String primaryAddressName = userAddressService.selectUserAddressName(userAddressDTO.getPrimaryAddressId());
         if(userAddressDTO.getSecondlyAddressId() != null){
