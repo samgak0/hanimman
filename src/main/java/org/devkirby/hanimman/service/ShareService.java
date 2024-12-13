@@ -15,9 +15,10 @@ public interface ShareService {
     void update(ShareDTO shareDTO) throws IOException;
     void delete(Integer id);
 
-    Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy);
+    Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId);
 
-    Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy);
+    Page<ShareDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId);
 
     void updateIsEnd();
 

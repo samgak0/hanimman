@@ -142,7 +142,11 @@ public class ShareServiceImpl implements ShareService {
 
 
     @Override
-    public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<ShareDTO> listAll
+            (Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
         if (sortBy.equals("locationDate")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
@@ -151,16 +155,23 @@ public class ShareServiceImpl implements ShareService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
+            return shareRepository.findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getShareDTO);
         } else{
-            return shareRepository.findAll(pageable)
+            return shareRepository.findByAddress_CityCodeAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getShareDTO);
         }
     }
 
     @Override
-    public Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<ShareDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
+
         if (sortBy.equals("locationDate")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
@@ -169,11 +180,13 @@ public class ShareServiceImpl implements ShareService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
 
-        if(isEnd){
-            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+        if(!isEnd){
+            return shareRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode, keyword, keyword)
                     .map(this::getShareDTO);
         }else{
-            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+            return shareRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
+                            (pageable, userCityCode, keyword, keyword)
                     .map(this::getShareDTO);
         }
 

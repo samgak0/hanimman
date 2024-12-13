@@ -130,16 +130,21 @@ public class ShareController {
     @GetMapping("/list")
     public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable,
                                         @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
-                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        return shareService.listAll(pageable, isEnd, sortBy);
+                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                        @RequestParam(required = true, defaultValue = "1100000000")String addressId,
+                                        @AuthenticationPrincipal CustomUserDetails loginUser) {
+        log.info("addressId : {}", addressId);
+        return shareService.listAll(pageable, isEnd, sortBy, addressId, loginUser.getId());
     }
 
     @GetMapping("/search")
     public Page<ShareDTO> searchShares(@PageableDefault(size = 10) Pageable pageable,
                                        @RequestParam String keyword,
                                        @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
-                                       @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
+                                       @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                       @RequestParam(required = true, defaultValue = "1100000000")String addressId,
+                                       @AuthenticationPrincipal CustomUserDetails loginUser) {
+        return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy, addressId, loginUser.getId());
     }
 
     @GetMapping("favorite/list")

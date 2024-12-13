@@ -135,11 +135,10 @@ public class TogetherController {
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "true") Boolean isEnd,
                                               @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                              @RequestParam(required = true, defaultValue = "1100000000")String addressId,
                                               @AuthenticationPrincipal CustomUserDetails loginUser) {
-        log.info("together list 출력 : " + sortBy);
-        log.info("together list 출력 : " + isEnd);
-        log.info("together list 출력 : " + loginUser.getId());
-        return togetherService.listAll(pageable, isEnd, sortBy, loginUser.getId());
+        log.info("addressId : {}", addressId);
+        return togetherService.listAll(pageable, isEnd, sortBy, addressId,loginUser.getId());
     }
 
     @GetMapping("/search")
@@ -147,8 +146,9 @@ public class TogetherController {
                                              @PageableDefault(size = 10) Pageable pageable,
                                              @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
                                              @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                             @RequestParam(required = true, defaultValue = "1100000000")String addressId,
                                              @AuthenticationPrincipal CustomUserDetails loginUser) {
-        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy, loginUser.getId());
+        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy, addressId,loginUser.getId());
     }
 
     @GetMapping("/favorite/list")

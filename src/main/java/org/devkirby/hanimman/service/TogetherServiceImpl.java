@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
-import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.dto.TogetherLocationDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
@@ -13,13 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -183,10 +179,11 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
-        UserAddress userAddress = userAddressRepository.findByUserId(userId);
-        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
-        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
+    public Page<TogetherDTO> listAll
+            (Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -195,26 +192,26 @@ public class TogetherServiceImpl implements TogetherService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            log.info("유저ID : " + userId);
-            log.info("유저위치정보 : " + userAddress.getPrimaryAddress());
             return togetherRepository.
-                    findByAddress_CityCodeAndAddress_DistrictCodeAndIsEndIsFalseAndDeletedAtIsNull
-                            (pageable, userCityCode, userDistrictCode)
+                    findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getTogetherDTO);
         }
         else{
             return togetherRepository.
-                    findByAddress_CityCodeAndAddress_DistrictCodeAndDeletedAtIsNull
-                            (pageable, userCityCode, userDistrictCode)
+                    findByAddress_CityCodeAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getTogetherDTO);
         }
     }
 
     @Override
-    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
-        UserAddress userAddress = userAddressRepository.findByUserId(userId);
-        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
-        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
+    public Page<TogetherDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
+
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -222,13 +219,13 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(isEnd){
-            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
-                            pageable, userCityCode, userDistrictCode, keyword, keyword)
+        if(!isEnd){
+            return togetherRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull(
+                            pageable, userCityCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }else{
-            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
-                            pageable, userCityCode, userDistrictCode, keyword, keyword)
+            return togetherRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
+                            pageable, userCityCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }
 

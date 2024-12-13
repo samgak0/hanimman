@@ -38,12 +38,24 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     Page<Together> findByDeletedAtIsNull(Pageable pageable);
 
     // 아래쪽은 지역 기반 검색
-    Page<Together> findByAddress_CityCodeAndAddress_DistrictCodeAndIsEndIsFalseAndDeletedAtIsNull
-            (Pageable pageable, String cityCode, String districtCode);
+//    Page<Together> findByAddress_CityCodeAndAddress_DistrictCodeAndIsEndIsFalseAndDeletedAtIsNull
+//            (Pageable pageable, String cityCode, String districtCode);
+//
+//    Page<Together> findByAddress_CityCodeAndAddress_DistrictCodeAndDeletedAtIsNull
+//            (Pageable pageable, String cityCode, String districtCode);
+//
+//    Page<Together>  findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
+//            (Pageable pageable, String cityCode, String districtCode, String titleKeyword, String contentKeyword);
 
-    Page<Together> findByAddress_CityCodeAndAddress_DistrictCodeAndDeletedAtIsNull
-            (Pageable pageable, String cityCode, String districtCode);
+    Page<Together> findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+            (Pageable pageable, String cityCode);
 
-    Page<Together>  findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
-            (Pageable pageable, String cityCode, String districtCode, String titleKeyword, String contentKeyword);
+    Page<Together> findByAddress_CityCodeAndDeletedAtIsNull
+            (Pageable pageable, String cityCode);
+
+    Page<Together> findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull
+            (Pageable pageable, String cityCode, String titleKeyword, String contentKeyword);
+
+    Page<Together> findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
+            (Pageable pageable, String cityCode, String titleKeyword, String contentKeyword);
 }
