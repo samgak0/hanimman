@@ -86,7 +86,7 @@ public class AddressService {
 
     // 동 이름으로 주소 검색
     public List<AddressDTO> searchByNeighborhood(String neighborhood) {
-        List<Address> addresses = addressRepository.findByNeighborhoodName(neighborhood); // neighborhood로 검색
+        List<Address> addresses = addressRepository.findByNeighborhoodNameContaining(neighborhood); // neighborhood로 검색
 
         return addresses.stream()
                 .map(address -> AddressDTO.builder()
