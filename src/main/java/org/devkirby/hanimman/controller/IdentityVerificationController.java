@@ -1,14 +1,27 @@
 package org.devkirby.hanimman.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpSession;
 
 
 @CrossOrigin
@@ -40,7 +53,7 @@ public class IdentityVerificationController {
         String identityVerificationResult = response.getBody().toString(); // 실제 값을 추출
 
         // React 앱의 API 엔드포인트 --> 테스트 하실 때 본인 노트북 아이피 주소 입력
-        String url = "http://192.168.101.253:3000/verification/mobile"; // 모바일
+        String url = "https://hanimman.netlify.app/verification/mobile"; // 모바일
 
         // HTTP 요청 헤더 준비
         HttpHeaders headers = new HttpHeaders();
