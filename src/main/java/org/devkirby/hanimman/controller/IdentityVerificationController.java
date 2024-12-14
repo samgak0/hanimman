@@ -53,7 +53,7 @@ public class IdentityVerificationController {
         String identityVerificationResult = response.getBody().toString(); // 실제 값을 추출
 
         // React 앱의 API 엔드포인트 --> 테스트 하실 때 본인 노트북 아이피 주소 입력
-        String url = "https://hanimman.netlify.app/verification/mobile"; // 모바일
+        String url = "https://hanimman.samgak.store/verification/mobile"; // 모바일
 
         // HTTP 요청 헤더 준비
         HttpHeaders headers = new HttpHeaders();
