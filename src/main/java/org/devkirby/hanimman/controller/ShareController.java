@@ -76,8 +76,9 @@ public class ShareController {
             if(files != null && !files.isEmpty()){
                 shareDTO.setFiles(files);
             }
-            shareService.create(shareDTO, primaryAddressId);
+            Integer id = shareService.create(shareDTO, primaryAddressId);
             map.put("code", 200);
+            map.put("id", id);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
         }
         return map;

@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public interface TogetherService {
-    void create(TogetherDTO togetherDTO , String primaryAddressId) throws IOException;
+    Integer create(TogetherDTO togetherDTO , String primaryAddressId) throws IOException;
     TogetherDTO read(Integer id, CustomUserDetails loginUser);
     void update(TogetherDTO togetherDTO) throws IOException;
     void delete(Integer id);

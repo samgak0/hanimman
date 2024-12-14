@@ -46,7 +46,7 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     @Transactional
-    public void create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
+    public Integer create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(togetherDTO.getUserId());
         Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
                 togetherDTO.getMarketName());
@@ -96,6 +96,7 @@ public class TogetherServiceImpl implements TogetherService {
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
             togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
         }
+        return togetherDTO.getId();
     }
 
     @Override

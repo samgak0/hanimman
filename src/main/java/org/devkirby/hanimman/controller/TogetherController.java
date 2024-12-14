@@ -82,8 +82,9 @@ public class TogetherController {
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
             }
-            togetherService.create(togetherDTO, primaryAddressId );
+            Integer id = togetherService.create(togetherDTO, primaryAddressId );
             map.put("code", 200);
+            map.put("id", id);
             map.put("msg", "같이가요 게시글 작성에 성공했습니다.");
             return map;
         }

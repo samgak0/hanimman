@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 public interface ShareService {
-    void create(ShareDTO shareDTO, String primaryAddressId) throws IOException;
+    Integer create(ShareDTO shareDTO, String primaryAddressId) throws IOException;
     ShareDTO read(Integer id, CustomUserDetails loginUser);
     void update(ShareDTO shareDTO) throws IOException;
     void delete(Integer id);

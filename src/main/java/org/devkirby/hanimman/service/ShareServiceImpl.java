@@ -42,7 +42,7 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
+    public Integer create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(shareDTO.getUserId());
         shareDTO.setAddressId(primaryAddressId);
         Share share = modelMapper.map(shareDTO, Share.class);
@@ -59,6 +59,7 @@ public class ShareServiceImpl implements ShareService {
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
             shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
         }
+        return shareDTO.getId();
 
     }
 
