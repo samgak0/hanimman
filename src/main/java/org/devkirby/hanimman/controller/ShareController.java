@@ -56,7 +56,7 @@ public class ShareController {
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
-        }else if(shareDTO.getContent().length() > 65535){
+        }else if(shareDTO.getContent().length() > 65535 || shareDTO.getContent().isEmpty()){
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
         }else if(files != null && files.size()>10){
@@ -64,6 +64,13 @@ public class ShareController {
                     + shareDTO.getFiles().size());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1){
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }else if(shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
+            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+        }else if(shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50){
+            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
+                    + shareDTO.getItem().length());
         } else {
             shareDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
@@ -102,6 +109,13 @@ public class ShareController {
                     + shareDTO.getContent().length());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        } else if(shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1){
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }else if(shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
+            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+        }else if(shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50){
+            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
+                    + shareDTO.getItem().length());
         }else{
             log.info("수정테스트입니다. {}", shareDTO);
             if(files != null && !files.isEmpty()){

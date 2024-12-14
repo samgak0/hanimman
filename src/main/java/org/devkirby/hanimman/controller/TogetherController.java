@@ -60,7 +60,7 @@ public class TogetherController {
         if (togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
-        } else if (togetherDTO.getContent().length() > 1000) {
+        } else if (togetherDTO.getContent().length() > 1000 || togetherDTO.getContent().isEmpty()) {
             throw new IllegalStateException("내용의 길이는 65535자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getContent().length());
         } else if (files != null && files.size() > 10) {
@@ -68,6 +68,13 @@ public class TogetherController {
                     + files.size());
         } else if (togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(togetherDTO.getQuantity()<1) {
+            throw new IllegalStateException("수량은 1개 이상이어야 합니다.");
+        }else if(togetherDTO.getPrice()<0) {
+            throw new IllegalStateException("가격은 0원 이상이어야 합니다.");
+        }else if(togetherDTO.getItem().isEmpty() || togetherDTO.getItem().length() > 50) {
+            throw new IllegalStateException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이 : " +
+                    + togetherDTO.getItem().length());
         } else {
             togetherDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
@@ -102,11 +109,18 @@ public class TogetherController {
         }else if(togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()){
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
-        }else if(togetherDTO.getContent().length() > 65535){
+        }else if(togetherDTO.getContent().length() > 65535 || togetherDTO.getContent().isEmpty()){
             throw new IllegalStateException("내용의 길이는 65535자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getContent().length());
         }else if(togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(togetherDTO.getQuantity()<1) {
+            throw new IllegalStateException("수량은 1개 이상이어야 합니다.");
+        }else if(togetherDTO.getPrice()<0) {
+            throw new IllegalStateException("가격은 0원 이상이어야 합니다.");
+        }else if(togetherDTO.getItem().isEmpty() || togetherDTO.getItem().length() > 50) {
+            throw new IllegalStateException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이 : " +
+                    + togetherDTO.getItem().length());
         }else {
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
