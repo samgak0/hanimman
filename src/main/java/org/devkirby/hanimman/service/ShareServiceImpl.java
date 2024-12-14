@@ -89,9 +89,12 @@ public class ShareServiceImpl implements ShareService {
             shareDTO.setParticipant(false);
         }
 
+        User user2 = userRepository.findById(share.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + share.getUser().getId()));
+        UserDTO userDTO2 = modelMapper.map(user2, UserDTO.class);
         shareDTO.setImageIds(getImageUrls(share));
         shareDTO.setUserNickname(share.getUser().getNickname());
-        shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO2));
         shareDTO.setBrix(parent.get().getBrix());
         ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
         if(shareLocation == null){

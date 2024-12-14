@@ -127,9 +127,12 @@ public class TogetherServiceImpl implements TogetherService {
             togetherDTO.setParticipant(false);
         }
 
+        User user2 = userRepository.findById(together.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + together.getUser().getId()));
+        UserDTO userDTO2 = modelMapper.map(user2, UserDTO.class);
         togetherDTO.setImageIds(getImageUrls(together));
         togetherDTO.setUserNickname(together.getUser().getNickname());
-        togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO2));
         togetherDTO.setBrix(parent.get().getBrix());
         TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
         if(togetherLocation == null){
