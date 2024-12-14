@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.Instant;
@@ -198,7 +200,15 @@ public class TogetherController {
 
     @GetMapping("/downloadprofile")
     public ResponseEntity<Resource> downloadProfile(@RequestParam Integer id) throws Exception {
-        File file = togetherService.downloadProfileImage(id);
+        File file;
+        try {
+            file = togetherService.downloadProfileImage(id);
+        } catch (FileNotFoundException e) {
+            // 파일이 없을 경우: DB에서 프로필 삭제
+            togetherService.deleteProfileById(id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
         InputStreamResource resource =
                 new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()

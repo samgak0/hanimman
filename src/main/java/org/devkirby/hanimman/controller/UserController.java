@@ -95,7 +95,7 @@ public class UserController {
     private UserDTO createUserWithProfile(UserDTO savedUserDTO) {
         System.out.println("savedUserDTO" + savedUserDTO);
         UserDTO signedUserDTO = userService.createUser(savedUserDTO);
-        profileService.createProfile(signedUserDTO);
+//        profileService.createProfile(signedUserDTO);
         return signedUserDTO;
     }
 

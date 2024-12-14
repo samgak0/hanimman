@@ -29,5 +29,7 @@ public interface TogetherService {
 
     File downloadProfileImage(Integer id) throws IOException;
 
+    void deleteProfileById(Integer id);
+
     Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable);
 }
