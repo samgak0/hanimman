@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.TogetherDTO;
-import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.dto.TogetherLocationDTO;
 import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
@@ -13,13 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -50,14 +46,21 @@ public class TogetherServiceImpl implements TogetherService {
 
     @Override
     @Transactional
-    public void create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
+    public Integer create(TogetherDTO togetherDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(togetherDTO.getUserId());
-        togetherDTO.setAddressId(primaryAddressId);
+        Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
+                togetherDTO.getMarketName());
+        String marketCategoryName;
+        if(togetherDTO.getMarketCategory() == null){
+            Optional<Address> address = addressRepository.findById(togetherDTO.getAddressDTO().getId());
+            togetherDTO.setAddressId(address.get().getId());
+        }else{
+            togetherDTO.setAddressId(market.getAddress().getId());
+        }
         Together together = modelMapper.map(togetherDTO, Together.class);
         togetherDTO.setId(togetherRepository.save(together).getId());
-        Market market = marketRepository.findByCategoryIdAndName(togetherDTO.getMarketCategory(),
-                        togetherDTO.getMarketName());
-        String marketCategoryName;
+
+
         if(togetherDTO.getMarketCategory() == null){
             Optional<Address> address = addressRepository.findById(togetherDTO.getAddressDTO().getId());
             TogetherLocation togetherLocation = TogetherLocation.builder()
@@ -89,9 +92,11 @@ public class TogetherServiceImpl implements TogetherService {
                     .build();
             togetherLocationRepository.save(togetherLocation);
         }
+
         if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
             togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
         }
+        return togetherDTO.getId();
     }
 
     @Override
@@ -123,9 +128,12 @@ public class TogetherServiceImpl implements TogetherService {
             togetherDTO.setParticipant(false);
         }
 
+        User user2 = userRepository.findById(together.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + together.getUser().getId()));
+        UserDTO userDTO2 = modelMapper.map(user2, UserDTO.class);
         togetherDTO.setImageIds(getImageUrls(together));
         togetherDTO.setUserNickname(together.getUser().getNickname());
-        togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        togetherDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO2));
         togetherDTO.setBrix(parent.get().getBrix());
         TogetherLocation togetherLocation = togetherLocationRepository.findByTogetherId(together.getId());
         if(togetherLocation == null){
@@ -145,6 +153,7 @@ public class TogetherServiceImpl implements TogetherService {
         togetherDTO.setFavorite(isFavorite);
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
+        togetherDTO.setParticipantCount(togetherParticipantRepository.countByParentId(together.getId()));
 
         return togetherDTO;
     }
@@ -152,13 +161,17 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     @Transactional
     public void update(TogetherDTO togetherDTO) throws IOException {
+        log.info("수정테스트입니다2.", togetherDTO);
         Together existingTogether = togetherRepository.findById(togetherDTO.getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + togetherDTO.getId()));
         togetherImageService.deleteByParent(togetherDTO.getId());
+        existingTogether = modelMapper.map(togetherDTO, Together.class);
         existingTogether.setModifiedAt(Instant.now());
         togetherRepository.save(existingTogether);
 
-        togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getUserId());
+        if(togetherDTO.getFiles() != null && !togetherDTO.getFiles().isEmpty()){
+            togetherImageService.uploadImages(togetherDTO.getFiles(), togetherDTO.getId());
+        }
     }
 
     @Override
@@ -171,10 +184,11 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
-    public Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
-        UserAddress userAddress = userAddressRepository.findByUserId(userId);
-        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
-        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
+    public Page<TogetherDTO> listAll
+            (Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -183,26 +197,26 @@ public class TogetherServiceImpl implements TogetherService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            log.info("유저ID : " + userId);
-            log.info("유저위치정보 : " + userAddress.getPrimaryAddress());
             return togetherRepository.
-                    findByAddress_CityCodeAndAddress_DistrictCodeAndIsEndIsFalseAndDeletedAtIsNull
-                            (pageable, userCityCode, userDistrictCode)
+                    findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getTogetherDTO);
         }
         else{
             return togetherRepository.
-                    findByAddress_CityCodeAndAddress_DistrictCodeAndDeletedAtIsNull
-                            (pageable, userCityCode, userDistrictCode)
+                    findByAddress_CityCodeAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getTogetherDTO);
         }
     }
 
     @Override
-    public Page<TogetherDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy, Integer userId) {
-        UserAddress userAddress = userAddressRepository.findByUserId(userId);
-        String userCityCode = userAddress.getPrimaryAddress().getCityCode();
-        String userDistrictCode = userAddress.getPrimaryAddress().getDistrictCode();
+    public Page<TogetherDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
+
         if (sortBy.equals("meetingAt")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.asc("meetingAt")));
@@ -210,13 +224,13 @@ public class TogetherServiceImpl implements TogetherService {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
-        if(isEnd){
-            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
-                            pageable, userCityCode, userDistrictCode, keyword, keyword)
+        if(!isEnd){
+            return togetherRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull(
+                            pageable, userCityCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }else{
-            return togetherRepository.findByAddress_CityCodeAndAddress_DistrictCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
-                            pageable, userCityCode, userDistrictCode, keyword, keyword)
+            return togetherRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull(
+                            pageable, userCityCode, keyword, keyword)
                     .map(this::getTogetherDTO);
         }
 
@@ -269,6 +283,12 @@ public class TogetherServiceImpl implements TogetherService {
     }
 
     @Override
+    @Transactional
+    public void deleteProfileById(Integer id) {
+        profileRepository.deleteById(id);
+    }
+
+    @Override
     public Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(),
                 pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
@@ -315,6 +335,8 @@ public class TogetherServiceImpl implements TogetherService {
         }
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
+        togetherDTO.setParticipantCount(togetherParticipantRepository.countByParentId(together.getId()));
+        log.info("together Participant : {}", togetherDTO.getParticipantCount());
         return togetherDTO;
     }
 }

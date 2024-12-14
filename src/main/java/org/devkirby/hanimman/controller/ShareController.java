@@ -8,6 +8,8 @@ import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.service.ShareService;
 import org.devkirby.hanimman.service.UserAddressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/share")
 @RequiredArgsConstructor
 public class ShareController {
+    private static final Logger log = LoggerFactory.getLogger(ShareController.class);
     private final ShareService shareService;
     private final UserAddressService userAddressService;
 
@@ -53,7 +56,7 @@ public class ShareController {
         if(shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()){
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getTitle().length());
-        }else if(shareDTO.getContent().length() > 65535){
+        }else if(shareDTO.getContent().length() > 65535 || shareDTO.getContent().isEmpty()){
             throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getContent().length());
         }else if(files != null && files.size()>10){
@@ -61,13 +64,21 @@ public class ShareController {
                     + shareDTO.getFiles().size());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1){
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }else if(shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
+            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+        }else if(shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50){
+            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
+                    + shareDTO.getItem().length());
         } else {
             shareDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
                 shareDTO.setFiles(files);
             }
-            shareService.create(shareDTO, primaryAddressId);
+            Integer id = shareService.create(shareDTO, primaryAddressId);
             map.put("code", 200);
+            map.put("id", id);
             map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
         }
         return map;
@@ -80,7 +91,10 @@ public class ShareController {
     }
 
     @PutMapping("/{id}")
-    public Map<String, Object> updateShare(@PathVariable Integer id, @RequestBody ShareDTO shareDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    public Map<String, Object> updateShare(@PathVariable Integer id,
+                                           @RequestPart(name="shareDTO") ShareDTO shareDTO,
+                                           @RequestPart(name="files", required = false) List<MultipartFile> files,
+                                           @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         shareDTO.setId(id);
         Instant now = Instant.now();
@@ -96,7 +110,18 @@ public class ShareController {
                     + shareDTO.getContent().length());
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
             throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        } else if(shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1){
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }else if(shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
+            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+        }else if(shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50){
+            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
+                    + shareDTO.getItem().length());
         }else{
+            log.info("수정테스트입니다. {}", shareDTO);
+            if(files != null && !files.isEmpty()){
+                shareDTO.setFiles(files); // 파일 설정
+            }
             shareService.update(shareDTO);
             map.put("code", 200);
             map.put("msg", "나눠요 게시글 수정에 성공했습니다.");
@@ -120,16 +145,21 @@ public class ShareController {
     @GetMapping("/list")
     public Page<ShareDTO> listAllShares(@PageableDefault(size = 10) Pageable pageable,
                                         @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
-                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        return shareService.listAll(pageable, isEnd, sortBy);
+                                        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                        @RequestParam(required = true, defaultValue = "1100000000")String addressId,
+                                        @AuthenticationPrincipal CustomUserDetails loginUser) {
+        log.info("addressId : {}", addressId);
+        return shareService.listAll(pageable, isEnd, sortBy, addressId, loginUser.getId());
     }
 
     @GetMapping("/search")
     public Page<ShareDTO> searchShares(@PageableDefault(size = 10) Pageable pageable,
                                        @RequestParam String keyword,
                                        @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
-                                       @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
-        return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy);
+                                       @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                       @RequestParam(required = true, defaultValue = "1100000000")String addressId,
+                                       @AuthenticationPrincipal CustomUserDetails loginUser) {
+        return shareService.searchByKeywords(keyword, pageable, isEnd, sortBy, addressId, loginUser.getId());
     }
 
     @GetMapping("favorite/list")

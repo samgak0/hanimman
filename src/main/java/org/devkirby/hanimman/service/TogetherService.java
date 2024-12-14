@@ -11,15 +11,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public interface TogetherService {
-    void create(TogetherDTO togetherDTO , String primaryAddressId) throws IOException;
+    Integer create(TogetherDTO togetherDTO , String primaryAddressId) throws IOException;
     TogetherDTO read(Integer id, CustomUserDetails loginUser);
     void update(TogetherDTO togetherDTO) throws IOException;
     void delete(Integer id);
 
-    Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, Integer userId);;
+    Page<TogetherDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy, String addressId ,Integer userId);;
 
     Page<TogetherDTO> searchByKeywords
-            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, Integer userId);
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId);
 
     void updateIsEnd();
 
@@ -28,6 +28,8 @@ public interface TogetherService {
     File downloadImage(Integer id) throws IOException;
 
     File downloadProfileImage(Integer id) throws IOException;
+
+    void deleteProfileById(Integer id);
 
     Page<TogetherDTO> listByUserId(Integer userId, Pageable pageable);
 }

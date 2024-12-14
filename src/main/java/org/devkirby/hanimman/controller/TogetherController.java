@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.Instant;
@@ -54,13 +56,13 @@ public class TogetherController {
         Optional<UserAddressDTO> userAddress = userAddressService.getUserAddress(loginUser.getId());
         UserAddressDTO userAddressDTO = userAddress.orElseThrow(()->
                 new IllegalArgumentException("주소를 찾을 수 없습니다."));
-        String primaryAddressId = userAddressDTO.getPrimaryAddressId();
-
+        String primaryAddressId = null;
+        
 
         if (togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
-        } else if (togetherDTO.getContent().length() > 1000) {
+        } else if (togetherDTO.getContent().length() > 1000 || togetherDTO.getContent().isEmpty()) {
             throw new IllegalStateException("내용의 길이는 65535자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getContent().length());
         } else if (files != null && files.size() > 10) {
@@ -68,13 +70,21 @@ public class TogetherController {
                     + files.size());
         } else if (togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(togetherDTO.getQuantity()<1) {
+            throw new IllegalStateException("수량은 1개 이상이어야 합니다.");
+        }else if(togetherDTO.getPrice()<0) {
+            throw new IllegalStateException("가격은 0원 이상이어야 합니다.");
+        }else if(togetherDTO.getItem().isEmpty() || togetherDTO.getItem().length() > 50) {
+            throw new IllegalStateException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이 : " +
+                    + togetherDTO.getItem().length());
         } else {
             togetherDTO.setUserId(loginUser.getId());
             if(files != null && !files.isEmpty()){
                 togetherDTO.setFiles(files); // 파일 설정
             }
-            togetherService.create(togetherDTO, primaryAddressId );
+            Integer id = togetherService.create(togetherDTO, primaryAddressId );
             map.put("code", 200);
+            map.put("id", id);
             map.put("msg", "같이가요 게시글 작성에 성공했습니다.");
             return map;
         }
@@ -87,23 +97,37 @@ public class TogetherController {
     }
 
     @PutMapping("/{id}")
-    public Map<String, Object> updateTogether(@PathVariable Integer id, @RequestBody TogetherDTO togetherDTO, @AuthenticationPrincipal User loginUser) throws IOException {
+    public Map<String, Object> updateTogether(@PathVariable Integer id,
+                                              @RequestPart(name="togetherDTO") TogetherDTO togetherDTO,
+                                              @RequestPart(name ="files", required = false) List<MultipartFile> files,
+                                              @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         togetherDTO.setId(id);
         Instant now = Instant.now();
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
+        log.info("수정테스트입니다. {}", togetherDTO);
         if(!loginUser.getId().equals(togetherDTO.getUserId())) {
             throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
         }else if(togetherDTO.getTitle().length() > 255 || togetherDTO.getTitle().isEmpty()){
             throw new IllegalStateException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getTitle().length());
-        }else if(togetherDTO.getContent().length() > 65535){
+        }else if(togetherDTO.getContent().length() > 65535 || togetherDTO.getContent().isEmpty()){
             throw new IllegalStateException("내용의 길이는 65535자 이하여야 합니다. 현재 길이 : " +
                     + togetherDTO.getContent().length());
         }else if(togetherDTO.getMeetingAt().isBefore(oneHourLater) || togetherDTO.getMeetingAt().isAfter(limitDay)) {
             throw new IllegalStateException("같이가요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+        }else if(togetherDTO.getQuantity()<1) {
+            throw new IllegalStateException("수량은 1개 이상이어야 합니다.");
+        }else if(togetherDTO.getPrice()<0) {
+            throw new IllegalStateException("가격은 0원 이상이어야 합니다.");
+        }else if(togetherDTO.getItem().isEmpty() || togetherDTO.getItem().length() > 50) {
+            throw new IllegalStateException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이 : " +
+                    + togetherDTO.getItem().length());
         }else {
+            if(files != null && !files.isEmpty()){
+                togetherDTO.setFiles(files); // 파일 설정
+            }
             togetherService.update(togetherDTO);
             map.put("code", 200);
             map.put("msg", "같이가요 게시글 수정에 성공했습니다.");
@@ -128,11 +152,10 @@ public class TogetherController {
     public Page<TogetherDTO> listAllTogethers(@PageableDefault(size = 10)Pageable pageable,
                                               @RequestParam(required = false, defaultValue = "true") Boolean isEnd,
                                               @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                              @RequestParam(required = true, defaultValue = "1100000000")String addressId,
                                               @AuthenticationPrincipal CustomUserDetails loginUser) {
-        log.info("together list 출력 : " + sortBy);
-        log.info("together list 출력 : " + isEnd);
-        log.info("together list 출력 : " + loginUser.getId());
-        return togetherService.listAll(pageable, isEnd, sortBy, loginUser.getId());
+        log.info("addressId : {}", addressId);
+        return togetherService.listAll(pageable, isEnd, sortBy, addressId,loginUser.getId());
     }
 
     @GetMapping("/search")
@@ -140,8 +163,9 @@ public class TogetherController {
                                              @PageableDefault(size = 10) Pageable pageable,
                                              @RequestParam(required = false, defaultValue = "false") Boolean isEnd,
                                              @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                             @RequestParam(required = true, defaultValue = "1100000000")String addressId,
                                              @AuthenticationPrincipal CustomUserDetails loginUser) {
-        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy, loginUser.getId());
+        return togetherService.searchByKeywords(keyword, pageable, isEnd, sortBy, addressId,loginUser.getId());
     }
 
     @GetMapping("/favorite/list")
@@ -177,7 +201,15 @@ public class TogetherController {
 
     @GetMapping("/downloadprofile")
     public ResponseEntity<Resource> downloadProfile(@RequestParam Integer id) throws Exception {
-        File file = togetherService.downloadProfileImage(id);
+        File file;
+        try {
+            file = togetherService.downloadProfileImage(id);
+        } catch (FileNotFoundException e) {
+            // 파일이 없을 경우: DB에서 프로필 삭제
+            togetherService.deleteProfileById(id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
         InputStreamResource resource =
                 new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()

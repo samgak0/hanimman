@@ -31,7 +31,6 @@ public class TogetherParticipantController {
     public void createParticipant(@RequestBody
                                       TogetherParticipantDTO togetherParticipantDTO,
                                   @AuthenticationPrincipal CustomUserDetails loginUser) {
-        log.info("같이가요 참여 : " + loginUser.getId());
         togetherParticipantDTO.setUserId(loginUser.getId());
         togetherParticipantService.create(togetherParticipantDTO);
     }

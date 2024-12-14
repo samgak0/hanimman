@@ -33,4 +33,16 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
     List<Share> findByIsEndIsFalse();
 
     Page<Share> findByDeletedAtIsNull(Pageable pageable);
+
+    Page<Share> findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+            (Pageable pageable, String cityCode);
+
+    Page<Share> findByAddress_CityCodeAndDeletedAtIsNull
+            (Pageable pageable, String cityCode);
+
+    Page<Share> findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull
+            (Pageable pageable, String cityCode, String titleKeyword, String contentKeyword);
+
+    Page<Share> findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
+            (Pageable pageable, String cityCode, String titleKeyword, String contentKeyword);
 }

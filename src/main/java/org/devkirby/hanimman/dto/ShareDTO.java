@@ -43,6 +43,9 @@ public class ShareDTO {
     // 게시글을 보는 유저가 이미 참여 신청을 했는지?
     private boolean participant;
 
+    // 받은 참여 신청 개수
+    private Integer participantCount;
+
     // 찜 수
     @Builder.Default
     private Integer favoriteCount=0;

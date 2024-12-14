@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface AddressRepository extends JpaRepository<Address, String> {
 
     // 주소검색
-    List<Address> findByNeighborhoodName(String neighborhoodName);
+    List<Address> findByNeighborhoodNameContaining(String neighborhoodName);
 
     Optional<Address> findById(String id);
 //    Optional<Address> findByNeighborhoodName(String neighborhoodName);

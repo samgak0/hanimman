@@ -42,7 +42,7 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     @Transactional
-    public void create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
+    public Integer create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
         Optional<User> user = userRepository.findById(shareDTO.getUserId());
         shareDTO.setAddressId(primaryAddressId);
         Share share = modelMapper.map(shareDTO, Share.class);
@@ -59,6 +59,7 @@ public class ShareServiceImpl implements ShareService {
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
             shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
         }
+        return shareDTO.getId();
 
     }
 
@@ -89,9 +90,12 @@ public class ShareServiceImpl implements ShareService {
             shareDTO.setParticipant(false);
         }
 
+        User user2 = userRepository.findById(share.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + share.getUser().getId()));
+        UserDTO userDTO2 = modelMapper.map(user2, UserDTO.class);
         shareDTO.setImageIds(getImageUrls(share));
         shareDTO.setUserNickname(share.getUser().getNickname());
-        shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO));
+        shareDTO.setUserProfileImage(profileService.getProfileImageUrlId(userDTO2));
         shareDTO.setBrix(parent.get().getBrix());
         ShareLocation shareLocation = shareLocationRepository.findByShareId(share.getId());
         if(shareLocation == null){
@@ -111,6 +115,7 @@ public class ShareServiceImpl implements ShareService {
         shareDTO.setFavorite(isFavorite);
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
         shareDTO.setFavoriteCount(favoriteCount);
+        shareDTO.setParticipantCount(shareParticipantRepository.countByParentId(share.getId()));
 
         return shareDTO;
     }
@@ -121,11 +126,14 @@ public class ShareServiceImpl implements ShareService {
         Share existingShare = shareRepository.findById(shareDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 나눠요 게시글이 없습니다 : " + shareDTO.getId()));
         shareImageService.deleteByParent(shareDTO.getId());
-        shareDTO.setModifiedAt(Instant.now());
-        modelMapper.map(shareDTO, existingShare);
+        existingShare = modelMapper.map(shareDTO, Share.class);
+        existingShare.setModifiedAt(Instant.now());
         shareRepository.save(existingShare);
 
-        shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+        if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
+            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+        }
+
     }
 
     @Override
@@ -139,7 +147,11 @@ public class ShareServiceImpl implements ShareService {
 
 
     @Override
-    public Page<ShareDTO> listAll(Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<ShareDTO> listAll
+            (Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
         if (sortBy.equals("locationDate")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
@@ -148,16 +160,23 @@ public class ShareServiceImpl implements ShareService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
         if(!isEnd){
-            return shareRepository.findByIsEndIsFalseAndDeletedAtIsNull(pageable)
+            return shareRepository.findByAddress_CityCodeAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getShareDTO);
         } else{
-            return shareRepository.findAll(pageable)
+            return shareRepository.findByAddress_CityCodeAndDeletedAtIsNull
+                            (pageable, userCityCode)
                     .map(this::getShareDTO);
         }
     }
 
     @Override
-    public Page<ShareDTO> searchByKeywords(String keyword, Pageable pageable, Boolean isEnd, String sortBy) {
+    public Page<ShareDTO> searchByKeywords
+            (String keyword, Pageable pageable, Boolean isEnd, String sortBy, String addressId, Integer userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 주소가 없습니다. : " + addressId));
+        String userCityCode = address.getCityCode();
+
         if (sortBy.equals("locationDate")) {
             pageable = PageRequest.of(pageable.getPageNumber(),
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("locationDate")));
@@ -166,11 +185,13 @@ public class ShareServiceImpl implements ShareService {
                     pageable.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
         }
 
-        if(isEnd){
-            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+        if(!isEnd){
+            return shareRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndIsEndIsFalseAndDeletedAtIsNull
+                            (pageable, userCityCode, keyword, keyword)
                     .map(this::getShareDTO);
         }else{
-            return shareRepository.findByTitleContainingOrContentContainingAndDeletedAtIsNull(keyword, keyword, pageable)
+            return shareRepository.findByAddress_CityCodeAndTitleContainingOrContentContainingAndDeletedAtIsNull
+                            (pageable, userCityCode, keyword, keyword)
                     .map(this::getShareDTO);
         }
 
@@ -266,6 +287,7 @@ public class ShareServiceImpl implements ShareService {
         }
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
         shareDTO.setFavoriteCount(favoriteCount);
+        shareDTO.setParticipantCount(shareParticipantRepository.countByParentId(share.getId()));
         return shareDTO;
     }
 }
