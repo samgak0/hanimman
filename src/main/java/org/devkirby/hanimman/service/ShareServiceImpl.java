@@ -111,6 +111,7 @@ public class ShareServiceImpl implements ShareService {
         shareDTO.setFavorite(isFavorite);
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
         shareDTO.setFavoriteCount(favoriteCount);
+        shareDTO.setParticipantCount(shareParticipantRepository.countByParentId(share.getId()));
 
         return shareDTO;
     }
@@ -282,6 +283,7 @@ public class ShareServiceImpl implements ShareService {
         }
         Integer favoriteCount = shareFavoriteRepository.countByParent(share);
         shareDTO.setFavoriteCount(favoriteCount);
+        shareDTO.setParticipantCount(shareParticipantRepository.countByParentId(share.getId()));
         return shareDTO;
     }
 }

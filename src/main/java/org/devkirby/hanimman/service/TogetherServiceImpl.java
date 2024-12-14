@@ -149,6 +149,7 @@ public class TogetherServiceImpl implements TogetherService {
         togetherDTO.setFavorite(isFavorite);
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
+        togetherDTO.setParticipantCount(togetherParticipantRepository.countByParentId(together.getId()));
 
         return togetherDTO;
     }
@@ -324,6 +325,7 @@ public class TogetherServiceImpl implements TogetherService {
         }
         Integer favoriteCount = togetherFavoriteRepository.countByParent(together);
         togetherDTO.setFavoriteCount(favoriteCount);
+        togetherDTO.setParticipantCount(togetherParticipantRepository.countByParentId(together.getId()));
         return togetherDTO;
     }
 }
