@@ -45,7 +45,7 @@ public class UserAddressService {
         // 이미 주소가 등록되어 있는지 확인
         UserAddress existingAddress = userAddressRepository.findByUserId(userAddressDTO.getUserId());
         if (existingAddress != null) {
-            throw new RuntimeException("이미 주소가 등록되어 있습니다."); // 예외 발생
+            return convertToDTO(existingAddress);
         }
 
         System.out.println("주소 저장 요청:" + userAddressDTO);
