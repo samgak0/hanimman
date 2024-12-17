@@ -31,19 +31,25 @@ SELECT
     s.price, 
     s.user_id, 
     'share' AS `type`,
-    si.id AS image_id,
+    si.image_id,
     COUNT(sf.id) OVER (PARTITION BY s.id) AS `favorite`,
-    COUNT(sp.id) OVER (PARTITION BY s.id) AS `participant`
+    COUNT(sr.id) OVER (PARTITION BY s.id) AS `review`
 FROM shares s
 LEFT JOIN addresses ad ON ad.id = s.address_id
-LEFT JOIN share_images si ON si.parent_id = s.id AND si.deleted_at IS NULL
+LEFT JOIN (
+    SELECT 
+        si.parent_id, 
+        si.id AS image_id,
+        ROW_NUMBER() OVER (PARTITION BY si.parent_id ORDER BY si.id) AS rn
+    FROM share_images si
+    WHERE si.deleted_at IS NULL
+) si ON si.parent_id = s.id AND si.rn = 1 -- 첫 번째 이미지만 필터링
 LEFT JOIN share_favorites sf ON sf.parent_id = s.id
-LEFT JOIN share_participants sp ON sp.parent_id = s.id
+LEFT JOIN share_reviews sr ON sr.parent_id = s.id
 WHERE s.deleted_at IS NULL
 AND s.is_end = 0
 
 UNION ALL
-
 
 SELECT 
     t.id, 
@@ -57,12 +63,19 @@ SELECT
     t.price, 
     t.user_id, 
     'together' AS `type`,
-    ti.id AS image_id,
+    ti.image_id,
     COUNT(tf.id) OVER (PARTITION BY t.id) AS `favorite`,
     COUNT(tp.id) OVER (PARTITION BY t.id) AS `participant`
 FROM togethers t
 LEFT JOIN addresses ad ON ad.id = t.address_id
-LEFT JOIN together_images ti ON ti.parent_id = t.id AND ti.deleted_at IS NULL
+LEFT JOIN (
+    SELECT 
+        ti.parent_id, 
+        ti.id AS image_id,
+        ROW_NUMBER() OVER (PARTITION BY ti.parent_id ORDER BY ti.id) AS rn
+    FROM together_images ti
+    WHERE ti.deleted_at IS NULL
+) ti ON ti.parent_id = t.id AND ti.rn = 1
 LEFT JOIN together_favorites tf ON tf.parent_id = t.id
 LEFT JOIN together_participants tp ON tp.parent_id = t.id
 WHERE t.deleted_at IS NULL
