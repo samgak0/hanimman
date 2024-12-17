@@ -2,6 +2,8 @@ package org.devkirby.hanimman.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.devkirby.hanimman.dto.ShareImageDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareImage;
@@ -16,7 +18,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShareImageServiceImpl implements ShareImageService {
