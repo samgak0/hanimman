@@ -60,7 +60,7 @@ public class ShareServiceImpl implements ShareService {
                 .build();
         shareLocationRepository.save(shareLocation);
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
-            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getId());
         }
         return shareDTO.getId();
 
