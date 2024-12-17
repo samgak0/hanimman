@@ -118,7 +118,6 @@ public class ShareController {
             throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
                     + shareDTO.getItem().length());
         }else{
-            log.info("수정테스트입니다. {}", shareDTO);
             if(files != null && !files.isEmpty()){
                 shareDTO.setFiles(files); // 파일 설정
             }

@@ -161,7 +161,6 @@ public class TogetherServiceImpl implements TogetherService {
     @Override
     @Transactional
     public void update(TogetherDTO togetherDTO) throws IOException {
-        log.info("수정테스트입니다2.", togetherDTO);
         Together existingTogether = togetherRepository.findById(togetherDTO.getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 ID의 같이가요 게시글이 없습니다. : " + togetherDTO.getId()));
         togetherImageService.deleteByParent(togetherDTO.getId());

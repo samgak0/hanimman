@@ -9,6 +9,8 @@ import org.devkirby.hanimman.dto.UserDTO;
 import org.devkirby.hanimman.entity.*;
 import org.devkirby.hanimman.repository.*;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ShareServiceImpl implements ShareService {
+    private static final Logger log = LoggerFactory.getLogger(ShareServiceImpl.class);
     private final ShareRepository shareRepository;
     private final ShareImageRepository shareImageRepository;
     private final ShareFavoriteRepository shareFavoriteRepository;
@@ -131,7 +134,8 @@ public class ShareServiceImpl implements ShareService {
         shareRepository.save(existingShare);
 
         if(shareDTO.getFiles() != null && !shareDTO.getFiles().isEmpty()){
-            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getUserId());
+            log.info("이미지 업로드 시작");
+            shareImageService.uploadImages(shareDTO.getFiles(), shareDTO.getId());
         }
 
     }

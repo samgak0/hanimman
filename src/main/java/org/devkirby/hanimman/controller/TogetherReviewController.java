@@ -7,6 +7,8 @@ import org.devkirby.hanimman.dto.TogetherReviewDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.devkirby.hanimman.service.TogetherReviewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/together-review")
 @RequiredArgsConstructor
 public class TogetherReviewController {
+    private static final Logger log = LoggerFactory.getLogger(TogetherReviewController.class);
     private final TogetherReviewService togetherReviewService;
     @Autowired
     private TogetherRepository togetherRepository;
@@ -39,6 +42,8 @@ public class TogetherReviewController {
         Optional<Together> together = togetherRepository.findById(togetherReviewDTO.getParentId());
         if(loginUser.getId() == together.get().getUser().getId()){
 
+        }else{
+            togetherReviewDTO.setTargetId(together.get().getUser().getId());
         }
         togetherReviewService.createReview(togetherReviewDTO);
         return Map.of("code", 200, "msg", "후기 작성에 성공했습니다.");
