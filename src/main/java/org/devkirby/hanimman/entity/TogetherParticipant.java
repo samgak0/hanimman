@@ -17,7 +17,7 @@ public class TogetherParticipant {
     private Integer id;
 
     @Column(nullable = false)
-    private Instant date;
+    private Instant date = Instant.now();
 
     @Column(nullable = false)
     private Integer quantity;

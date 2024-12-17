@@ -84,7 +84,12 @@ public class TogetherParticipantServiceImpl implements TogetherParticipantServic
     @Override
     public List<TogetherParticipantDTO> listAllByParentId(Integer parentId) {
         return togetherParticipantRepository.findByParentId(parentId).stream()
-                .map(togetherParticipant -> modelMapper.map(togetherParticipant, TogetherParticipantDTO.class))
+                .map(togetherParticipant -> {
+                    TogetherParticipantDTO togetherParticipantDTO = modelMapper.map(togetherParticipant, TogetherParticipantDTO.class);
+                    togetherParticipantDTO.setNickname(togetherParticipant.getUser().getNickname());
+                    togetherParticipantDTO.setImageIds(getImageThumbnailUrls(togetherParticipant.getParent()));
+                    return togetherParticipantDTO;
+                })
                 .collect(Collectors.toList());
     }
 

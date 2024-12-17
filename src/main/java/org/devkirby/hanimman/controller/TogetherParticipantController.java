@@ -46,17 +46,17 @@ public class TogetherParticipantController {
     }
 
     @PutMapping("/{id}/rejected")
-    public void rejectedParticipant(Integer id) {
+    public void rejectedParticipant(@PathVariable Integer id) {
         togetherParticipantService.rejected(id);
     }
 
     @PutMapping("/{id}/accepted")
-    public void acceptedParticipant(Integer id) {
+    public void acceptedParticipant(@PathVariable Integer id) {
         togetherParticipantService.accepted(id);
     }
 
     @PutMapping("/{id}/complete")
-    public void completeParticipant(Integer id) {
+    public void completeParticipant(@PathVariable Integer id) {
         togetherParticipantService.complete(id);
     }
 
@@ -66,7 +66,8 @@ public class TogetherParticipantController {
     }
 
     @GetMapping("/list/{parentId}")
-    public List<TogetherParticipantDTO> listAllByParentId(Integer parentId) {
+    public List<TogetherParticipantDTO> listAllByParentId(@PathVariable Integer parentId) {
+        log.info("listAllByParentId: {}", parentId);
         return togetherParticipantService.listAllByParentId(parentId);
     }
 

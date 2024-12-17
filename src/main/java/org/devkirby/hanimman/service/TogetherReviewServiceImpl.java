@@ -31,7 +31,7 @@ public class TogetherReviewServiceImpl implements TogetherReviewService {
 
         Optional<TogetherReview> existingReview = togetherReviewRepository.findByUserIdAndTargetIdAndParentIdAndDeletedAtIsNull(userId, targetId, parentId);
         if (existingReview.isPresent()) {
-            throw new IllegalArgumentException("이미 해당 함께요에 대한 후기를 작성하셨습니다.");
+            throw new IllegalArgumentException("이미 해당 함께가요에 대한 후기를 작성하셨습니다.");
         }
         setRating(targetId, togetherReviewDTO.getRating());
         TogetherReview togetherReview = modelMapper.map(togetherReviewDTO, TogetherReview.class);

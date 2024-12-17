@@ -42,17 +42,17 @@ public class ShareParticipantController {
     }
 
     @PutMapping("/{id}/rejected")
-    public void rejectedParticipant(Integer id) {
+    public void rejectedParticipant(@PathVariable Integer id) {
         shareParticipantService.rejected(id);
     }
 
     @PutMapping("/{id}/accepted")
-    public void acceptedParticipant(Integer id) {
+    public void acceptedParticipant(@PathVariable Integer id) {
         shareParticipantService.accepted(id);
     }
 
     @PutMapping("/{id}/complete")
-    public void completeParticipant(Integer id) {
+    public void completeParticipant(@PathVariable Integer id) {
         shareParticipantService.complete(id);
     }
 
@@ -62,7 +62,7 @@ public class ShareParticipantController {
     }
 
     @GetMapping("/list/{parentId}")
-    public List<ShareParticipantDTO> listAllByParentId(Integer parentId) {
+    public List<ShareParticipantDTO> listAllByParentId(@PathVariable Integer parentId) {
         return shareParticipantService.listAllByParentId(parentId);
     }
 

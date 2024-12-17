@@ -1,27 +1,44 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.devkirby.hanimman.config.CustomUserDetails;
+import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherReviewDTO;
+import org.devkirby.hanimman.entity.Together;
+import org.devkirby.hanimman.repository.TogetherRepository;
 import org.devkirby.hanimman.service.TogetherReviewService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/together-review")
 @RequiredArgsConstructor
 public class TogetherReviewController {
     private final TogetherReviewService togetherReviewService;
+    @Autowired
+    private TogetherRepository togetherRepository;
 
     @PostMapping("/create")
-    public Map<String, Object> createReview(TogetherReviewDTO togetherReviewDTO) {
+    public Map<String, Object> createReview(@RequestBody  TogetherReviewDTO togetherReviewDTO,
+                                            @AuthenticationPrincipal CustomUserDetails loginUser) {
         if (togetherReviewDTO.getContent().length() > 100) {
             throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");
         } else if (togetherReviewDTO.getRating() < -2 || togetherReviewDTO.getRating() > 2) {
             throw new IllegalArgumentException("평점은 1점 이상 5점 이하로 작성해주세요.");
+        }
+        togetherReviewDTO.setUserId(loginUser.getId());
+        togetherReviewDTO.setCreatedAt(Instant.now());
+        Optional<Together> together = togetherRepository.findById(togetherReviewDTO.getParentId());
+        if(loginUser.getId() == together.get().getUser().getId()){
+
         }
         togetherReviewService.createReview(togetherReviewDTO);
         return Map.of("code", 200, "msg", "후기 작성에 성공했습니다.");
