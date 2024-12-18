@@ -1,19 +1,17 @@
 package org.devkirby.hanimman.service;
 
-import org.springframework.stereotype.Service;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.devkirby.hanimman.dto.ShareTogetherDTO;
+import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -33,7 +31,7 @@ SELECT
     'share' AS `type`,
     si.image_id,
     COUNT(sf.id) OVER (PARTITION BY s.id) AS `favorite`,
-    COUNT(sr.id) OVER (PARTITION BY s.id) AS `review`
+    COUNT(sp.id) OVER (PARTITION BY s.id) AS `participant`
 FROM shares s
 LEFT JOIN addresses ad ON ad.id = s.address_id
 LEFT JOIN (
@@ -43,9 +41,9 @@ LEFT JOIN (
         ROW_NUMBER() OVER (PARTITION BY si.parent_id ORDER BY si.id) AS rn
     FROM share_images si
     WHERE si.deleted_at IS NULL
-) si ON si.parent_id = s.id AND si.rn = 1 -- 첫 번째 이미지만 필터링
+) si ON si.parent_id = s.id AND si.rn = 1
 LEFT JOIN share_favorites sf ON sf.parent_id = s.id
-LEFT JOIN share_reviews sr ON sr.parent_id = s.id
+LEFT JOIN share_participants sp ON sp.parent_id = s.id
 WHERE s.deleted_at IS NULL
 AND s.is_end = 0
 
