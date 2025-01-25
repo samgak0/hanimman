@@ -13,17 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +33,7 @@ public class NoticeFileServiceImpl implements NoticeFileService {
     @Transactional
     public void create(NoticeFileDTO noticeFileDTO) {
         NoticeFile noticeFile = modelMapper.map(noticeFileDTO, NoticeFile.class);
-        NoticeFile result = noticeFileRepository.save(noticeFile);
+        noticeFileRepository.save(noticeFile);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.devkirby.hanimman.service;
 
 import org.devkirby.hanimman.dto.InquiryDTO;
-import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

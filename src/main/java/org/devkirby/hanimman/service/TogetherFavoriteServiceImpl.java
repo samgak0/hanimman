@@ -8,15 +8,12 @@ import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.TogetherFavoriteRepository;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.devkirby.hanimman.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TogetherFavoriteServiceImpl implements TogetherFavoriteService {
     private final TogetherFavoriteRepository togetherFavoriteRepository;
-    private final ModelMapper modelMapper;
-
     private final TogetherRepository togetherRepository;
     private final UserRepository userRepository;
 

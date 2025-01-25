@@ -1,13 +1,11 @@
 package org.devkirby.hanimman.service;
 
 import org.devkirby.hanimman.dto.NoticeDTO;
-import org.devkirby.hanimman.dto.NoticeFileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public interface NoticeService {
     void create(NoticeDTO noticeDTO) throws IOException;

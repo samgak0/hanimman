@@ -3,14 +3,12 @@ package org.devkirby.hanimman.filter;
 import java.io.IOException;
 import java.security.Key;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.devkirby.hanimman.service.UserService;
 import org.devkirby.hanimman.util.JWTUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,13 +27,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final Key secretKey = JWTUtil.getSecretKey();
     private final UserService userService;
 
-    @Autowired
     public JWTAuthenticationFilter(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         if (request.getRequestURL().toString().startsWith("/verification")
                 || request.getRequestURL().toString().startsWith("/users/verify")) {

@@ -16,8 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,9 +44,6 @@ public class TogetherReportServiceImpl implements TogetherReportService {
                 -> new RuntimeException("Reporter not found"));
         ReportCategory category = reportCategoryRepository.findById(togetherReportDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-
-//        ZonedDateTime nowKST = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-//        Instant createdAt = nowKST.toInstant();
 
         togetherReportRepository.save(TogetherReport.builder()
                 .reporter(reporterUser)

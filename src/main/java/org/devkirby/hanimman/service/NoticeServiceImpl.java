@@ -3,7 +3,6 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.NoticeDTO;
-import org.devkirby.hanimman.dto.NoticeFileDTO;
 import org.devkirby.hanimman.entity.Notice;
 import org.devkirby.hanimman.entity.NoticeFile;
 import org.devkirby.hanimman.repository.NoticeFileRepository;

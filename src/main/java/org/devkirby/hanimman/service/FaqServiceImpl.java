@@ -3,7 +3,6 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.FaqDTO;
-import org.devkirby.hanimman.dto.FaqFileDTO;
 import org.devkirby.hanimman.entity.Faq;
 import org.devkirby.hanimman.entity.FaqFile;
 import org.devkirby.hanimman.repository.FaqFileRepository;

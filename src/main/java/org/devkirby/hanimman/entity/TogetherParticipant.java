@@ -17,6 +17,7 @@ public class TogetherParticipant {
     private Integer id;
 
     @Column(nullable = false)
+    @Builder.Default
     private Instant date = Instant.now();
 
     @Column(nullable = false)

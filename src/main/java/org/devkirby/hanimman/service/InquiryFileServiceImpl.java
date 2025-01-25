@@ -13,17 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +33,7 @@ public class InquiryFileServiceImpl implements InquiryFileService {
     @Transactional
     public void create(InquiryFileDTO inquiryFileDTO) {
         InquiryFile inquiryFile = modelMapper.map(inquiryFileDTO, InquiryFile.class);
-        InquiryFile result = inquiryFileRepository.save(inquiryFile);
+        inquiryFileRepository.save(inquiryFile);
     }
 
     @Override

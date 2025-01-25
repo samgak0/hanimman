@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ShareFavoriteServiceImpl implements ShareFavoriteService {
     private final ShareFavoriteRepository shareFavoriteRepository;
-    private final ModelMapper modelMapper;
 
     private final ShareRepository shareRepository;
     private final UserRepository userRepository;

@@ -38,7 +38,6 @@ public class TogetherServiceImpl implements TogetherService {
     private final MarketRepository marketRepository;
     private final TogetherLocationRepository togetherLocationRepository;
     private final ModelMapper modelMapper;
-    private final UserAddressRepository userAddressRepository;
 
     private final Logger log = LoggerFactory.getLogger(TogetherServiceImpl.class);
     @Value("${com.devkirby.hanimman.upload.default_image.png}")

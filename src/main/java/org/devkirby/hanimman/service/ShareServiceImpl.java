@@ -36,7 +36,6 @@ public class ShareServiceImpl implements ShareService {
     private final ProfileService profileService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-    private final MarketRepository marketRepository;
     private final ShareLocationRepository shareLocationRepository;
     private final ModelMapper modelMapper;
 
@@ -46,7 +45,6 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional
     public Integer create(ShareDTO shareDTO, String primaryAddressId) throws IOException {
-        Optional<User> user = userRepository.findById(shareDTO.getUserId());
         shareDTO.setAddressId(primaryAddressId);
         Share share = modelMapper.map(shareDTO, Share.class);
         shareDTO.setId(shareRepository.save(share).getId());
@@ -77,7 +75,6 @@ public class ShareServiceImpl implements ShareService {
         shareRepository.save(share);
         User user = userRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. : " + loginUser.getId()));
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         Optional<User> parent = userRepository.findById(share.getUser().getId());
         ShareDTO shareDTO = modelMapper.map(share, ShareDTO.class);
 

@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherParticipantDTO;
 import org.devkirby.hanimman.entity.Together;
-import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.entity.TogetherParticipant;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherParticipantRepository;

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.ShareParticipantDTO;
 import org.devkirby.hanimman.entity.Share;
 import org.devkirby.hanimman.entity.ShareParticipant;
-import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.repository.ShareImageRepository;
 import org.devkirby.hanimman.repository.ShareParticipantRepository;
 import org.modelmapper.ModelMapper;

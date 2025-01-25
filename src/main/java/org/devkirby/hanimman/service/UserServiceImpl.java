@@ -92,7 +92,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }
-
     }
 
     // 회원 탈퇴

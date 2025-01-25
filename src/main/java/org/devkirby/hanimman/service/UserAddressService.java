@@ -6,8 +6,8 @@ import org.devkirby.hanimman.entity.UserAddress;
 import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.UserAddressRepository;
-import org.devkirby.hanimman.repository.UserRepository; // UserRepository 추가
-import org.devkirby.hanimman.repository.AddressRepository; // AddressRepository 추가
+import org.devkirby.hanimman.repository.UserRepository;
+import org.devkirby.hanimman.repository.AddressRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

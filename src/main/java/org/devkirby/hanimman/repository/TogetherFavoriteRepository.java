@@ -1,6 +1,5 @@
 package org.devkirby.hanimman.repository;
 
-import org.devkirby.hanimman.dto.TogetherFavoriteDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherFavorite;
 import org.devkirby.hanimman.entity.User;

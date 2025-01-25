@@ -3,29 +3,19 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.TogetherImageDTO;
-import org.devkirby.hanimman.entity.Share;
-import org.devkirby.hanimman.entity.ShareImage;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.entity.TogetherImage;
 import org.devkirby.hanimman.repository.TogetherImageRepository;
 import org.devkirby.hanimman.repository.TogetherRepository;
 import org.devkirby.hanimman.util.ImageUploadUtil;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +31,7 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     @Transactional
     public void create(TogetherImageDTO togetherImageDTO) {
         TogetherImage togetherImage = modelMapper.map(togetherImageDTO, TogetherImage.class);
-        TogetherImage result = togetherImageRepository.save(togetherImage);
+        togetherImageRepository.save(togetherImage);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package org.devkirby.hanimman.repository;
 
-import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.UserAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -3,7 +3,6 @@ package org.devkirby.hanimman.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.dto.InquiryDTO;
-import org.devkirby.hanimman.dto.InquiryFileDTO;
 import org.devkirby.hanimman.entity.Inquiry;
 import org.devkirby.hanimman.entity.InquiryFile;
 import org.devkirby.hanimman.repository.InquiryFileRepository;
@@ -79,14 +78,18 @@ public class InquiryServiceImpl implements InquiryService {
         InquiryFile inquiryFile = inquiryFileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 이미지 파일이 없습니다 : " + id));
         File file = new File("C:/upload/inquiry/" + inquiryFile.getServerName());
+        
+        if (!file.exists()) {
+            throw new IOException("파일을 찾을 수 없습니다: " + file.getAbsolutePath());
+        }
+        
         return file;
     }
 
     private List<Integer> getInquiryFiles(Inquiry inquiry) {
-        List<Integer> imageIds = inquiryFileRepository.findByParentAndDeletedAtIsNull(inquiry)
+        return inquiryFileRepository.findByParentAndDeletedAtIsNull(inquiry)
                 .stream()
-                .map(inquriyFile -> inquriyFile.getId())
+                .map(InquiryFile::getId)
                 .collect(Collectors.toList());
-        return imageIds;
     }
 }

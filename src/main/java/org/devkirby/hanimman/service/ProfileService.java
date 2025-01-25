@@ -54,7 +54,6 @@ public class ProfileService {
 
         // 파일 경로 설정
         Path filePath = Paths.get(uploadDir + "/" + fileNameWithUUID);
-        Path fileDir = Paths.get(uploadDir);
 
         // 파일 저장
         file.transferTo(filePath.toFile());
