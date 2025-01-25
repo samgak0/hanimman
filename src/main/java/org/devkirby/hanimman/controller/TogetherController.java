@@ -38,7 +38,6 @@ import java.util.Optional;
 public class TogetherController {
     private final TogetherService togetherService;
     private final Logger log = LoggerFactory.getLogger(TogetherController.class);
-    private final UserAddressService userAddressService;
 
     @PostMapping("/create")
     public Map<String, Object> createTogether(@RequestPart("togetherDTO") TogetherDTO togetherDTO,

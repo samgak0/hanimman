@@ -5,8 +5,6 @@ import org.devkirby.hanimman.dto.ResponseUserAddressDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.entity.Address;
 import org.devkirby.hanimman.repository.AddressRepository;
-import org.devkirby.hanimman.repository.UserAddressRepository;
-import org.devkirby.hanimman.service.AddressService;
 import org.devkirby.hanimman.service.UserAddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
