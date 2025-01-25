@@ -14,5 +14,6 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     // 주소검색
     List<Address> findByNeighborhoodNameContaining(String neighborhoodName);
 
+    @NonNull
     Optional<Address> findById(@NonNull String id);
 }

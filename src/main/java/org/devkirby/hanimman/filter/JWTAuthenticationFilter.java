@@ -1,7 +1,6 @@
 package org.devkirby.hanimman.filter;
 
 import java.io.IOException;
-import java.security.Key;
 import java.time.Instant;
 
 import org.devkirby.hanimman.service.UserService;
@@ -24,7 +23,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Key secretKey = JWTUtil.getSecretKey();
     private final UserService userService;
 
     public JWTAuthenticationFilter(UserService userService) {
@@ -32,7 +30,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         if (request.getRequestURL().toString().startsWith("/verification")
                 || request.getRequestURL().toString().startsWith("/users/verify")) {
@@ -50,7 +49,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         try {
             Claims claims = JWTUtil.validateToken(token);
-            String codenum = claims.get("codenum",String.class);
+            String codenum = claims.get("codenum", String.class);
 
             if (codenum != null) {
                 var customUserDetails = userService.loadUserByCodeNum(codenum);
@@ -84,7 +83,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             // 만료된 토큰 처리
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("토큰이 만료되었습니다.");
-            SecurityContextHolder.clearContext();  // 인증 정보를 초기화
+            SecurityContextHolder.clearContext(); // 인증 정보를 초기화
             return;
         } catch (BlockedUserException e) {
             // 블록된 사용자 처리
@@ -110,4 +109,3 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }
-

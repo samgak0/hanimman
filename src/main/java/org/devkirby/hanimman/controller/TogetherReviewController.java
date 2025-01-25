@@ -2,7 +2,6 @@ package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
-import org.devkirby.hanimman.dto.TogetherDTO;
 import org.devkirby.hanimman.dto.TogetherReviewDTO;
 import org.devkirby.hanimman.entity.Together;
 import org.devkirby.hanimman.repository.TogetherRepository;
@@ -24,14 +23,13 @@ import java.util.Optional;
 @RequestMapping("/api/v1/together-review")
 @RequiredArgsConstructor
 public class TogetherReviewController {
-    private static final Logger log = LoggerFactory.getLogger(TogetherReviewController.class);
     private final TogetherReviewService togetherReviewService;
     @Autowired
     private TogetherRepository togetherRepository;
 
     @PostMapping("/create")
-    public Map<String, Object> createReview(@RequestBody  TogetherReviewDTO togetherReviewDTO,
-                                            @AuthenticationPrincipal CustomUserDetails loginUser) {
+    public Map<String, Object> createReview(@RequestBody TogetherReviewDTO togetherReviewDTO,
+            @AuthenticationPrincipal CustomUserDetails loginUser) {
         if (togetherReviewDTO.getContent().length() > 100) {
             throw new IllegalArgumentException("후기 내용은 100자 이하로 작성해주세요.");
         } else if (togetherReviewDTO.getRating() < -2 || togetherReviewDTO.getRating() > 2) {
@@ -40,9 +38,9 @@ public class TogetherReviewController {
         togetherReviewDTO.setUserId(loginUser.getId());
         togetherReviewDTO.setCreatedAt(Instant.now());
         Optional<Together> together = togetherRepository.findById(togetherReviewDTO.getParentId());
-        if(loginUser.getId() == together.get().getUser().getId()){
+        if (loginUser.getId() == together.get().getUser().getId()) {
 
-        }else{
+        } else {
             togetherReviewDTO.setTargetId(together.get().getUser().getId());
         }
         togetherReviewService.createReview(togetherReviewDTO);

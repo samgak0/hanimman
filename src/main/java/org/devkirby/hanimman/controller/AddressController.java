@@ -1,7 +1,6 @@
 package org.devkirby.hanimman.controller;
 
 import org.devkirby.hanimman.dto.AddressDTO;
-import org.devkirby.hanimman.dto.UserAddressDTO;
 import org.devkirby.hanimman.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

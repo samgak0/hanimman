@@ -8,7 +8,6 @@ import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.repository.ShareFavoriteRepository;
 import org.devkirby.hanimman.repository.ShareRepository;
 import org.devkirby.hanimman.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +23,7 @@ public class ShareFavoriteServiceImpl implements ShareFavoriteService {
     public void create(Integer userId, Integer parentId) {
         Share share = shareRepository.findById(parentId).orElseThrow();
         User user = userRepository.findById(userId).orElseThrow();
-        if(shareFavoriteRepository.existsByUserAndParent(user, share)) {
+        if (shareFavoriteRepository.existsByUserAndParent(user, share)) {
             throw new IllegalStateException("이미 즐겨찾기한 글입니다.");
         }
         ShareFavorite shareFavorite = ShareFavorite.builder()
@@ -37,7 +36,8 @@ public class ShareFavoriteServiceImpl implements ShareFavoriteService {
     @Override
     @Transactional
     public void delete(Integer parentId, Integer userId) {
-        Integer id = shareFavoriteRepository.findByUserAndParent(userRepository.findById(userId).orElseThrow(), shareRepository.findById(parentId).orElseThrow()).getId();
+        Integer id = shareFavoriteRepository.findByUserAndParent(userRepository.findById(userId).orElseThrow(),
+                shareRepository.findById(parentId).orElseThrow()).getId();
         shareFavoriteRepository.deleteById(id);
     }
 

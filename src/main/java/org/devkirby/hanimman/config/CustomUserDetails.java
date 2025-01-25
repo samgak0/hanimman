@@ -1,7 +1,6 @@
 package org.devkirby.hanimman.config;
 
 import lombok.ToString;
-import org.devkirby.hanimman.entity.Address;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -19,10 +18,9 @@ public class CustomUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Integer id;
 
-
-
     // 생성자
-    public CustomUserDetails(Integer id, String nickname, String codenum, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Integer id, String nickname, String codenum,
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.nickname = nickname;
         this.codenum = codenum;
@@ -41,7 +39,7 @@ public class CustomUserDetails implements UserDetails {
         return null;
     }
 
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
 
@@ -49,7 +47,6 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return "";
     }
-
 
     public String getNickname() {
         return nickname;
@@ -61,12 +58,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;  // 예시에서는 만료되지 않음
+        return true; // 예시에서는 만료되지 않음
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;  // 자격증명 만료되지 않음
+        return true; // 자격증명 만료되지 않음
     }
 
     public Instant getBlockedAt() {

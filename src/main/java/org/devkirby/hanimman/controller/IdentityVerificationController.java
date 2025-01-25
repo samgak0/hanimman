@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 
-
 @CrossOrigin
 @RestController
 @RequestMapping("/identity-verifications")
@@ -43,14 +42,14 @@ public class IdentityVerificationController {
         return verifyIdentity(request.getIdentityVerificationId(), session);
     }
 
-
     @GetMapping
     public ResponseEntity<?> verifyIdentityGet(@RequestParam String identityVerificationId, HttpSession session) {
         // verifyIdentity 메서드 호출 (이 부분에서 실제 데이터 처리)
-        ResponseEntity response = verifyIdentity(identityVerificationId, session);
+        ResponseEntity<?> response = verifyIdentity(identityVerificationId, session);
 
         // verifyIdentity에서 얻은 값 (예: 개인정보)
-        String identityVerificationResult = response.getBody().toString(); // 실제 값을 추출
+        String identityVerificationResult = response.getBody() != null ? response.getBody().toString() : ""; // null 체크
+                                                                                                             // 추가
 
         // React 앱의 API 엔드포인트 --> 테스트 하실 때 본인 노트북 아이피 주소 입력
         String url = "https://hanimman.samgak.store/verification/mobile"; // 모바일

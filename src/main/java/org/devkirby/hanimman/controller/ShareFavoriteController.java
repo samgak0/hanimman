@@ -3,10 +3,6 @@ package org.devkirby.hanimman.controller;
 import lombok.RequiredArgsConstructor;
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
-import org.devkirby.hanimman.dto.ShareFavoriteDTO;
-import org.devkirby.hanimman.dto.UserDTO;
-import org.devkirby.hanimman.entity.Share;
-import org.devkirby.hanimman.entity.User;
 import org.devkirby.hanimman.service.ShareFavoriteService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +15,13 @@ public class ShareFavoriteController {
 
     @PostMapping("/create")
     public void createShareFavorite(@RequestBody ShareDTO shareDTO,
-                                    @AuthenticationPrincipal CustomUserDetails loginUser) {
+            @AuthenticationPrincipal CustomUserDetails loginUser) {
         shareFavoriteService.create(loginUser.getId(), shareDTO.getId());
     }
 
     @DeleteMapping("/{id}")
     public void deleteShareFavorite(@PathVariable Integer id,
-                                    @AuthenticationPrincipal CustomUserDetails loginUser) {
+            @AuthenticationPrincipal CustomUserDetails loginUser) {
         shareFavoriteService.delete(id, loginUser.getId());
     }
 

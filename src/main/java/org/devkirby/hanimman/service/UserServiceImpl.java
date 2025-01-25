@@ -39,7 +39,6 @@ public class UserServiceImpl implements UserService {
 
     // 회원조회
     public UserDTO selectUser(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
         Optional<User> opt = userRepository.findByNameAndPhonenumAndGenderAndBirth(userDTO.getName(),
                 userDTO.getPhonenum(), userDTO.getGender(), userDTO.getBirth());
         User savedUser = new User();

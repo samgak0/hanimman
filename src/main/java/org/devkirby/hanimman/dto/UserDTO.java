@@ -5,11 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.devkirby.hanimman.entity.Gender;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collection;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +18,7 @@ public class UserDTO {
     private String name; // 이름
     private LocalDate birth; // 생년월일
     private Gender gender; // 성별
-    private String phonenum; //핸드폰번호
+    private String phonenum; // 핸드폰번호
     private String nickname; // 닉네임
     private String codenum; // 코드번호
     private Instant blockedAt; // 블록된 여부
