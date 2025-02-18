@@ -18,7 +18,6 @@ public class CustomUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Integer id;
 
-    // 생성자
     public CustomUserDetails(Integer id, String nickname, String codenum,
             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -27,7 +26,6 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
-    // UserDetails 인터페이스 메서드 구현
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -35,7 +33,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        // 비밀번호가 필요 없다면 null 또는 빈 문자열을 반환
         return null;
     }
 
@@ -58,12 +55,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // 예시에서는 만료되지 않음
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // 자격증명 만료되지 않음
+        return true;
     }
 
     public Instant getBlockedAt() {

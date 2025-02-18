@@ -21,12 +21,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
+    private JWTAuthenticationFilter jwtAuthenticationFilter() {
         return new JWTAuthenticationFilter(userService);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    private SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource)
+            throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource)) // CORS 설정 적용
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화

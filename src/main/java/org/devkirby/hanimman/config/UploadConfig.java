@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UploadConfig {
     @Bean
-    public ImageUploadUtil imageUploadUtil() {
+    private ImageUploadUtil imageUploadUtil() {
         return new ImageUploadUtil();
     }
 }
