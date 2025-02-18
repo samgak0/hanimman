@@ -17,11 +17,17 @@ public class ShareImageController {
     @Autowired
     private ShareImageService shareImageService;
 
+    /**
+     * 나눠요 게시글 이미지 업로드
+     * 
+     * @param file    이미지 파일
+     * @param shareId 나눠요 게시글 아이디
+     * @return 업로드 결과
+     */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("shareId") Integer shareId
-    ) throws IOException {
+            @RequestParam("shareId") Integer shareId) throws IOException {
         String result = shareImageService.uploadImage(file, shareId);
         return ResponseEntity.ok(result);
     }

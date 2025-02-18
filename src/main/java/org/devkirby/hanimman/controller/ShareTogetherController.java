@@ -17,6 +17,11 @@ public class ShareTogetherController {
 
     private final ShareTogetherService service;
 
+    /**
+     * 나눠요와 함께해요 게시글 목록 조회
+     * 
+     * @return 나눠요와 함께해요 게시글 목록
+     */
     @GetMapping
     public List<ShareTogetherDTO> getSharesAndTogethers() {
         return service.getSharesAndTogethers();

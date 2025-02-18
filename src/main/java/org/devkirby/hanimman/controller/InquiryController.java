@@ -29,6 +29,15 @@ import java.util.Map;
 public class InquiryController {
     private final InquiryService inquiryService;
 
+    /**
+     * 1:1 문의 작성
+     * 
+     * @param inquiryDTO 1:1 문의 정보
+     * @param files      첨부파일
+     * @param loginUser  로그인 유저
+     * @return 작성 결과
+     * @throws IOException 파일 처리 예외
+     */
     @PostMapping("/create")
     public Map<String, Object> createInquiry(@RequestPart("inquiryDTO") InquiryDTO inquiryDTO,
             @RequestPart(name = "files", required = false) List<MultipartFile> files,
@@ -41,11 +50,26 @@ public class InquiryController {
         return createResponse(200, "1:1 문의 작성에 성공했습니다.");
     }
 
+    /**
+     * 1:1 문의 조회
+     * 
+     * @param id 1:1 문의 아이디
+     * @return 1:1 문의 정보
+     */
     @GetMapping("/{id}")
     public InquiryDTO readInquiry(@PathVariable Integer id) {
         return inquiryService.read(id);
     }
 
+    /**
+     * 1:1 문의 수정
+     * 
+     * @param id         1:1 문의 아이디
+     * @param inquiryDTO 1:1 문의 정보
+     * @param loginUser  로그인 유저
+     * @return 수정 결과
+     * @throws IOException 파일 처리 예외
+     */
     @PutMapping("/{id}")
     public Map<String, Object> updateInquiry(@PathVariable Integer id, @RequestBody InquiryDTO inquiryDTO,
             @AuthenticationPrincipal User loginUser) throws IOException {
@@ -56,6 +80,13 @@ public class InquiryController {
         return createResponse(200, "1:1 문의 수정에 성공했습니다.");
     }
 
+    /**
+     * 1:1 문의 삭제
+     * 
+     * @param id        1:1 문의 아이디
+     * @param loginUser 로그인 유저
+     * @return 삭제 결과
+     */
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteInquiry(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
         if (!loginUser.getId().equals(inquiryService.read(id).getUserId())) {
@@ -65,16 +96,36 @@ public class InquiryController {
         return createResponse(200, "1:1 문의 삭제에 성공했습니다.");
     }
 
+    /**
+     * 1:1 문의 목록 조회
+     * 
+     * @param pageable 페이지 정보
+     * @return 1:1 문의 목록
+     */
     @GetMapping("/list")
     public Page<InquiryDTO> listAllInquiries(@PageableDefault(size = 10) Pageable pageable) {
         return inquiryService.listAll(pageable);
     }
 
+    /**
+     * 1:1 문의 검색
+     * 
+     * @param id       1:1 문의 아이디
+     * @param pageable 페이지 정보
+     * @return 1:1 문의 목록
+     */
     @GetMapping("/search")
     public Page<InquiryDTO> searchInquiries(@RequestParam Integer id, @PageableDefault(size = 10) Pageable pageable) {
         return inquiryService.searchById(id, pageable);
     }
 
+    /**
+     * 1:1 문의 첨부파일 다운로드
+     * 
+     * @param id 1:1 문의 아이디
+     * @return 첨부파일
+     * @throws Exception 파일 처리 예외
+     */
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
         File file = inquiryService.downloadImage(id);
@@ -87,6 +138,12 @@ public class InquiryController {
                 .body(resource);
     }
 
+    /**
+     * 1:1 문의 유효성 검사
+     * 
+     * @param inquiryDTO 1:1 문의 정보
+     * @param files      첨부파일
+     */
     private void validateInquiry(InquiryDTO inquiryDTO, List<MultipartFile> files) {
         if (inquiryDTO.getTitle().length() > 255 || inquiryDTO.getTitle().isEmpty()) {
             throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "

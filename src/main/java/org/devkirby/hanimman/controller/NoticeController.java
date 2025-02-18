@@ -29,6 +29,15 @@ import java.util.Map;
 public class NoticeController {
     private final NoticeService noticeService;
 
+    /**
+     * 공지사항 작성
+     * 
+     * @param noticeDTO 공지사항 정보
+     * @param files     첨부파일
+     * @param loginUser 로그인 유저
+     * @return 작성 결과
+     * @throws IOException 파일 처리 예외
+     */
     @PostMapping("/create")
     public Map<String, Object> createNotice(@RequestPart("noticeDTO") NoticeDTO noticeDTO,
             @RequestPart(name = "files", required = false) List<MultipartFile> files,
@@ -51,11 +60,25 @@ public class NoticeController {
         return map;
     }
 
+    /**
+     * 공지사항 조회
+     * 
+     * @param id 공지사항 아이디
+     * @return 공지사항 정보
+     */
     @GetMapping("/{id}")
     public NoticeDTO readNotice(@PathVariable Integer id) {
         return noticeService.read(id);
     }
 
+    /**
+     * 공지사항 수정
+     * 
+     * @param id        공지사항 아이디
+     * @param noticeDTO 공지사항 정보
+     * @return 수정 결과
+     * @throws IOException 파일 처리 예외
+     */
     @PutMapping("/{id}")
     public Map<String, Object> updateNotice(@PathVariable Integer id, @RequestBody NoticeDTO noticeDTO)
             throws IOException {
@@ -88,16 +111,36 @@ public class NoticeController {
         }
     }
 
+    /**
+     * 공지사항 목록 조회
+     * 
+     * @param pageable 페이지 정보
+     * @return 공지사항 목록
+     */
     @GetMapping("/list")
     public Page<NoticeDTO> listAllNotices(@PageableDefault(size = 10) Pageable pageable) {
         return noticeService.listAll(pageable);
     }
 
+    /**
+     * 공지사항 검색
+     * 
+     * @param keyword  검색 키워드
+     * @param pageable 페이지 정보
+     * @return 공지사항 목록
+     */
     @GetMapping("/search")
     public Page<NoticeDTO> searchNotices(@RequestParam String keyword, @PageableDefault(size = 10) Pageable pageable) {
         return noticeService.searchByKeywords(keyword, pageable);
     }
 
+    /**
+     * 공지사항 첨부파일 다운로드
+     * 
+     * @param id 공지사항 아이디
+     * @return 첨부파일
+     * @throws Exception 파일 처리 예외
+     */
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
         File file = noticeService.downloadImage(id);

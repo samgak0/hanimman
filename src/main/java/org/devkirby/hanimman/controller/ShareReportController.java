@@ -18,6 +18,12 @@ public class ShareReportController {
     @Autowired
     private ShareReportService shareReportService;
 
+    /**
+     * 나눠요 게시글 신고
+     * 
+     * @param shareReportDTO 신고 정보
+     * @param loginUser      로그인 유저
+     */
     @PostMapping("/report")
     public ResponseEntity<Void> report(@Valid @RequestBody ShareReportDTO shareReportDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
@@ -26,7 +32,11 @@ public class ShareReportController {
         return ResponseEntity.ok().build();
     }
 
-    // 카테고리 조회
+    /**
+     * 신고 카테고리 조회
+     * 
+     * @return 신고 카테고리 목록
+     */
     @GetMapping("/categories")
     public ResponseEntity<List<ReportCategoryDTO>> getCategories() {
         List<ReportCategoryDTO> categories = shareReportService.findAllCategories();

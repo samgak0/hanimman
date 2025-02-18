@@ -32,16 +32,36 @@ public class IdentityVerificationController {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 본인인증 컨트롤러
+     * 
+     * @param restTemplate RestTemplate
+     * @param objectMapper ObjectMapper
+     */
     public IdentityVerificationController(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * 본인인증 POST 요청
+     * 
+     * @param request 본인인증 요청 정보
+     * @param session 세션
+     * @return 본인인증 결과
+     */
     @PostMapping
     public ResponseEntity<?> verifyIdentityPost(@RequestBody VerificationRequest request, HttpSession session) {
         return verifyIdentity(request.getIdentityVerificationId(), session);
     }
 
+    /**
+     * 본인인증 GET 요청
+     * 
+     * @param identityVerificationId 본인인증 아이디
+     * @param session                세션
+     * @return 본인인증 결과
+     */
     @GetMapping
     public ResponseEntity<?> verifyIdentityGet(@RequestParam String identityVerificationId, HttpSession session) {
         // verifyIdentity 메서드 호출 (이 부분에서 실제 데이터 처리)
@@ -79,6 +99,13 @@ public class IdentityVerificationController {
         }
     }
 
+    /**
+     * 본인인증 조회
+     * 
+     * @param identityVerificationId 본인인증 아이디
+     * @param session                세션
+     * @return 본인인증 결과
+     */
     private ResponseEntity<?> verifyIdentity(String identityVerificationId, HttpSession session) {
         try {
             String url = "https://api.portone.io/identity-verifications/" + identityVerificationId;

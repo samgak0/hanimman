@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/main")
 public class MainController {
 
+    /**
+     * 메인 페이지 조회
+     * 
+     * @param loginUser 로그인 유저
+     */
     @GetMapping
-    public void listAll(@AuthenticationPrincipal CustomUserDetails loginUser){
-        
+    public void listAll(@AuthenticationPrincipal CustomUserDetails loginUser) {
+
     }
 }
