@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/refresh-token")
 public class TokenController {
 
+    /**
+     * 리프레시 토큰 갱신
+     * 
+     * @param tokenRequest 리프레시 토큰 요청 정보
+     * @return 리프레시 토큰 갱신 결과
+     */
     @PostMapping
     public ResponseEntity<?> refreshAuthToken(@RequestBody TokenRequest tokenRequest) {
         try {
@@ -28,6 +34,9 @@ public class TokenController {
         }
     }
 
+    /**
+     * 리프레시 토큰 요청 정보
+     */
     public static class TokenRequest {
         private String token;
 
@@ -40,6 +49,9 @@ public class TokenController {
         }
     }
 
+    /**
+     * 리프레시 토큰 응답 정보
+     */
     public static class TokenResponse {
         private String token;
 

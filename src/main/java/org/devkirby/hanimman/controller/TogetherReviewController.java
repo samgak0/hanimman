@@ -25,6 +25,13 @@ public class TogetherReviewController {
     @Autowired
     private TogetherRepository togetherRepository;
 
+    /**
+     * 후기 작성
+     * 
+     * @param togetherReviewDTO 후기 정보
+     * @param loginUser         로그인 유저
+     * @return 후기 작성 결과
+     */
     @PostMapping("/create")
     public Map<String, Object> createReview(@RequestBody TogetherReviewDTO togetherReviewDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
@@ -45,11 +52,24 @@ public class TogetherReviewController {
         return Map.of("code", 200, "msg", "후기 작성에 성공했습니다.");
     }
 
+    /**
+     * 후기 조회
+     * 
+     * @param id 후기 ID
+     * @return 후기 조회 결과
+     */
     @GetMapping("/{id}")
     public TogetherReviewDTO readReview(Integer id) {
         return togetherReviewService.readReview(id);
     }
 
+    /**
+     * 후기 수정
+     * 
+     * @param id                후기 ID
+     * @param togetherReviewDTO 후기 정보
+     * @return 후기 수정 결과
+     */
     @PutMapping("/{id}")
     public Map<String, Object> updateReview(Integer id, TogetherReviewDTO togetherReviewDTO) {
         togetherReviewDTO.setId(id);
@@ -57,18 +77,38 @@ public class TogetherReviewController {
         return Map.of("code", 200, "msg", "후기 수정에 성공했습니다.");
     }
 
+    /**
+     * 후기 삭제
+     * 
+     * @param id 후기 ID
+     * @return 후기 삭제 결과
+     */
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteReview(Integer id) {
         togetherReviewService.deleteReview(id);
         return Map.of("code", 200, "msg", "후기 삭제에 성공했습니다.");
     }
 
+    /**
+     * 작성한 후기 조회
+     * 
+     * @param pageable 페이지 정보
+     * @param userId   유저 ID
+     * @return 작성한 후기 조회 결과
+     */
     @GetMapping("/written/{userId}")
     public Page<TogetherReviewDTO> getWrittenReviews(
             @PageableDefault(size = 10) Pageable pageable, Integer userId) {
         return togetherReviewService.getWrittenReviews(userId, pageable);
     }
 
+    /**
+     * 받은 후기 조회
+     * 
+     * @param pageable 페이지 정보
+     * @param targetId 유저 ID
+     * @return 받은 후기 조회 결과
+     */
     @GetMapping("/accept/{targetId}")
     public Page<TogetherReviewDTO> getAcceptReviews(
             @PageableDefault(size = 10) Pageable pageable, Integer targetId) {

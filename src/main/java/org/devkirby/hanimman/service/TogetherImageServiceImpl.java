@@ -58,9 +58,9 @@ public class TogetherImageServiceImpl implements TogetherImageService {
 
     @Override
     @Transactional
-    public void deleteByParent(Integer togetherId){
+    public void deleteByParent(Integer togetherId) {
         List<TogetherImage> togetherImages = togetherImageRepository.findAllByParentId(togetherId);
-        for(TogetherImage togetherImage : togetherImages){
+        for (TogetherImage togetherImage : togetherImages) {
             togetherImage.setDeletedAt(Instant.now());
             togetherImageRepository.save(togetherImage);
         }
@@ -91,7 +91,7 @@ public class TogetherImageServiceImpl implements TogetherImageService {
     @Transactional
     public List<String> uploadImages(List<MultipartFile> multipartFiles, Integer togetherId) throws IOException {
         List<String> serverNames = new ArrayList<>();
-        for(MultipartFile file : multipartFiles){
+        for (MultipartFile file : multipartFiles) {
             serverNames.add(uploadImage(file, togetherId));
         }
         return serverNames;

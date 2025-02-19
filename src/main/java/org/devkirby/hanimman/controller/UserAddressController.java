@@ -25,8 +25,13 @@ public class UserAddressController {
     @Autowired
     private AddressRepository addressRepository;
 
-    // 첫번째 주소 생성
-    @PostMapping("/save")
+    /**
+     * 주소 생성
+     * 
+     * @param userAddressDTO 주소 정보
+     * @param loginUser      로그인 유저
+     * @return 주소 생성 결과
+     */
     public ResponseEntity<UserAddressDTO> saveUserAddress(@RequestBody UserAddressDTO userAddressDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
         System.out.println(loginUser);
@@ -37,7 +42,13 @@ public class UserAddressController {
         return ResponseEntity.ok(savedAddress);
     }
 
-    // 두 번째 주소 저장
+    /**
+     * 두 번째 주소 저장
+     * 
+     * @param userAddressDTO 주소 정보
+     * @param loginUser      로그인 유저
+     * @return 두 번째 주소 저장 결과
+     */
     @PostMapping("/save/secondary")
     public ResponseEntity<UserAddressDTO> saveSecondaryUserAddress(@RequestBody UserAddressDTO userAddressDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
@@ -48,7 +59,12 @@ public class UserAddressController {
         return ResponseEntity.ok(savedAddress);
     }
 
-    // 주소 조회
+    /**
+     * 주소 조회
+     * 
+     * @param loginUser 로그인 유저
+     * @return 주소 조회 결과
+     */
     @GetMapping("/select")
     public ResponseEntity<ResponseUserAddressDTO> getUserAddress(@AuthenticationPrincipal CustomUserDetails loginUser) {
         String secondAddressName = null;
@@ -86,7 +102,13 @@ public class UserAddressController {
         return ResponseEntity.ok(responseUserAddressDTO);
     }
 
-    // 주소 수정
+    /**
+     * 주소 수정
+     * 
+     * @param userAddressDTO 주소 정보
+     * @param loginUser      로그인 유저
+     * @return 주소 수정 결과
+     */
     @PutMapping("/update")
     public ResponseEntity<UserAddressDTO> updateUserAddress(
             @RequestBody UserAddressDTO userAddressDTO,

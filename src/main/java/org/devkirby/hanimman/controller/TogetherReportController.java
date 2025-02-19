@@ -19,7 +19,13 @@ public class TogetherReportController {
     @Autowired
     private TogetherReportService togetherReportService;
 
-    // 생성
+    /**
+     * 같이가요 게시글 신고
+     * 
+     * @param togetherReportDTO 신고 정보
+     * @param loginUser         로그인 유저
+     * @return 신고 결과
+     */
     @PostMapping("/report")
     public ResponseEntity<Void> report(@Valid @RequestBody TogetherReportDTO togetherReportDTO,
             @AuthenticationPrincipal CustomUserDetails loginUser) {
@@ -28,7 +34,11 @@ public class TogetherReportController {
         return ResponseEntity.ok().build(); // 200 OK 응답 반환
     }
 
-    // 조회
+    /**
+     * 선택 신고 조회
+     * 
+     * @return 선택 신고 조회 결과
+     */
     @GetMapping("/select-reports")
     public ResponseEntity<List<TogetherReport>> getSelectReports() {
         List<TogetherReport> selectReports = togetherReportService.findAllSelectReports();
@@ -36,7 +46,11 @@ public class TogetherReportController {
 
     }
 
-    // 카테고리 조회
+    /**
+     * 카테고리 조회
+     * 
+     * @return 카테고리 조회 결과
+     */
     @GetMapping("/categories")
     public ResponseEntity<List<ReportCategoryDTO>> getCategories() {
         List<ReportCategoryDTO> categories = togetherReportService.findAllCategories();

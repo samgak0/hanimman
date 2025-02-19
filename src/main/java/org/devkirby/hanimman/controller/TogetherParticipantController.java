@@ -28,9 +28,8 @@ public class TogetherParticipantController {
     private final Logger log = LoggerFactory.getLogger(TogetherParticipantController.class);
 
     @PostMapping("/create")
-    public void createParticipant(@RequestBody
-                                      TogetherParticipantDTO togetherParticipantDTO,
-                                  @AuthenticationPrincipal CustomUserDetails loginUser) {
+    public void createParticipant(@RequestBody TogetherParticipantDTO togetherParticipantDTO,
+            @AuthenticationPrincipal CustomUserDetails loginUser) {
         togetherParticipantDTO.setUserId(loginUser.getId());
         togetherParticipantService.create(togetherParticipantDTO);
     }
@@ -84,8 +83,7 @@ public class TogetherParticipantController {
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam Integer id) throws Exception {
         File file = togetherService.downloadImage(id);
-        InputStreamResource resource =
-                new InputStreamResource(new FileInputStream(file));
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
                 .header("content-disposition",
                         "filename=" + URLEncoder.encode(file.getName(), "utf-8"))

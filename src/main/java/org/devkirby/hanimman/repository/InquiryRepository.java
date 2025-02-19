@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface InquiryRepository extends JpaRepository<Inquiry, Integer> {
     List<Inquiry> findByTitleContaining(String keyword);
-
+    
     @Query("SELECT i FROM Inquiry i WHERE i.title LIKE %:keyword% OR i.content LIKE %:keyword%")
     List<Inquiry> findByTitleOrContentContaining(String keyword);
 
