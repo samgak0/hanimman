@@ -1,6 +1,8 @@
 package org.devkirby.hanimman.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.devkirby.hanimman.config.CustomUserDetails;
 import org.devkirby.hanimman.dto.ShareDTO;
 import org.devkirby.hanimman.dto.UserAddressDTO;
@@ -30,13 +32,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/share")
 @RequiredArgsConstructor
 public class ShareController {
-    private static final Logger log = LoggerFactory.getLogger(ShareController.class);
     private final ShareService shareService;
     private final UserAddressService userAddressService;
+
+    private static final String ERROR_TITLE_LENGTH = "제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_CONTENT_LENGTH = "내용의 길이는 65535자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_IMAGE_LIMIT = "이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: %d";
+    private static final String ERROR_LOCATION_DATE = "나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.";
+    private static final String ERROR_QUANTITY = "수량은 1개 이상이어야 합니다.";
+    private static final String ERROR_PRICE = "가격은 0원 이상이어야 합니다.";
+    private static final String ERROR_ITEM_LENGTH = "물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_UNAUTHORIZED_EDIT = "본인이 작성한 게시글만 수정할 수 있습니다.";
+    private static final String ERROR_UNAUTHORIZED_DELETE = "본인이 작성한 게시글만 삭제할 수 있습니다.";
+
+    private static final String MSG_SUCCESS_CREATE = "나눠요 게시글 작성에 성공했습니다.";
+    private static final String MSG_SUCCESS_UPDATE = "나눠요 게시글 수정에 성공했습니다.";
+    private static final String MSG_SUCCESS_DELETE = "나눠요 게시글 삭제에 성공했습니다.";
 
     @PostMapping("/create")
     public Map<String, Object> createShare(@RequestPart("shareDTO") ShareDTO shareDTO,
@@ -52,23 +68,19 @@ public class ShareController {
         String primaryAddressId = userAddressDTO.getPrimaryAddressId();
 
         if (shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getTitle().length());
+            throw new IllegalArgumentException(String.format(ERROR_TITLE_LENGTH, shareDTO.getTitle().length()));
         } else if (shareDTO.getContent().length() > 65535 || shareDTO.getContent().isEmpty()) {
-            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getContent().length());
+            throw new IllegalArgumentException(String.format(ERROR_CONTENT_LENGTH, shareDTO.getContent().length()));
         } else if (files != null && files.size() > 10) {
-            throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
-                    + shareDTO.getFiles().size());
+            throw new IllegalArgumentException(String.format(ERROR_IMAGE_LIMIT, shareDTO.getFiles().size()));
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
-            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_LOCATION_DATE);
         } else if (shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1) {
-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_QUANTITY);
         } else if (shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
-            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_PRICE);
         } else if (shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50) {
-            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getItem().length());
+            throw new IllegalArgumentException(String.format(ERROR_ITEM_LENGTH, shareDTO.getItem().length()));
         } else {
             shareDTO.setUserId(loginUser.getId());
             if (files != null && !files.isEmpty()) {
@@ -77,7 +89,7 @@ public class ShareController {
             Integer id = shareService.create(shareDTO, primaryAddressId);
             map.put("code", 200);
             map.put("id", id);
-            map.put("msg", "나눠요 게시글 작성에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_CREATE);
         }
         return map;
     }
@@ -99,30 +111,27 @@ public class ShareController {
         Instant oneHourLater = now.plus(1, ChronoUnit.HOURS);
         Instant limitDay = now.plus(7, ChronoUnit.DAYS);
         if (!loginUser.getId().equals(shareDTO.getUserId())) {
-            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+            throw new IllegalArgumentException(ERROR_UNAUTHORIZED_EDIT);
         }
         if (shareDTO.getTitle().length() > 255 || shareDTO.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getTitle().length());
+            throw new IllegalArgumentException(String.format(ERROR_TITLE_LENGTH, shareDTO.getTitle().length()));
         } else if (shareDTO.getContent().length() > 65535) {
-            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getContent().length());
+            throw new IllegalArgumentException(String.format(ERROR_CONTENT_LENGTH, shareDTO.getContent().length()));
         } else if (shareDTO.getLocationDate().isBefore(oneHourLater) || shareDTO.getLocationDate().isAfter(limitDay)) {
-            throw new IllegalArgumentException("나눠요 시간은 현재 시간으로부터 한 시간 이후, 7일 이전이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_LOCATION_DATE);
         } else if (shareDTO.getQuantity() == null || shareDTO.getQuantity() < 1) {
-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_QUANTITY);
         } else if (shareDTO.getPrice() == null || shareDTO.getPrice() < 0) {
-            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
+            throw new IllegalArgumentException(ERROR_PRICE);
         } else if (shareDTO.getItem().isEmpty() || shareDTO.getItem().length() > 50) {
-            throw new IllegalArgumentException("물품의 길이는 1자 이상, 50자 이하여야 합니다. 현재 길이: "
-                    + shareDTO.getItem().length());
+            throw new IllegalArgumentException(String.format(ERROR_ITEM_LENGTH, shareDTO.getItem().length()));
         } else {
             if (files != null && !files.isEmpty()) {
                 shareDTO.setFiles(files); // 파일 설정
             }
             shareService.update(shareDTO);
             map.put("code", 200);
-            map.put("msg", "나눠요 게시글 수정에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_UPDATE);
         }
         return map;
     }
@@ -132,11 +141,11 @@ public class ShareController {
             @AuthenticationPrincipal CustomUserDetails loginUser) {
         Map<String, Object> map = new HashMap<>();
         if (!loginUser.getId().equals(shareService.read(id, loginUser).getUserId())) {
-            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException(ERROR_UNAUTHORIZED_DELETE);
         } else {
             shareService.delete(id);
             map.put("code", 200);
-            map.put("msg", "나눠요 게시글 삭제에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_DELETE);
         }
         return map;
     }

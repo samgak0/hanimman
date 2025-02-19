@@ -29,6 +29,15 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final String ERROR_MISSING_FIELDS = "Missing required fields.";
+    private static final String ERROR_INVALID_INPUT_DATA = "Invalid input data.";
+    private static final String ERROR_PROCESS_FAILED = "An error occurred during the process";
+    private static final String ERROR_BLOCKED_USER = "고객센터로 문의 주세요";
+    private static final String ERROR_DELETED_USER = "탈퇴된 회원입니다.";
+    private static final String MSG_LOGIN_SUCCESS = "Login successful.";
+    private static final String MSG_DELETE_SUCCESS = "회원 탈퇴가 완료되었습니다.";
+    private static final String ERROR_DELETE_FAILED = "탈퇴 처리 중 오류가 발생했습니다.";
+
     @Autowired
     private UserService userService;
 
@@ -43,7 +52,7 @@ public class UserController {
         // 필수 필드 검증
         if (resultData.getName() == null || resultData.getPhoneNumber() == null ||
                 resultData.getBirthDate() == null || resultData.getGender() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Missing required fields."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ERROR_MISSING_FIELDS));
         }
 
         try {
@@ -71,23 +80,23 @@ public class UserController {
             // 유저는 있으나 blocked처리 된 경우 BadRequest
             log.info("Existing user found: " + existingUser);
             if (existingUser.getBlockedAt() != null) {
-                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "고객센터로 문의 주세요");
-           // 탈퇴된 회원일 경우
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, ERROR_BLOCKED_USER);
+                // 탈퇴된 회원일 경우
             } else if (existingUser.getDeletedAt() != null) {
-                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, "탈퇴된 회원입니다.");
+                return generateResponseWithToken(existingUser, HttpStatus.BAD_REQUEST, ERROR_DELETED_USER);
             } else {
                 // 로그인 성공 -> JWT 생성 및 응답
-                return generateResponseWithToken(existingUser, HttpStatus.OK, "Login successful.");
+                return generateResponseWithToken(existingUser, HttpStatus.OK, MSG_LOGIN_SUCCESS);
             }
         } catch (IllegalArgumentException e) {
             log.error("Invalid input data", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse("Invalid input data."));
+                    .body(new ErrorResponse(ERROR_INVALID_INPUT_DATA));
         } catch (Exception e) {
             log.error("Error during verification, signup, or login", e);
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("An error occurred during the process"));
+                    .body(new ErrorResponse(ERROR_PROCESS_FAILED));
         }
     }
 
@@ -95,12 +104,12 @@ public class UserController {
     private UserDTO createUserWithProfile(UserDTO savedUserDTO) {
         System.out.println("savedUserDTO" + savedUserDTO);
         UserDTO signedUserDTO = userService.createUser(savedUserDTO);
-//        profileService.createProfile(signedUserDTO);
+        // profileService.createProfile(signedUserDTO);
         return signedUserDTO;
     }
 
     private ResponseEntity<SuccessResponse> generateResponseWithToken(UserDTO userDTO, HttpStatus status,
-                                                                      String message) {
+            String message) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
         claims.put("nickName", userDTO.getNickname());
@@ -177,13 +186,13 @@ public class UserController {
 
     // 회원 탈퇴
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(userDetails);
         try {
             userService.deleteUser(userDTO);
-            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+            return ResponseEntity.ok(MSG_DELETE_SUCCESS);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("탈퇴 처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(ERROR_DELETE_FAILED);
         }
 
     }
@@ -222,7 +231,6 @@ public class UserController {
         private String birthDate;
         private String gender;
 
-
         // Getters and setters
         public String getName() {
             return name;
@@ -257,9 +265,9 @@ public class UserController {
         }
     }
 
-
-    @GetMapping({"/myprofile", "/editprofile"})
-    public ResponseEntity<Map<String, Object>> getUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    @GetMapping({ "/myprofile", "/editprofile" })
+    public ResponseEntity<Map<String, Object>> getUserProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
 
         // 프로필 가져오기
@@ -273,22 +281,21 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
     @Transactional
     @PostMapping("/editprofile")
-    public ResponseEntity<Map<String, Object>> updateUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                 @RequestParam("nickname") String nickname,
-                                                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
+    public ResponseEntity<Map<String, Object>> updateUserProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam("nickname") String nickname,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
         UserDTO userDTO = userService.getCurrentUserDetails(customUserDetails);
         userDTO.setNickname(nickname);
         userDTO.setModifiedAt(Instant.now());
         userService.updateUser(userDTO);
-        if(profileImage != null) {
+        if (profileImage != null) {
             profileService.updateProfile(userDTO, profileImage);
         }
 
         return null;
     }
-
 
 }

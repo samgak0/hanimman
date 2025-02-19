@@ -29,6 +29,14 @@ import java.util.Map;
 public class NoticeController {
     private final NoticeService noticeService;
 
+    private static final String ERROR_TITLE_LENGTH = "제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_CONTENT_LENGTH = "내용의 길이는 65535자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_UNAUTHORIZED_DELETE = "공지사항은 관리자만 삭제할 수 있습니다.";
+
+    private static final String MSG_SUCCESS_CREATE = "공지사항 작성에 성공했습니다.";
+    private static final String MSG_SUCCESS_UPDATE = "공지사항 수정에 성공했습니다.";
+    private static final String MSG_SUCCESS_DELETE = "공지사항 삭제에 성공했습니다.";
+
     /**
      * 공지사항 작성
      * 
@@ -44,18 +52,16 @@ public class NoticeController {
             @AuthenticationPrincipal User loginUser) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if (noticeDTO.getTitle().length() > 255 || noticeDTO.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
-                    + noticeDTO.getTitle().length());
+            throw new IllegalArgumentException(String.format(ERROR_TITLE_LENGTH, noticeDTO.getTitle().length()));
         } else if (noticeDTO.getContent().length() > 65535) {
-            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
-                    + noticeDTO.getContent().length());
+            throw new IllegalArgumentException(String.format(ERROR_CONTENT_LENGTH, noticeDTO.getContent().length()));
         } else {
             if (files != null && !files.isEmpty()) {
                 noticeDTO.setFiles(files);
             }
             noticeService.create(noticeDTO);
             map.put("code", 200);
-            map.put("msg", "공지사항 작성에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_CREATE);
         }
         return map;
     }
@@ -85,15 +91,13 @@ public class NoticeController {
         Map<String, Object> map = new HashMap<>();
 
         if (noticeDTO.getTitle().length() > 255 || noticeDTO.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
-                    + noticeDTO.getTitle().length());
+            throw new IllegalArgumentException(String.format(ERROR_TITLE_LENGTH, noticeDTO.getTitle().length()));
         } else if (noticeDTO.getContent().length() > 65535) {
-            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
-                    + noticeDTO.getContent().length());
+            throw new IllegalArgumentException(String.format(ERROR_CONTENT_LENGTH, noticeDTO.getContent().length()));
         } else {
             noticeService.update(noticeDTO);
             map.put("code", 200);
-            map.put("msg", "공지사항 수정에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_UPDATE);
         }
         return map;
     }
@@ -102,11 +106,11 @@ public class NoticeController {
     public Map<String, Object> deleteNotice(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
         Map<String, Object> map = new HashMap<>();
         if (!loginUser.getId().equals(noticeService.read(id).getUserId())) {
-            throw new IllegalArgumentException("공지사항은 관리자만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException(ERROR_UNAUTHORIZED_DELETE);
         } else {
             noticeService.delete(id);
             map.put("code", 200);
-            map.put("msg", "공지사항 삭제에 성공했습니다.");
+            map.put("msg", MSG_SUCCESS_DELETE);
             return map;
         }
     }

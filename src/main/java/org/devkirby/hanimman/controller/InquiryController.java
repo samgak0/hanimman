@@ -29,6 +29,15 @@ import java.util.Map;
 public class InquiryController {
     private final InquiryService inquiryService;
 
+    private static final String ERROR_TITLE_LENGTH = "제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_CONTENT_LENGTH = "내용의 길이는 65535자 이하여야 합니다. 현재 길이: %d";
+    private static final String ERROR_IMAGE_LIMIT = "이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: %d";
+    private static final String ERROR_UNAUTHORIZED_DELETE = "본인이 작성한 문의만 삭제할 수 있습니다.";
+
+    private static final String MSG_SUCCESS_CREATE = "1:1 문의 작성에 성공했습니다.";
+    private static final String MSG_SUCCESS_UPDATE = "1:1 문의 수정에 성공했습니다.";
+    private static final String MSG_SUCCESS_DELETE = "1:1 문의 삭제에 성공했습니다.";
+
     /**
      * 1:1 문의 작성
      * 
@@ -47,7 +56,7 @@ public class InquiryController {
             inquiryDTO.setFiles(files);
         }
         inquiryService.create(inquiryDTO);
-        return createResponse(200, "1:1 문의 작성에 성공했습니다.");
+        return createResponse(200, MSG_SUCCESS_CREATE);
     }
 
     /**
@@ -77,7 +86,7 @@ public class InquiryController {
         validateInquiry(inquiryDTO, inquiryDTO.getFiles());
         inquiryDTO.setUserId(loginUser.getId());
         inquiryService.create(inquiryDTO);
-        return createResponse(200, "1:1 문의 수정에 성공했습니다.");
+        return createResponse(200, MSG_SUCCESS_UPDATE);
     }
 
     /**
@@ -90,10 +99,10 @@ public class InquiryController {
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteInquiry(@PathVariable Integer id, @AuthenticationPrincipal User loginUser) {
         if (!loginUser.getId().equals(inquiryService.read(id).getUserId())) {
-            throw new IllegalArgumentException("본인이 작성한 문의만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException(ERROR_UNAUTHORIZED_DELETE);
         }
         inquiryService.delete(id);
-        return createResponse(200, "1:1 문의 삭제에 성공했습니다.");
+        return createResponse(200, MSG_SUCCESS_DELETE);
     }
 
     /**
@@ -146,14 +155,11 @@ public class InquiryController {
      */
     private void validateInquiry(InquiryDTO inquiryDTO, List<MultipartFile> files) {
         if (inquiryDTO.getTitle().length() > 255 || inquiryDTO.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("제목의 길이는 1자 이상, 255자 이하여야 합니다. 현재 길이: "
-                    + inquiryDTO.getTitle().length());
+            throw new IllegalArgumentException(String.format(ERROR_TITLE_LENGTH, inquiryDTO.getTitle().length()));
         } else if (inquiryDTO.getContent().length() > 65535) {
-            throw new IllegalArgumentException("내용의 길이는 65535자 이하여야 합니다. 현재 길이: "
-                    + inquiryDTO.getContent().length());
+            throw new IllegalArgumentException(String.format(ERROR_CONTENT_LENGTH, inquiryDTO.getContent().length()));
         } else if (files != null && files.size() > 10) {
-            throw new IllegalArgumentException("이미지는 최대 10개까지 업로드할 수 있습니다. 현재 이미지 개수: "
-                    + files.size());
+            throw new IllegalArgumentException(String.format(ERROR_IMAGE_LIMIT, files.size()));
         }
     }
 
